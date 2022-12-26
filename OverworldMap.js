@@ -114,6 +114,7 @@ class OverworldMap {
 
 
 window.OverworldMaps = {
+  
   DemoRoom: {
     id: "DemoRoom",
     lowerSrc: "/images/maps/DemoLower.png",
@@ -305,20 +306,20 @@ window.OverworldMaps = {
       [utils.asGridCoord(10,6)]: [{
         disqualify: ["SEEN_INTRO"],
         events: [
-          { type: "addStoryFlag", flag: "SEEN_INTRO"},
-          { type: "textMessage", text: "* You are chopping ingredients on your first day as a Pizza Chef at a famed establishment in town. *"},
+          // { type: "addStoryFlag", flag: "SEEN_INTRO"},
+          { type: "textMessage", text: "Welcome to the HASH!"},
           { type: "walk", who: "kitchenNpcA", direction: "down"},
           { type: "stand", who: "kitchenNpcA", direction: "right", time: 200},
           { type: "stand", who: "hero", direction: "left", time: 200},
-          { type: "textMessage", text: "Ahem. Is this your best work?"},
-          { type: "textMessage", text: "These pepperonis are completely unstable! The pepper shapes are all wrong!"},
-          { type: "textMessage", text: "Don't even get me started on the mushrooms."},
-          { type: "textMessage", text: "You will never make it in pizza!"},
+          { type: "textMessage", text: "You dont have it baby"},
+          { type: "textMessage", text: "This is a dangerus place!"},
+          // { type: "textMessage", text: "Don't even get me started on the mushrooms."},
+          // { type: "textMessage", text: "You will never make it in pizza!"},
           { type: "stand", who: "kitchenNpcA", direction: "right", time: 200},
           { type: "walk", who: "kitchenNpcA", direction: "up"},
           { type: "stand", who: "kitchenNpcA", direction: "up", time: 300},
           { type: "stand", who: "hero", direction: "down", time: 400},
-          { type: "textMessage", text: "* The competition is fierce! You should spend some time leveling up your Pizza lineup and skills. *"},
+          // { type: "textMessage", text: "* The competition is fierce! You should spend some time leveling up your Pizza lineup and skills. *"},
           {
             type: "changeMap",
             map: "Street",
