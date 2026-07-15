@@ -20,6 +20,7 @@ class BattleEvent {
     message.init( this.battle.element )
   }
 
+  // Here the characters takes the damage
   async stateChange(resolve) {
     const {caster, target, damage, recover, status, action} = this.event;
     let who = this.event.onCaster ? caster : target;

@@ -1,6 +1,6 @@
 window.Actions = {
   damage1: {
-    name: "Whomp!",
+    name: "Attack!",
     description: "Pillowy punch of dough",
     success: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}!"},
@@ -9,7 +9,7 @@ window.Actions = {
     ]
   },
   saucyStatus: {
-    name: "Tomato Squeeze",
+    name: "Squeeze",
     description: "Applies the Saucy status",
     targetType: "friendly",
     success: [
@@ -18,7 +18,7 @@ window.Actions = {
     ]
   },
   clumsyStatus: {
-    name: "Olive Oil",
+    name: "Recovery",
     description: "Slippery mess of deliciousness",
     success: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}!"},
@@ -39,7 +39,7 @@ window.Actions = {
     ]
   },
   item_recoverHp: {
-    name: "Parmesan",
+    name: "Meta-war",
     targetType: "friendly",
     success: [
       { type:"textMessage", text: "{CASTER} sprinkles on some {ACTION}!", },

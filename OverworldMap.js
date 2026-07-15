@@ -142,7 +142,7 @@ window.OverworldMaps = {
           {
             required: ["TALKED_TO_ERIO"],
             events: [
-              { type: "textMessage", text: "Isn't Erio the coolest?", faceHero: "npcA" },
+              { type: "textMessage", text: "Im thinking in Satoshi Nakamoto", faceHero: "npcA" },
             ]
           },
           {
@@ -304,21 +304,21 @@ window.OverworldMaps = {
         }
       ],
       [utils.asGridCoord(10,6)]: [{
-        disqualify: ["SEEN_INTRO"],
+        // disqualify: ["SEEN_INTRO"],
         events: [
           // { type: "addStoryFlag", flag: "SEEN_INTRO"},
-          { type: "textMessage", text: "Welcome to the HASH!"},
-          { type: "walk", who: "kitchenNpcA", direction: "down"},
-          { type: "stand", who: "kitchenNpcA", direction: "right", time: 200},
-          { type: "stand", who: "hero", direction: "left", time: 200},
-          { type: "textMessage", text: "You dont have it baby"},
-          { type: "textMessage", text: "This is a dangerus place!"},
+          // { type: "textMessage", text: "Welcome to the HASH!"},
+          // { type: "walk", who: "kitchenNpcA", direction: "down"},
+          // { type: "stand", who: "kitchenNpcA", direction: "right", time: 200},
+          // { type: "stand", who: "hero", direction: "left", time: 200},
+          // { type: "textMessage", text: "You dont have it baby"},
+          // { type: "textMessage", text: "This is a dangerus place!"},
           // { type: "textMessage", text: "Don't even get me started on the mushrooms."},
           // { type: "textMessage", text: "You will never make it in pizza!"},
-          { type: "stand", who: "kitchenNpcA", direction: "right", time: 200},
-          { type: "walk", who: "kitchenNpcA", direction: "up"},
-          { type: "stand", who: "kitchenNpcA", direction: "up", time: 300},
-          { type: "stand", who: "hero", direction: "down", time: 400},
+          // { type: "stand", who: "kitchenNpcA", direction: "right", time: 200},
+          // { type: "walk", who: "kitchenNpcA", direction: "up"},
+          // { type: "stand", who: "kitchenNpcA", direction: "up", time: 300},
+          // { type: "stand", who: "hero", direction: "down", time: 400},
           // { type: "textMessage", text: "* The competition is fierce! You should spend some time leveling up your Pizza lineup and skills. *"},
           {
             type: "changeMap",

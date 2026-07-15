@@ -38,6 +38,8 @@
   position: absolute;
   left: -11px;
   bottom: -7px;
+  width: 50%;
+
 }
 .Battle .Combatant_character_crop {
   display:none;
@@ -103,7 +105,7 @@
   bottom: -3px;
   padding-left: 2px;
   padding-right: 2px;
-  background: rgba(0,0,0,0.8);
+  background: rgba(0, 0, 0, 0.911);
   color: white;
   margin: 0;
 }
@@ -116,7 +118,8 @@
 
 .Pizza {
   position: absolute;
-  transform: scale(2);
+  /* transform: scale(2); */
+  width: 2vh;
   transition: opacity 0.4s, transform 0.4s;
   background: url(/images/characters/pizzas/pizza-shadow.png) no-repeat no-repeat;
 }
@@ -125,7 +128,7 @@
   left: 51px;
 }
 .Pizza[data-team="enemy"] {
-  top: 47px;
+  top: 60px;
   right: 100px;
 }
 .Pizza[data-active="false"] {
