@@ -86,6 +86,34 @@ class BattleEvent {
     menu.init( this.battle.element )
   }
 
+  //Shown after defeating a wild Hashimon. Resolves with the captured
+  //Hashimon (already saved in playerState) or null if released.
+  captureMenu(resolve) {
+    const species = HashimonSpecies[this.battle.enemy.hashimonSpecies];
+    const menu = new KeyboardMenu();
+    menu.init(this.battle.element);
+    menu.setOptions([
+      {
+        label: "Capturar",
+        description: `Agrega a ${species.name} a tu colección`,
+        handler: () => {
+          menu.end();
+          const hashimon = HashimonSystem.createInstance(this.battle.enemy.hashimonSpecies);
+          const saved = window.playerState.addHashimon(hashimon);
+          resolve(saved);
+        }
+      },
+      {
+        label: "Dejar ir",
+        description: "Deja libre al Hashimon salvaje",
+        handler: () => {
+          menu.end();
+          resolve(null);
+        }
+      }
+    ]);
+  }
+
   replacementMenu(resolve) {
     const menu = new ReplacementMenu({
       replacements: Object.values(this.battle.combatants).filter(c => {

@@ -1,4 +1,22 @@
 window.Actions = {
+  scratch: {
+    name: "Scratch",
+    description: "Zarpazo rápido y directo",
+    success: [
+      { type: "textMessage", text: "{CASTER} uses {ACTION}!"},
+      { type: "animation", animation: "spin"},
+      { type: "stateChange", damage: 10}
+    ]
+  },
+  hashPulse: {
+    name: "Hash Pulse",
+    description: "Pulso de energía de hashes",
+    success: [
+      { type: "textMessage", text: "{CASTER} uses {ACTION}!"},
+      { type: "animation", animation: "glob", color: "#ffd76a" },
+      { type: "stateChange", damage: 12}
+    ]
+  },
   damage1: {
     name: "Attack!",
     description: "Pillowy punch of dough",

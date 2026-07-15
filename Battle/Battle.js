@@ -99,6 +99,11 @@ class Battle {
       this.element.classList.add(this.arena);
     }
 
+    // Wild encounters show the Hashimon itself instead of a trainer sprite
+    if (this.enemy.isWild) {
+      this.element.classList.add("wild-battle");
+    }
+
     this.element.innerHTML = (`
     <div class="Battle_hero">
       <img src="${'/images/characters/people/hero.png'}" alt="Hero" />

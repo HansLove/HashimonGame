@@ -86,6 +86,20 @@ class TurnCycle {
         type: "textMessage",
         text: "Winner!"
       })
+
+      //Wild Hashimon defeated: offer to capture it
+      if (winner === "player" && this.battle.enemy.isWild) {
+        const captured = await this.onNewEvent({
+          type: "captureMenu"
+        })
+        if (captured) {
+          await this.onNewEvent({
+            type: "textMessage",
+            text: `¡${captured.name} fue capturado! Ya está en Mi colección.`
+          })
+        }
+      }
+
       this.onWinner(winner);
       return;
     }

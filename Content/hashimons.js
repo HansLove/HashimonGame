@@ -7,6 +7,14 @@ window.PizzaTypes = {
 }
 
 window.Pizzas = {
+  "lion001": {
+    name: "Solar Cub",
+    description: "Un Hashimon salvaje de la rama solar",
+    type: PizzaTypes.spicy,
+    src: "/images/characters/pizzas/hashimon_1.png",
+    icon: "/images/icons/spicy.png",
+    actions: [ "scratch", "hashPulse" ],
+  },
   "s001": {
     name: "Hashimon",
     description: "Pizza desc here",

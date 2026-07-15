@@ -36,8 +36,8 @@ class SubmissionMenu {
     return {
       root: [
         {
-          label: "Attack",
-          description: "Choose an attack",
+          label: "Poderes",
+          description: "Elige un poder",
           handler: () => {
             //Do something when chosen...
             this.keyboardMenu.setOptions( this.getPages().attacks )
@@ -53,7 +53,7 @@ class SubmissionMenu {
         },
         {
           label: "Swap",
-          description: "Change to another pizza",
+          description: "Change to another Hashimon",
           handler: () => { 
             //See pizza options
             this.keyboardMenu.setOptions( this.getPages().replacements )

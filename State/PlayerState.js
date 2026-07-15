@@ -37,6 +37,33 @@ class PlayerState {
     ]
     this.storyFlags = {
     };
+    this.hashimons = {}; //Captured Hashimons, keyed by instance id
+    this.loadHashimons();
+  }
+
+  addHashimon(hashimon) {
+    //Avoid accidental id collisions: same species captured twice gets a suffixed id
+    let id = hashimon.id;
+    while (this.hashimons[id]) {
+      id = `${hashimon.id}_${Date.now()}${Math.floor(Math.random() * 999)}`;
+    }
+    this.hashimons[id] = { ...hashimon, id };
+    this.saveHashimons();
+    utils.emitEvent("HashimonCollectionChanged");
+    return this.hashimons[id];
+  }
+
+  saveHashimons() {
+    if (!window.localStorage) { return; }
+    window.localStorage.setItem("Hashimon_Collection", JSON.stringify(this.hashimons));
+  }
+
+  loadHashimons() {
+    if (!window.localStorage) { return; }
+    const file = window.localStorage.getItem("Hashimon_Collection");
+    if (file) {
+      this.hashimons = JSON.parse(file);
+    }
   }
 
   addPizza(pizzaId) {

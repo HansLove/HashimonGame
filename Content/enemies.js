@@ -1,4 +1,17 @@
 window.Enemies = {
+  "wildSolarCub": {
+    name: "Solar Cub salvaje",
+    src: "/images/characters/pizzas/hashimon_1.png",
+    isWild: true,
+    hashimonSpecies: "solarCub",
+    pizzas: {
+      "a": {
+        pizzaId: "lion001",
+        maxHp: 35,
+        level: 1,
+      },
+    }
+  },
   "erio": {
     name: "Erio",
     src: "/images/characters/people/erio.png",

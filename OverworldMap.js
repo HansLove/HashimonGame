@@ -397,7 +397,7 @@ window.OverworldMaps = {
         talking: [
           {
             events: [
-              { type: "textMessage", text: "One time i saw a 10 stars Hashimon ", faceHero: "streetNpcA" },
+              { type: "textMessage", text: "One time i saw a 10 stars Hashimon. A wild one roams just east of here...", faceHero: "streetNpcA" },
             ]
           }
         ]
@@ -461,10 +461,27 @@ window.OverworldMaps = {
       return walls;
     }(),
     cutsceneSpaces: {
+      //Wild Hashimon encounter zone
+      [utils.asGridCoord(13,10)]: [
+        {
+          events: [
+            { type: "textMessage", text: "¡Un Solar Cub salvaje apareció!" },
+            { type: "battle", enemyId: "wildSolarCub" },
+          ]
+        }
+      ],
+      [utils.asGridCoord(13,11)]: [
+        {
+          events: [
+            { type: "textMessage", text: "¡Un Solar Cub salvaje apareció!" },
+            { type: "battle", enemyId: "wildSolarCub" },
+          ]
+        }
+      ],
       [utils.asGridCoord(5,9)]: [
         {
           events: [
-            { 
+            {
               type: "changeMap",
               map: "DiningRoom",
               x: utils.withGrid(6),

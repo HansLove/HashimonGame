@@ -22,6 +22,22 @@ class PauseMenu {
       return [
         ...lineupPizzas,
         {
+          label: "Mi colección",
+          description: "Tus Hashimons capturados",
+          handler: () => {
+            //Hand control over to the collection overlay; resume the game when it closes
+            this.esc?.unbind();
+            this.keyboardMenu.end();
+            this.element.remove();
+            const collection = new HashimonCollection({
+              onComplete: () => {
+                this.onComplete();
+              }
+            });
+            collection.init(document.querySelector(".game-container"));
+          }
+        },
+        {
           label: "Save",
           description: "Save your progress",
           handler: () => {
@@ -59,7 +75,7 @@ class PauseMenu {
       ...unequipped,
       {
         label: "Move to front",
-        description: "Move this pizza to the front of the list",
+        description: "Move this Hashimon to the front of the list",
         handler: () => {
           playerState.moveToFront(pageKey);
           this.keyboardMenu.setOptions( this.getOptions("root") );

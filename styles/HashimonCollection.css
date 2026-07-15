@@ -1,0 +1,104 @@
+.HashimonCollection {
+  left: 2em;
+  right: 2em;
+  top: 0.5em;
+  max-height: 180px;
+  overflow-y: auto;
+  z-index: 3;
+  font-size: 6px;
+}
+.HashimonCollection p {
+  margin: 1px 0;
+}
+.HashimonCollection button {
+  font-family: inherit;
+  font-size: 6px;
+  color: var(--menu-font-color);
+  background: var(--dialog-background);
+  border: 1px solid var(--menu-border-color);
+  padding: 1px 4px;
+  cursor: pointer;
+}
+.HashimonCollection button:hover,
+.HashimonCollection button:focus {
+  background: var(--menu-selected-background);
+  color: #fff;
+  outline: 0;
+}
+
+.HashimonCollection_row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 0;
+  border-bottom: 1px solid var(--menu-border-color);
+}
+.HashimonCollection_portrait {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+.HashimonCollection_row-info {
+  flex: 1;
+}
+.HashimonCollection_row-name {
+  font-size: 7px;
+}
+.HashimonCollection_empty {
+  text-align: center;
+  padding: 8px 0;
+}
+
+.HashimonCollection_detail {
+  display: flex;
+  gap: 6px;
+  padding-top: 2px;
+}
+.HashimonCollection_sprite {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+.HashimonCollection_form {
+  text-align: center;
+  font-size: 5px;
+}
+.HashimonCollection_detail-fields {
+  flex: 1;
+  column-count: 2;
+  column-gap: 8px;
+  font-size: 5px;
+}
+.HashimonCollection_detail-fields span {
+  opacity: 0.7;
+}
+
+.HashimonCollection_progress {
+  padding-top: 2px;
+  font-size: 5px;
+}
+.HashimonCollection_progress-bar {
+  height: 4px;
+  border: 1px solid var(--menu-border-color);
+  background: #fff;
+}
+.HashimonCollection_progress-fill {
+  height: 100%;
+  background: #ffc934;
+  transition: width 0.2s;
+}
+
+.HashimonCollection_share-message {
+  min-height: 8px;
+  font-size: 5px;
+  color: #9b05a8;
+}
+
+.HashimonCollection_footer {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  padding: 3px 0 1px;
+}
