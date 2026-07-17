@@ -5,7 +5,7 @@ class Hud {
 
   update() {
     this.scoreboards.forEach(s => {
-      s.update(window.playerState.pizzas[s.id])
+      s.update(HashimonSystem.toCombatantConfig(window.playerState.hashimons[s.id]))
     })
   }
 
@@ -21,11 +21,9 @@ class Hud {
 
     const {playerState} = window;
     playerState.lineup.forEach(key => {
-      const pizza = playerState.pizzas[key];
       const scoreboard = new Combatant({
         id: key,
-        ...Pizzas[pizza.pizzaId],
-        ...pizza,
+        ...HashimonSystem.toCombatantConfig(playerState.hashimons[key]),
       }, null)
       scoreboard.createElement();
       this.scoreboards.push(scoreboard);

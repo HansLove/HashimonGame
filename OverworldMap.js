@@ -60,8 +60,8 @@ class OverworldMap {
       if (object.type === "Person") {
         instance = new Person(object);
       }
-      if (object.type === "PizzaStone") {
-        instance = new PizzaStone(object);
+      if (object.type === "HashimonStone") {
+        instance = new HashimonStone(object);
       }
       this.gameObjects[key] = instance;
       this.gameObjects[key].id = key;
@@ -106,7 +106,14 @@ class OverworldMap {
     const hero = this.gameObjects["hero"];
     const match = this.cutsceneSpaces[ `${hero.x},${hero.y}` ];
     if (!this.isCutscenePlaying && match) {
-      this.startCutscene( match[0].events )
+      //Pick the first scenario whose story flags line up, so a space can be
+      //spent once (disqualify) or gated behind progress (required).
+      const relevantScenario = match.find(scenario => {
+        const hasRequired = (scenario.required || []).every(sf => playerState.storyFlags[sf]);
+        const isDisqualified = (scenario.disqualify || []).some(sf => playerState.storyFlags[sf]);
+        return hasRequired && !isDisqualified;
+      })
+      relevantScenario && this.startCutscene( relevantScenario.events )
     }
   }
 }
@@ -195,12 +202,12 @@ window.OverworldMaps = {
         //   { type: "walk",  direction: "down" },
         // ]
       },
-      pizzaStone: {
-        type: "PizzaStone",
+      hashimonStone: {
+        type: "HashimonStone",
         x: utils.withGrid(2),
         y: utils.withGrid(7),
-        storyFlag: "USED_PIZZA_STONE",
-        pizzas: ["v001", "f001"],
+        storyFlag: "USED_HASHIMON_STONE",
+        hashimons: ["v001", "f001"],
       },
     },
     walls: {
@@ -461,9 +468,11 @@ window.OverworldMaps = {
       return walls;
     }(),
     cutsceneSpaces: {
-      //Wild Hashimon encounter zone
+      //Wild Hashimon encounter zone. Capturing sets CAUGHT_SOLAR_CUB, which
+      //retires both tiles; letting it go leaves the encounter available.
       [utils.asGridCoord(13,10)]: [
         {
+          disqualify: ["CAUGHT_SOLAR_CUB"],
           events: [
             { type: "textMessage", text: "¡Un Solar Cub salvaje apareció!" },
             { type: "battle", enemyId: "wildSolarCub" },
@@ -472,6 +481,7 @@ window.OverworldMaps = {
       ],
       [utils.asGridCoord(13,11)]: [
         {
+          disqualify: ["CAUGHT_SOLAR_CUB"],
           events: [
             { type: "textMessage", text: "¡Un Solar Cub salvaje apareció!" },
             { type: "battle", enemyId: "wildSolarCub" },
@@ -560,12 +570,12 @@ window.OverworldMaps = {
           }
         ]
       },
-      pizzaStone: {
-        type: "PizzaStone",
+      hashimonStone: {
+        type: "HashimonStone",
         x: utils.withGrid(1),
         y: utils.withGrid(4),
         storyFlag: "STONE_SHOP",
-        pizzas: ["v002", "f002"],
+        hashimons: ["v002", "f002"],
       },
     },
     cutsceneSpaces: {
@@ -696,7 +706,7 @@ window.OverworldMaps = {
         talking: [
           {
             events: [
-              { type: "textMessage", text: "Finally... a pizza place that gets me!", faceHero: "greenKitchenNpcB" },
+              { type: "textMessage", text: "Finally... a Hashimon lab that gets me!", faceHero: "greenKitchenNpcB" },
             ]
           }
         ]
@@ -812,7 +822,7 @@ window.OverworldMaps = {
         talking: [
           {
             events: [
-              { type: "textMessage", text: "This place is famous for veggie pizzas!", faceHero: "streetNorthNpcA" },
+              { type: "textMessage", text: "This place is famous for block branch Hashimons!", faceHero: "streetNorthNpcA" },
             ]
           }
         ]
@@ -858,12 +868,12 @@ window.OverworldMaps = {
           },
         ]
       },
-      pizzaStone: {
-        type: "PizzaStone",
+      hashimonStone: {
+        type: "HashimonStone",
         x: utils.withGrid(2),
         y: utils.withGrid(9),
         storyFlag: "STONE_STREET_NORTH",
-        pizzas: ["v001", "f001"],
+        hashimons: ["v001", "f001"],
       },
     },
     walls: {
@@ -1030,7 +1040,7 @@ window.OverworldMaps = {
         talking: [
           {
             events: [
-              { type: "textMessage", text: "I've been dreaming of this pizza for weeks!", faceHero: "diningRoomNpcD" },
+              { type: "textMessage", text: "I've been dreaming of this Hashimon for weeks!", faceHero: "diningRoomNpcD" },
             ]
           },
         ]

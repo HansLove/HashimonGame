@@ -1,4 +1,4 @@
-class PizzaStone extends GameObject {
+class HashimonStone extends GameObject {
   constructor(config) {
     super(config);
     this.sprite = new Sprite({
@@ -11,7 +11,7 @@ class PizzaStone extends GameObject {
       currentAnimation: "used-down"
     });
     this.storyFlag = config.storyFlag;
-    this.pizzas = config.pizzas;
+    this.hashimons = config.hashimons;
 
     this.talking = [
       {
@@ -22,8 +22,8 @@ class PizzaStone extends GameObject {
       },
       {
         events: [
-          { type: "textMessage", text: "Approaching the legendary pizza stone..." },
-          { type: "craftingMenu", pizzas: this.pizzas },
+          { type: "textMessage", text: "Approaching the legendary Hashimon stone..." },
+          { type: "craftingMenu", hashimons: this.hashimons },
           { type: "addStoryFlag", flag: this.storyFlag },
         ]
       }

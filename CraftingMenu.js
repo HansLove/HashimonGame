@@ -1,17 +1,17 @@
 class CraftingMenu {
-  constructor({ pizzas, onComplete}) {
-    this.pizzas = pizzas;
+  constructor({ hashimons, onComplete}) {
+    this.hashimons = hashimons;
     this.onComplete = onComplete;
   }
 
   getOptions() {
-    return this.pizzas.map(id => {
-      const base = Pizzas[id];
+    return this.hashimons.map(speciesKey => {
+      const species = Hashimons[speciesKey];
       return {
-        label: base.name,
-        description: base.description,
+        label: species.name,
+        description: species.description,
         handler: () => {
-          playerState.addPizza(id);
+          playerState.addHashimon(HashimonSystem.createInstance(speciesKey));
           this.close();
         }
       }

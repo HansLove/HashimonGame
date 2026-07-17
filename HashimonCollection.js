@@ -14,15 +14,19 @@ class HashimonCollection {
 
   renderList() {
     this.lastShareMessage = "";
+    //The roster is the collection now: starter and captures live side by side.
     const hashimons = Object.values(window.playerState.hashimons);
 
     const rows = hashimons.map(h => {
       const sprite = HashimonSystem.getSpriteForStage(h);
+      const inLineup = window.playerState.lineup.indexOf(h.id) !== -1;
       return (`
         <div class="HashimonCollection_row">
           <img class="HashimonCollection_portrait" src="${sprite.src}" alt="${h.name}" />
           <div class="HashimonCollection_row-info">
-            <p class="HashimonCollection_row-name">${h.name}</p>
+            <p class="HashimonCollection_row-name">
+              ${h.name}${inLineup ? ` <span class="HashimonCollection_badge">en equipo</span>` : ""}
+            </p>
             <p>${h.species} &middot; stage ${h.stage}/${h.maxStage} &middot; ${h.branch}</p>
             <p>Best share: ${h.pow.bestShareDifficulty}</p>
           </div>
@@ -71,6 +75,8 @@ class HashimonCollection {
           <p><span>Stage</span> ${h.stage} / ${h.maxStage}</p>
           <p><span>Branch</span> ${h.branch}</p>
           <p><span>Star class</span> ${h.starClass}</p>
+          <p><span>HP</span> ${h.hp} / ${h.maxHp}</p>
+          <p><span>Poder / Def</span> ${h.stats.power} / ${h.stats.defense}</p>
           <p><span>Template</span> ${h.pow.templateId}</p>
           <p><span>Birth nonce</span> ${h.pow.birthNonce}</p>
           <p><span>Valid shares</span> ${h.pow.validShares}</p>
@@ -96,14 +102,15 @@ class HashimonCollection {
 
     this.element.querySelector("button[data-share]").addEventListener("click", () => {
       const result = HashimonSystem.simulateShare(h);
-      window.playerState.saveHashimons();
+      window.playerState.save();
 
       let message = `Share #${h.pow.validShares} &middot; dificultad ${result.difficulty}`;
       if (result.isNewBest) {
         message += " &middot; ¡Nuevo best share!";
       }
       if (result.stageUp) {
-        message += ` &middot; ¡Subió a stage ${result.newStage}!`;
+        message += ` &middot; ¡Subió a stage ${result.newStage}! (+stats)`;
+        utils.emitEvent("PlayerStateUpdated");
       }
       if (result.foundBlock) {
         message += " &middot; ¡¡BLOQUE ENCONTRADO!!";

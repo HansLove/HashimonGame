@@ -8,19 +8,18 @@ class PauseMenu {
 
     //Case 1: Show the first page of options
     if (pageKey === "root") {
-      const lineupPizzas = playerState.lineup.map(id => {
-        const {pizzaId} = playerState.pizzas[id];
-        const base = Pizzas[pizzaId];
+      const lineupHashimons = playerState.lineup.map(id => {
+        const hashimon = playerState.hashimons[id];
         return {
-          label: base.name,
-          description: base.description,
+          label: hashimon.name,
+          description: `${hashimon.description} (stage ${hashimon.stage}/${hashimon.maxStage})`,
           handler: () => {
             this.keyboardMenu.setOptions( this.getOptions(id) )
           }
         }
       })
       return [
-        ...lineupPizzas,
+        ...lineupHashimons,
         {
           label: "Mi colección",
           description: "Tus Hashimons capturados",
@@ -55,15 +54,15 @@ class PauseMenu {
       ]
     }
 
-    //Case 2: Show the options for just one pizza (by id)
-    const unequipped = Object.keys(playerState.pizzas).filter(id => {
+    //Case 2: Show the options for just one Hashimon (by id).
+    //Anything you caught and haven't equipped shows up here.
+    const unequipped = Object.keys(playerState.hashimons).filter(id => {
       return playerState.lineup.indexOf(id) === -1;
     }).map(id => {
-      const {pizzaId} = playerState.pizzas[id];
-      const base = Pizzas[pizzaId];
+      const hashimon = playerState.hashimons[id];
       return {
-        label: `Swap for ${base.name}`,
-        description: base.description,
+        label: `Cambiar por ${hashimon.name}`,
+        description: `${hashimon.description} (stage ${hashimon.stage}/${hashimon.maxStage})`,
         handler: () => {
           playerState.swapLineup(pageKey, id);
           this.keyboardMenu.setOptions( this.getOptions("root") );
@@ -74,8 +73,8 @@ class PauseMenu {
     return [
       ...unequipped,
       {
-        label: "Move to front",
-        description: "Move this Hashimon to the front of the list",
+        label: "Mover al frente",
+        description: "Pon a este Hashimon primero en la lista",
         handler: () => {
           playerState.moveToFront(pageKey);
           this.keyboardMenu.setOptions( this.getOptions("root") );

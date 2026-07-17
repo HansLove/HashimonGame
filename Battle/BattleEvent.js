@@ -26,13 +26,16 @@ class BattleEvent {
     let who = this.event.onCaster ? caster : target;
 
     if (damage) {
-      //modify the target to have less HP
+      //Actions carry a base damage; the caster's power and the target's defense
+      //scale it, which is what makes evolving to a higher stage hit harder.
+      const scaled = Math.max(1, Math.round(damage * caster.stats.power / target.stats.defense));
+
       target.update({
-        hp: target.hp - damage
+        hp: target.hp - scaled
       })
-      
+
       //start blinking
-      target.pizzaElement.classList.add("battle-damage-blink");
+      target.hashimonElement.classList.add("battle-damage-blink");
     }
 
     if (recover) {
@@ -65,7 +68,7 @@ class BattleEvent {
     this.battle.enemyTeam.update();
 
     //stop blinking
-    target.pizzaElement.classList.remove("battle-damage-blink");
+    target.hashimonElement.classList.remove("battle-damage-blink");
     resolve();
   }
 
@@ -89,7 +92,8 @@ class BattleEvent {
   //Shown after defeating a wild Hashimon. Resolves with the captured
   //Hashimon (already saved in playerState) or null if released.
   captureMenu(resolve) {
-    const species = HashimonSpecies[this.battle.enemy.hashimonSpecies];
+    const {wildSpecies, captureFlag} = this.battle.enemy;
+    const species = Hashimons[wildSpecies];
     const menu = new KeyboardMenu();
     menu.init(this.battle.element);
     menu.setOptions([
@@ -98,8 +102,14 @@ class BattleEvent {
         description: `Agrega a ${species.name} a tu colección`,
         handler: () => {
           menu.end();
-          const hashimon = HashimonSystem.createInstance(this.battle.enemy.hashimonSpecies);
-          const saved = window.playerState.addHashimon(hashimon);
+          const saved = window.playerState.addHashimon(
+            HashimonSystem.createInstance(wildSpecies)
+          );
+          //Retires this encounter so the same wild Hashimon can't be farmed
+          if (captureFlag) {
+            window.playerState.storyFlags[captureFlag] = true;
+            window.playerState.save();
+          }
           resolve(saved);
         }
       },

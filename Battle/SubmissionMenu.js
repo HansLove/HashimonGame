@@ -55,7 +55,7 @@ class SubmissionMenu {
           label: "Swap",
           description: "Change to another Hashimon",
           handler: () => { 
-            //See pizza options
+            //See Hashimon options
             this.keyboardMenu.setOptions( this.getPages().replacements )
           }
         },

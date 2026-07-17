@@ -1,4 +1,4 @@
-//Hashimon core: species data, simulated proof of work, and evolution math.
+//Hashimon core: instance creation, simulated proof of work, and evolution math.
 //All tuning knobs live in HashimonConfig so pacing is easy to adjust.
 window.HashimonConfig = {
   maxStage: 33,
@@ -7,45 +7,29 @@ window.HashimonConfig = {
   difficultyPoints: 3,  //progress granted per doubling of best share difficulty
   secondsPerShare: 10,  //simulated mining time added per share
   blockDifficulty: 1000000, //simulated difficulty that counts as mining a real block
-}
-
-window.HashimonSpecies = {
-  solarCub: {
-    name: "Solar Cub",
-    species: "lion",
-    branch: "solar",
-    starClass: "yellow",
-    baseHp: 35,
-    baseStats: { power: 8, defense: 7, speed: 6, energy: 10 },
-    moves: ["scratch", "hashPulse"],
-    templateId: "template_demo_001",
-    birthNonce: 481927,
-    baseId: "hashimon_lion_001",
-    //Visual milestones. The architecture supports one sprite per stage (up to 33),
-    //for now we only define a few milestones.
-    spriteStages: [
-      { minStage: 1, label: "Lion BB", src: "/images/characters/pizzas/hashimon_1.png" },
-      { minStage: 6, label: "LionKid", src: "/images/characters/pizzas/hashimon_2.png" },
-      { minStage: 16, label: "Lion Adult", src: "/images/adult-lion.svg" },
-      { minStage: 28, label: "Lion Mythic", src: "/images/adult-lion.svg" },
-      { minStage: 33, label: "Lion Sovereign", src: "/images/adult-lion.svg" },
-    ],
-  }
+  statGrowthPerStage: 0.15, //+15% per stage over the species base (x5.8 at stage 33)
 }
 
 window.HashimonSystem = {
 
-  createInstance(speciesKey) {
-    const species = HashimonSpecies[speciesKey];
-    return {
-      id: species.baseId,
+  //overrides lets enemies tweak balance (stage, level, maxHp, hp) without
+  //needing a whole species of their own.
+  createInstance(speciesKey, overrides = {}) {
+    const species = Hashimons[speciesKey];
+    const hashimon = {
+      id: `${speciesKey}_${Date.now()}${Math.floor(Math.random() * 9999)}`,
+      speciesKey,
       name: species.name,
+      description: species.description,
       species: species.species,
       stage: 1,
       maxStage: HashimonConfig.maxStage,
       branch: species.branch,
       starClass: species.starClass,
       level: 1,
+      xp: 0,
+      maxXp: 100,
+      status: null,
       hp: species.baseHp,
       maxHp: species.baseHp,
       stats: { ...species.baseStats },
@@ -63,8 +47,56 @@ window.HashimonSystem = {
         nextThreshold: HashimonConfig.stageStep,
       },
       moves: [ ...species.moves ],
-      speciesKey,
+    };
+
+    if (overrides.stage) {
+      hashimon.stage = overrides.stage;
+      this.applyStageScaling(hashimon);
+      hashimon.hp = hashimon.maxHp;
     }
+    ["level", "maxHp", "hp", "id"].forEach(key => {
+      if (overrides[key] !== undefined) { hashimon[key] = overrides[key]; }
+    })
+    if (overrides.maxHp !== undefined && overrides.hp === undefined) {
+      hashimon.hp = hashimon.maxHp;
+    }
+    return hashimon;
+  },
+
+  //Turns an instance into the shape Combatant expects.
+  toCombatantConfig(hashimon) {
+    return {
+      name: hashimon.name,
+      description: hashimon.description,
+      src: this.getSpriteForStage(hashimon).src,
+      icon: HashimonBranches[hashimon.branch].icon,
+      type: hashimon.branch,
+      actions: hashimon.moves,
+      stats: { ...hashimon.stats },
+      hp: hashimon.hp,
+      maxHp: hashimon.maxHp,
+      xp: hashimon.xp,
+      maxXp: hashimon.maxXp,
+      level: hashimon.level,
+      status: hashimon.status,
+    }
+  },
+
+  //Stage drives raw power: maxHp and every stat grow off the species base.
+  //Current hp follows maxHp so evolving never feels like a downgrade.
+  applyStageScaling(hashimon) {
+    const species = Hashimons[hashimon.speciesKey];
+    const multiplier = 1 + (hashimon.stage - 1) * HashimonConfig.statGrowthPerStage;
+    const previousMaxHp = hashimon.maxHp;
+
+    hashimon.maxHp = Math.round(species.baseHp * multiplier);
+    Object.keys(species.baseStats).forEach(key => {
+      hashimon.stats[key] = Math.round(species.baseStats[key] * multiplier);
+    })
+
+    const gained = hashimon.maxHp - previousMaxHp;
+    if (gained > 0) { hashimon.hp = Math.min(hashimon.maxHp, hashimon.hp + gained); }
+    if (hashimon.hp > hashimon.maxHp) { hashimon.hp = hashimon.maxHp; }
   },
 
   calculateEvolutionProgress(hashimon) {
@@ -83,7 +115,7 @@ window.HashimonSystem = {
   },
 
   getSpriteForStage(hashimon) {
-    const species = HashimonSpecies[hashimon.speciesKey] || HashimonSpecies.solarCub;
+    const species = Hashimons[hashimon.speciesKey];
     let result = species.spriteStages[0];
     species.spriteStages.forEach(milestone => {
       if (hashimon.stage >= milestone.minStage) {
@@ -102,6 +134,8 @@ window.HashimonSystem = {
     hashimon.evolution.nextThreshold = newStage >= hashimon.maxStage
       ? hashimon.evolution.progress
       : newStage * HashimonConfig.stageStep;
+
+    if (newStage !== oldStage) { this.applyStageScaling(hashimon); }
     return { oldStage, newStage, stageUp: newStage > oldStage };
   },
 

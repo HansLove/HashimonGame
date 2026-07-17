@@ -1,98 +1,94 @@
 class PlayerState {
   constructor() {
-    this.pizzas = {
-      "p1": {
-        pizzaId: "s001",
-        hp: 50,
-        maxHp: 50,
-        xp: 0,
-        maxXp: 100,
-        level: 1,
-        status: null,
-      },
-      // "p2": {
-      //   pizzaId: "v001",
-      //   hp: 50,
-      //   maxHp: 50,
-      //   xp: 75,
-      //   maxXp: 100,
-      //   level: 1,
-      //   status: null,
-      // },
-      // "p3": {
-      //   pizzaId: "f001",
-      //   hp: 50,
-      //   maxHp: 50,
-      //   xp: 75,
-      //   maxXp: 100,
-      //   level: 1,
-      //   status: null,
-      // }
-    }
-    this.lineup = ["p1"];
+    //Single roster: everything you own lives here, whether it was your starter
+    //or caught in the wild. `lineup` holds the ids you take into battle.
+    this.hashimons = {};
+    this.lineup = [];
     this.items = [
       { actionId: "item_recoverHp", instanceId: "item1" },
       { actionId: "item_recoverHp", instanceId: "item2" },
       { actionId: "item_recoverHp", instanceId: "item3" },
     ]
-    this.storyFlags = {
-    };
-    this.hashimons = {}; //Captured Hashimons, keyed by instance id
-    this.loadHashimons();
+    this.storyFlags = {};
+
+    if (!this.load()) {
+      this.seedStarter();
+    }
   }
 
+  seedStarter() {
+    const starter = HashimonSystem.createInstance("s001", { id: "hashimon_starter_001" });
+    this.hashimons[starter.id] = starter;
+    this.lineup = [starter.id];
+  }
+
+  //Starting a new game wipes the roster. Without this the autosave would leak
+  //the previous run's Hashimons into a fresh save.
+  reset() {
+    this.hashimons = {};
+    this.lineup = [];
+    this.storyFlags = {};
+    this.items = [
+      { actionId: "item_recoverHp", instanceId: "item1" },
+      { actionId: "item_recoverHp", instanceId: "item2" },
+      { actionId: "item_recoverHp", instanceId: "item3" },
+    ]
+    this.seedStarter();
+    this.save();
+  }
+
+  //Adds an already-built instance (wild capture, crafting). Guards against id
+  //collisions so a second catch never overwrites the first one.
   addHashimon(hashimon) {
-    //Avoid accidental id collisions: same species captured twice gets a suffixed id
     let id = hashimon.id;
     while (this.hashimons[id]) {
-      id = `${hashimon.id}_${Date.now()}${Math.floor(Math.random() * 999)}`;
+      id = `${hashimon.speciesKey}_${Date.now()}${Math.floor(Math.random() * 9999)}`;
     }
     this.hashimons[id] = { ...hashimon, id };
-    this.saveHashimons();
-    utils.emitEvent("HashimonCollectionChanged");
-    return this.hashimons[id];
-  }
-
-  saveHashimons() {
-    if (!window.localStorage) { return; }
-    window.localStorage.setItem("Hashimon_Collection", JSON.stringify(this.hashimons));
-  }
-
-  loadHashimons() {
-    if (!window.localStorage) { return; }
-    const file = window.localStorage.getItem("Hashimon_Collection");
-    if (file) {
-      this.hashimons = JSON.parse(file);
-    }
-  }
-
-  addPizza(pizzaId) {
-    const newId = `p${Date.now()}`+Math.floor(Math.random() * 99999);
-    this.pizzas[newId] = {
-      pizzaId,
-      hp: 50,
-      maxHp: 50,
-      xp: 0,
-      maxXp: 100,
-      level: 1,
-      status: null,
-    }
     if (this.lineup.length < 3) {
-      this.lineup.push(newId)
+      this.lineup.push(id);
     }
+    this.save();
     utils.emitEvent("LineupChanged");
+    return this.hashimons[id];
   }
 
   swapLineup(oldId, incomingId) {
     const oldIndex = this.lineup.indexOf(oldId);
     this.lineup[oldIndex] = incomingId;
+    this.save();
     utils.emitEvent("LineupChanged");
   }
 
   moveToFront(futureFrontId) {
     this.lineup = this.lineup.filter(id => id !== futureFrontId);
     this.lineup.unshift(futureFrontId);
+    this.save();
     utils.emitEvent("LineupChanged");
+  }
+
+  //The roster autosaves on every change so captures and mined shares survive a
+  //reload without the player having to hit Save. Map position stays in Progress.
+  save() {
+    if (!window.localStorage) { return; }
+    window.localStorage.setItem("Hashimon_PlayerState", JSON.stringify({
+      hashimons: this.hashimons,
+      lineup: this.lineup,
+      items: this.items,
+      storyFlags: this.storyFlags,
+    }))
+  }
+
+  load() {
+    if (!window.localStorage) { return false; }
+    const file = window.localStorage.getItem("Hashimon_PlayerState");
+    if (!file) { return false; }
+    const data = JSON.parse(file);
+    this.hashimons = data.hashimons || {};
+    this.lineup = data.lineup || [];
+    this.items = data.items || this.items;
+    this.storyFlags = data.storyFlags || {};
+    return this.lineup.length > 0;
   }
 
 }

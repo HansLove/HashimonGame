@@ -4,22 +4,19 @@ class Progress {
     this.startingHeroX = 0;
     this.startingHeroY = 0;
     this.startingHeroDirection = "down";
-    this.saveFileKey = "PizzaLegends_SaveFile1";
+    this.saveFileKey = "Hashimon_SaveFile1";
   }
 
+  //Only the world position lives here; the roster owns its own storage so that
+  //captures and mined shares persist without an explicit Save.
   save() {
     window.localStorage.setItem(this.saveFileKey, JSON.stringify({
       mapId: this.mapId,
       startingHeroX: this.startingHeroX,
       startingHeroY: this.startingHeroY,
       startingHeroDirection: this.startingHeroDirection,
-      playerState: {
-        pizzas: playerState.pizzas,
-        lineup: playerState.lineup,
-        items: playerState.items,
-        storyFlags: playerState.storyFlags
-      }
     }))
+    playerState.save();
   }
 
   getSaveFile() {
@@ -31,7 +28,7 @@ class Progress {
     const file = window.localStorage.getItem(this.saveFileKey);
     return file ? JSON.parse(file) : null
   }
-  
+
   load() {
     const file = this.getSaveFile();
     if (file) {
@@ -39,9 +36,6 @@ class Progress {
       this.startingHeroX = file.startingHeroX;
       this.startingHeroY = file.startingHeroY;
       this.startingHeroDirection = file.startingHeroDirection;
-      Object.keys(file.playerState).forEach(key => {
-        playerState[key] = file.playerState[key];
-      })
     }
   }
 

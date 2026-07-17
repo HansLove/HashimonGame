@@ -12,17 +12,17 @@
 }
 
 /* Start stateful paths as display:none */
-.Team .dead-pizza {
+.Team .dead-hashimon {
   display:none;
 }
-.Team .active-pizza-indicator {
+.Team .active-hashimon-indicator {
   display:none;
 }
 
 /* Display them as opted in by data-attributes */
-.Team [data-dead="true"] .dead-pizza {
+.Team [data-dead="true"] .dead-hashimon {
   display:block;
 }
-.Team [data-active="true"] .active-pizza-indicator {
+.Team [data-active="true"] .active-hashimon-indicator {
   display:block;
 }

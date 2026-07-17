@@ -19,7 +19,7 @@ class TurnCycle {
       enemy
     })
 
-    //Stop here if we are replacing this Pizza
+    //Stop here if we are replacing this Hashimon
     if (submission.replacement) {
       await this.onNewEvent({
         type: "replace",
@@ -64,7 +64,7 @@ class TurnCycle {
 
       if (submission.target.team === "enemy") {
 
-        const playerActivePizzaId = this.battle.activeCombatants.player;
+        const playerActiveHashimonId = this.battle.activeCombatants.player;
         const xp = submission.target.givesXp;
 
         await this.onNewEvent({
@@ -74,7 +74,7 @@ class TurnCycle {
         await this.onNewEvent({
           type: "giveXp",
           xp,
-          combatant: this.battle.combatants[playerActivePizzaId]
+          combatant: this.battle.combatants[playerActiveHashimonId]
         })
       }
     }

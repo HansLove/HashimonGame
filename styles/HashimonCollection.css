@@ -45,6 +45,13 @@
 .HashimonCollection_row-name {
   font-size: 7px;
 }
+.HashimonCollection_badge {
+  font-size: 5px;
+  background: var(--menu-selected-background);
+  color: #fff;
+  padding: 0 2px;
+  vertical-align: middle;
+}
 .HashimonCollection_empty {
   text-align: center;
   padding: 8px 0;

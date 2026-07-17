@@ -5,61 +5,21 @@ class Battle {
     this.onComplete = onComplete;
     this.arena = arena;
 
-    this.combatants = {
-      // "player1": new Combatant({
-      //   ...Pizzas.s001,
-      //   team: "player",
-      //   hp: 30,
-      //   maxHp: 50,
-      //   xp: 95,
-      //   maxXp: 100,
-      //   level: 1,
-      //   status: { type: "saucy" },
-      //   isPlayerControlled: true
-      // }, this),
-      // "player2": new Combatant({
-      //   ...Pizzas.s002,
-      //   team: "player",
-      //   hp: 30,
-      //   maxHp: 50,
-      //   xp: 75,
-      //   maxXp: 100,
-      //   level: 1,
-      //   status: null,
-      //   isPlayerControlled: true
-      // }, this),
-      // "enemy1": new Combatant({
-      //   ...Pizzas.v001,
-      //   team: "enemy",
-      //   hp: 1,
-      //   maxHp: 50,
-      //   xp: 20,
-      //   maxXp: 100,
-      //   level: 1,
-      // }, this),
-      // "enemy2": new Combatant({
-      //   ...Pizzas.f001,
-      //   team: "enemy",
-      //   hp: 25,
-      //   maxHp: 50,
-      //   xp: 30,
-      //   maxXp: 100,
-      //   level: 1,
-      // }, this)
-    }
+    this.combatants = {}
 
     this.activeCombatants = {
-      player: null, //"player1",
-      enemy: null, //"enemy1",
+      player: null,
+      enemy: null,
     }
 
-    //Dynamically add the Player team
+    //Dynamically add the Player team, straight from the roster
     window.playerState.lineup.forEach(id => {
-      this.addCombatant(id, "player", window.playerState.pizzas[id])
+      this.addCombatant(id, "player", window.playerState.hashimons[id])
     });
-    //Now the enemy team
-    Object.keys(this.enemy.pizzas).forEach(key => {
-      this.addCombatant("e_"+key, "enemy", this.enemy.pizzas[key])
+    //The enemy team is instanced fresh from its species each battle
+    Object.keys(this.enemy.hashimons).forEach(key => {
+      const {speciesKey, ...overrides} = this.enemy.hashimons[key];
+      this.addCombatant("e_"+key, "enemy", HashimonSystem.createInstance(speciesKey, overrides))
     })
 
 
@@ -78,15 +38,14 @@ class Battle {
 
   }
 
-  addCombatant(id, team, config) {
+  addCombatant(id, team, hashimon) {
       this.combatants[id] = new Combatant({
-        ...Pizzas[config.pizzaId],
-        ...config,
+        ...HashimonSystem.toCombatantConfig(hashimon),
         team,
         isPlayerControlled: team === "player"
       }, this)
 
-      //Populate first active pizza
+      //Populate first active Hashimon
       this.activeCombatants[team] = this.activeCombatants[team] || id
   }
 
@@ -149,14 +108,15 @@ class Battle {
 
         if (winner === "player") {
           const playerState = window.playerState;
-          Object.keys(playerState.pizzas).forEach(id => {
-            const playerStatePizza = playerState.pizzas[id];
+          Object.keys(playerState.hashimons).forEach(id => {
+            const rosterHashimon = playerState.hashimons[id];
             const combatant = this.combatants[id];
             if (combatant) {
-              playerStatePizza.hp = combatant.hp;
-              playerStatePizza.xp = combatant.xp;
-              playerStatePizza.maxXp = combatant.maxXp;
-              playerStatePizza.level = combatant.level;
+              rosterHashimon.hp = combatant.hp;
+              rosterHashimon.xp = combatant.xp;
+              rosterHashimon.maxXp = combatant.maxXp;
+              rosterHashimon.level = combatant.level;
+              rosterHashimon.status = combatant.status;
             }
           })
 
@@ -164,6 +124,8 @@ class Battle {
           playerState.items = playerState.items.filter(item => {
             return !this.usedInstanceIds[item.instanceId]
           })
+
+          playerState.save();
 
           //Send signal to update
           utils.emitEvent("PlayerStateUpdated");

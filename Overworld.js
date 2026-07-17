@@ -108,6 +108,8 @@ class Overworld {
       y: this.progress.startingHeroY,
       direction: this.progress.startingHeroDirection,
     }
+  } else {
+    window.playerState.reset();
   }
 
   //Load the HUD

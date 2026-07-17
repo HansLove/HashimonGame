@@ -1,6 +1,6 @@
 window.BattleAnimations = {
   async spin(event, onComplete) {
-    const element = event.caster.pizzaElement;
+    const element = event.caster.hashimonElement;
     const animationClassName = event.caster.team === "player" ? "battle-spin-right" : "battle-spin-left";
     element.classList.add(animationClassName);
 
@@ -9,7 +9,7 @@ window.BattleAnimations = {
       element.classList.remove(animationClassName);
     }, { once:true });
 
-    //Continue battle cycle right around when the pizzas collide
+    //Continue battle cycle right around when the Hashimons collide
     await utils.wait(100);
     onComplete();
   },
