@@ -88,6 +88,16 @@ class PlayerState {
     this.lineup = data.lineup || [];
     this.items = data.items || this.items;
     this.storyFlags = data.storyFlags || {};
+
+    //Hashimons captured before DNA existed get theirs derived now. It comes from
+    //their unchanged PoW identity, so they end up with the DNA they always
+    //would have had.
+    Object.values(this.hashimons).forEach(h => {
+      if (!h.dna) {
+        h.dna = HashimonDNA.derive(h.pow.templateId, h.pow.birthNonce, h.speciesKey);
+      }
+    })
+
     return this.lineup.length > 0;
   }
 

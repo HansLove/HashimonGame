@@ -468,23 +468,21 @@ window.OverworldMaps = {
       return walls;
     }(),
     cutsceneSpaces: {
-      //Wild Hashimon encounter zone. Capturing sets CAUGHT_SOLAR_CUB, which
-      //retires both tiles; letting it go leaves the encounter available.
+      //Wild encounter zone. Each step here rolls a Hashimon from Street's own
+      //ecology (pixel / electric / metal), a unique individual every time.
       [utils.asGridCoord(13,10)]: [
         {
-          disqualify: ["CAUGHT_SOLAR_CUB"],
           events: [
-            { type: "textMessage", text: "¡Un Solar Cub salvaje apareció!" },
-            { type: "battle", enemyId: "wildSolarCub" },
+            { type: "textMessage", text: "A wild Hashimon appeared!" },
+            { type: "wildEncounter", zone: "street" },
           ]
         }
       ],
       [utils.asGridCoord(13,11)]: [
         {
-          disqualify: ["CAUGHT_SOLAR_CUB"],
           events: [
-            { type: "textMessage", text: "¡Un Solar Cub salvaje apareció!" },
-            { type: "battle", enemyId: "wildSolarCub" },
+            { type: "textMessage", text: "A wild Hashimon appeared!" },
+            { type: "wildEncounter", zone: "street" },
           ]
         }
       ],

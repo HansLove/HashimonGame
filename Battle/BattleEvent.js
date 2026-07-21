@@ -90,22 +90,21 @@ class BattleEvent {
   }
 
   //Shown after defeating a wild Hashimon. Resolves with the captured
-  //Hashimon (already saved in playerState) or null if released.
+  //individual (already saved in playerState) or null if released.
   captureMenu(resolve) {
-    const {wildSpecies, captureFlag} = this.battle.enemy;
-    const species = Hashimons[wildSpecies];
+    const {wildIndividual, wildSpecies, captureFlag} = this.battle.enemy;
+    //Save the exact creature that was fought, with its unique DNA — not a fresh
+    //roll of the species.
+    const individual = wildIndividual || HashimonSystem.createInstance(wildSpecies);
     const menu = new KeyboardMenu();
     menu.init(this.battle.element);
     menu.setOptions([
       {
-        label: "Capturar",
-        description: `Agrega a ${species.name} a tu colección`,
+        label: "Capture",
+        description: `Add ${individual.name} to your collection`,
         handler: () => {
           menu.end();
-          const saved = window.playerState.addHashimon(
-            HashimonSystem.createInstance(wildSpecies)
-          );
-          //Retires this encounter so the same wild Hashimon can't be farmed
+          const saved = window.playerState.addHashimon(individual);
           if (captureFlag) {
             window.playerState.storyFlags[captureFlag] = true;
             window.playerState.save();
@@ -114,8 +113,8 @@ class BattleEvent {
         }
       },
       {
-        label: "Dejar ir",
-        description: "Deja libre al Hashimon salvaje",
+        label: "Let it go",
+        description: "Set the wild Hashimon free",
         handler: () => {
           menu.end();
           resolve(null);

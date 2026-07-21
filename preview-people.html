@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Hashimon — Generador de personas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ribeye&display=swap" rel="stylesheet">
+    <style>
+      body {
+        background: #2b2b33; color: #eee; margin: 0; padding: 16px 20px;
+        font-family: 'Ribeye', cursive;
+      }
+      h1 { font-size: 18px; margin: 0 0 2px; }
+      p.sub { font-size: 11px; opacity: 0.6; margin: 0 0 14px; font-family: monospace; }
+
+      .controls {
+        display: flex; gap: 14px; align-items: flex-end; flex-wrap: wrap;
+        background: #34343f; border: 1px solid #4a4a58; padding: 10px 12px; margin-bottom: 16px;
+      }
+      .controls label { font-size: 10px; display: block; opacity: 0.7; margin-bottom: 3px; }
+      .controls input { width: 90px; }
+      button {
+        font-family: inherit; background: #9b05a8; color: #fff; border: 0;
+        padding: 6px 12px; cursor: pointer; font-size: 12px;
+      }
+      button:hover { background: #b81ec6; }
+      button.ghost { background: #4a4a58; }
+
+      .grid { display: flex; flex-wrap: wrap; gap: 6px; }
+      .person {
+        width: 74px; background: #3a3a45; border: 1px solid transparent;
+        padding: 4px; text-align: center; cursor: pointer;
+      }
+      .person:hover, .person.selected { border-color: #9b05a8; background: #45364a; }
+      .person canvas { image-rendering: pixelated; display: block; margin: 0 auto; }
+      .person .seed { font-size: 8px; opacity: 0.6; font-family: monospace; margin-top: 3px;
+                      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+      .detail {
+        display: flex; gap: 20px; align-items: flex-start;
+        background: #34343f; border: 1px solid #4a4a58; padding: 12px; margin-bottom: 16px;
+      }
+      /* display:flex would otherwise beat the `hidden` attribute */
+      .detail[hidden] { display: none; }
+      .detail canvas { image-rendering: pixelated; background: #22222a; }
+      .detail .meta { font-family: monospace; font-size: 11px; line-height: 1.7; }
+      .detail .meta b { color: #ffc934; }
+      .swatches { display: flex; gap: 3px; margin-top: 4px; }
+      .swatches i { width: 14px; height: 14px; display: block; border: 1px solid #000; }
+      .hint { font-size: 10px; opacity: 0.5; font-family: monospace; }
+    </style>
+  </head>
+  <body>
+    <h1>Generador de personas</h1>
+    <p class="sub">
+      PersonGenerator.generate(seed) &rarr; spritesheet 128&times;128. Semilla determinista: la misma semilla da siempre la misma persona.
+    </p>
+
+    <div class="controls">
+      <div>
+        <label>Cuántas</label>
+        <input id="count" type="number" value="48" min="1" max="400">
+      </div>
+      <div>
+        <label>Prefijo de semilla</label>
+        <input id="prefix" type="text" value="person">
+      </div>
+      <div>
+        <label>Frame</label>
+        <select id="frame">
+          <option value="0,0">idle-down</option>
+          <option value="0,1">idle-right</option>
+          <option value="0,2">idle-up</option>
+          <option value="0,3">idle-left</option>
+          <option value="walk">caminar (animado)</option>
+        </select>
+      </div>
+      <button id="go">Generar</button>
+      <button id="reroll" class="ghost">Otra tanda</button>
+      <span class="hint" id="stats"></span>
+    </div>
+
+    <div class="detail" id="detail" hidden>
+      <div>
+        <div class="hint">hoja completa 4&times;4</div>
+        <canvas id="sheet" width="384" height="384"></canvas>
+      </div>
+      <div class="meta" id="meta"></div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <script src="/PersonGenerator.js"></script>
+    <script>
+      const $ = id => document.getElementById(id);
+      let people = [];
+      let batch = 0;
+      let animTimer = null;
+
+      function drawFrame(canvas, img, fx, fy, scale) {
+        const ctx = canvas.getContext("2d");
+        ctx.imageSmoothingEnabled = false;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, fx * 32, fy * 32, 32, 32, 0, 0, 32 * scale, 32 * scale);
+      }
+
+      async function render() {
+        clearInterval(animTimer);
+        const count = Math.max(1, Math.min(400, Number($("count").value)));
+        const prefix = $("prefix").value.trim() || "person";
+        const mode = $("frame").value;
+
+        const t0 = performance.now();
+        people = PersonGenerator.generateMany(count, `${prefix}_b${batch}`);
+        const ms = performance.now() - t0;
+        $("stats").textContent = `${count} personas en ${ms.toFixed(0)}ms (${(ms / count).toFixed(1)}ms c/u)`;
+
+        const grid = $("grid");
+        grid.innerHTML = "";
+        const imgs = [];
+
+        people.forEach((p, i) => {
+          const cell = document.createElement("div");
+          cell.className = "person";
+          const canvas = document.createElement("canvas");
+          canvas.width = 32 * 2; canvas.height = 32 * 2;
+          const seed = document.createElement("div");
+          seed.className = "seed";
+          seed.textContent = p.seed;
+          cell.appendChild(canvas); cell.appendChild(seed);
+          cell.addEventListener("click", () => showDetail(i, cell));
+          grid.appendChild(cell);
+
+          const img = new Image();
+          img.onload = () => {
+            imgs[i] = img;
+            if (mode !== "walk") {
+              const [fx, fy] = mode.split(",").map(Number);
+              drawFrame(canvas, img, fx, fy, 2);
+            }
+          };
+          img.src = p.src;
+          p.img = img;
+          p.canvas = canvas;
+        });
+
+        if (mode === "walk") {
+          //walk-down cycle from Sprite.js: [1,0],[0,0],[3,0],[0,0]
+          const cycle = [[1,0],[0,0],[3,0],[0,0]];
+          let f = 0;
+          animTimer = setInterval(() => {
+            const [fx, fy] = cycle[f % cycle.length];
+            people.forEach(p => { if (p.img.complete) drawFrame(p.canvas, p.img, fx, fy, 2); });
+            f++;
+          }, 140);
+        }
+      }
+
+      function showDetail(i, cell) {
+        document.querySelectorAll(".person").forEach(c => c.classList.remove("selected"));
+        cell.classList.add("selected");
+
+        const p = people[i];
+        const {used} = PersonGenerator.build(p.seed);
+        $("detail").hidden = false;
+
+        const sheet = $("sheet");
+        const ctx = sheet.getContext("2d");
+        ctx.imageSmoothingEnabled = false;
+        ctx.clearRect(0, 0, sheet.width, sheet.height);
+        ctx.drawImage(p.img, 0, 0, 128, 128, 0, 0, 384, 384);
+
+        //Zones are counted on the SOURCE base, not the recolored output: once a
+        //hue is rotated it no longer classifies the same, which would make the
+        //readout useless for tuning. Swatches show the source colour next to the
+        //colour it became.
+        const base = PersonGenerator.sheets[used[0].src];
+        const probe = document.createElement("canvas");
+        probe.width = 128; probe.height = 128;
+        const pctx = probe.getContext("2d");
+        pctx.drawImage(base, 0, 0);
+        const src = pctx.getImageData(0, 0, 128, 128).data;
+
+        pctx.clearRect(0, 0, 128, 128);
+        pctx.drawImage(p.img, 0, 0);
+        const out = pctx.getImageData(0, 0, 128, 128).data;
+
+        const zones = {};
+        const sample = {};
+        for (let k = 0; k < src.length; k += 4) {
+          if (src[k + 3] < 200) continue;
+          const z = PersonPalette.classify(src[k], src[k + 1], src[k + 2]);
+          zones[z] = (zones[z] || 0) + 1;
+          if (!sample[z]) {
+            sample[z] = {
+              from: `rgb(${src[k]},${src[k+1]},${src[k+2]})`,
+              to: `rgb(${out[k]},${out[k+1]},${out[k+2]})`,
+            };
+          }
+        }
+
+        $("meta").innerHTML = `
+          <div><b>semilla</b> ${p.seed}</div>
+          <div><b>capas</b> ${used.map(u => `${u.layer} &larr; ${u.src.split("/").pop()}`).join("<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")}</div>
+          <div style="margin-top:8px"><b>zonas del base</b> <span class="hint">(origen &rarr; resultado)</span></div>
+          ${Object.entries(zones).sort((a, b) => b[1] - a[1]).map(([z, n]) => `
+            <div>${z.padEnd(8, " ").replace(/ /g, "&nbsp;")} ${String(n).padStart(4, " ").replace(/ /g, "&nbsp;")}px
+              <span class="swatches" style="display:inline-flex;vertical-align:middle">
+                <i style="background:${sample[z].from}"></i>
+                <i style="background:${sample[z].to}"></i>
+              </span>
+            </div>`).join("")}
+          <div class="hint" style="margin-top:8px">Los ajustes viven en PersonLayers[].tint de PersonGenerator.js</div>
+        `;
+      }
+
+      $("go").addEventListener("click", render);
+      $("reroll").addEventListener("click", () => { batch++; render(); });
+      $("frame").addEventListener("change", render);
+
+      PersonGenerator.preload().then(render).catch(e => {
+        $("stats").textContent = "Error: " + e.message;
+      });
+    </script>
+  </body>
+</html>

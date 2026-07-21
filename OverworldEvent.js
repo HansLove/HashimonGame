@@ -89,6 +89,20 @@ class OverworldEvent {
 
   }
 
+  //A wild encounter rolls a Hashimon from the zone's ecology and fights that
+  //exact individual, which is the one the player may then capture.
+  wildEncounter(resolve) {
+    const roll = HashimonEncounters.rollWild(this.event.zone);
+    const battle = new Battle({
+      enemy: HashimonEncounters.toWildEnemy(roll),
+      arena: this.event.arena || null,
+      onComplete: (didWin) => {
+        resolve(didWin ? "WON_BATTLE" : "LOST_BATTLE");
+      }
+    })
+    battle.init(document.querySelector(".game-container"));
+  }
+
   pause(resolve) {
     this.map.isPaused = true;
     const menu = new PauseMenu({

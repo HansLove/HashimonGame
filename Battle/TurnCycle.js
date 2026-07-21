@@ -95,7 +95,7 @@ class TurnCycle {
         if (captured) {
           await this.onNewEvent({
             type: "textMessage",
-            text: `¡${captured.name} fue capturado! Ya está en Mi colección.`
+            text: `${captured.name} was captured! It's now in My Collection.`
           })
         }
       }

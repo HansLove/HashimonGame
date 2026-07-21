@@ -49,6 +49,18 @@ window.HashimonSystem = {
       moves: [ ...species.moves ],
     };
 
+    //A unique birth nonce (wild catches pass one) makes every individual its own
+    //creature, even within a species. Applied before deriving DNA so the DNA
+    //reflects it.
+    if (overrides.birthNonce !== undefined) { hashimon.pow.birthNonce = overrides.birthNonce; }
+    if (overrides.templateId !== undefined) { hashimon.pow.templateId = overrides.templateId; }
+
+    //ADN Hashiano: bound to the proof of work, so it is stable forever and can
+    //be recomputed by anyone from the template and birth nonce alone.
+    hashimon.dna = HashimonDNA.derive(
+      hashimon.pow.templateId, hashimon.pow.birthNonce, speciesKey
+    );
+
     if (overrides.stage) {
       hashimon.stage = overrides.stage;
       this.applyStageScaling(hashimon);

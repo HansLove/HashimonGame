@@ -16,10 +16,14 @@ class Battle {
     window.playerState.lineup.forEach(id => {
       this.addCombatant(id, "player", window.playerState.hashimons[id])
     });
-    //The enemy team is instanced fresh from its species each battle
+    //Enemy team. A wild encounter passes an already-minted individual (it has a
+    //dna), so we field that exact creature. Trainers pass a spec to instance.
     Object.keys(this.enemy.hashimons).forEach(key => {
-      const {speciesKey, ...overrides} = this.enemy.hashimons[key];
-      this.addCombatant("e_"+key, "enemy", HashimonSystem.createInstance(speciesKey, overrides))
+      const entry = this.enemy.hashimons[key];
+      const instance = entry.dna
+        ? entry
+        : HashimonSystem.createInstance(entry.speciesKey, (({speciesKey, ...o}) => o)(entry));
+      this.addCombatant("e_"+key, "enemy", instance)
     })
 
 

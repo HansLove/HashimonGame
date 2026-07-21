@@ -36,8 +36,8 @@ class SubmissionMenu {
     return {
       root: [
         {
-          label: "Poderes",
-          description: "Elige un poder",
+          label: "Powers",
+          description: "Choose a power",
           handler: () => {
             //Do something when chosen...
             this.keyboardMenu.setOptions( this.getPages().attacks )

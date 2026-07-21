@@ -21,8 +21,8 @@ class PauseMenu {
       return [
         ...lineupHashimons,
         {
-          label: "Mi colección",
-          description: "Tus Hashimons capturados",
+          label: "My Collection",
+          description: "Your captured Hashimons",
           handler: () => {
             //Hand control over to the collection overlay; resume the game when it closes
             this.esc?.unbind();
@@ -61,7 +61,7 @@ class PauseMenu {
     }).map(id => {
       const hashimon = playerState.hashimons[id];
       return {
-        label: `Cambiar por ${hashimon.name}`,
+        label: `Swap for ${hashimon.name}`,
         description: `${hashimon.description} (stage ${hashimon.stage}/${hashimon.maxStage})`,
         handler: () => {
           playerState.swapLineup(pageKey, id);
@@ -73,8 +73,8 @@ class PauseMenu {
     return [
       ...unequipped,
       {
-        label: "Mover al frente",
-        description: "Pon a este Hashimon primero en la lista",
+        label: "Move to front",
+        description: "Put this Hashimon first in the list",
         handler: () => {
           playerState.moveToFront(pageKey);
           this.keyboardMenu.setOptions( this.getOptions("root") );

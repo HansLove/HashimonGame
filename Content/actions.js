@@ -1,7 +1,7 @@
 window.Actions = {
   scratch: {
     name: "Scratch",
-    description: "Zarpazo rápido y directo",
+    description: "A quick, direct swipe",
     success: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}!"},
       { type: "animation", animation: "spin"},
@@ -10,7 +10,7 @@ window.Actions = {
   },
   hashPulse: {
     name: "Hash Pulse",
-    description: "Pulso de energía de hashes",
+    description: "A pulse of hashing energy",
     success: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}!"},
       { type: "animation", animation: "glob", color: "#ffd76a" },
