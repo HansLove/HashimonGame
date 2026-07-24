@@ -126,15 +126,19 @@ window.HashimonSystem = {
     );
   },
 
+  //Returns the form LABEL from the species' spriteStages, and the SRC from the
+  //DNA-driven pixel generator (falling back to the static PNG if it's absent).
+  //So the same creature is drawn from its hash everywhere it appears.
   getSpriteForStage(hashimon) {
     const species = Hashimons[hashimon.speciesKey];
-    let result = species.spriteStages[0];
-    species.spriteStages.forEach(milestone => {
-      if (hashimon.stage >= milestone.minStage) {
-        result = milestone;
-      }
+    let milestone = species.spriteStages[0];
+    species.spriteStages.forEach(m => {
+      if (hashimon.stage >= m.minStage) { milestone = m; }
     })
-    return result;
+    return {
+      label: milestone.label,
+      src: window.HashimonSprite ? HashimonSprite.toDataURL(hashimon, { scale: 4 }) : milestone.src,
+    };
   },
 
   //Recalculates progress + stage from PoW data. Returns whether the stage went up.

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Hashimon — Creature Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ribeye&display=swap" rel="stylesheet">
+    <style>
+      body { background:#15121f; color:#e8e2f0; margin:0; padding:16px 20px; font-family:'Ribeye',cursive; }
+      h1 { font-size:20px; margin:0 0 2px; }
+      p.sub { font-family:monospace; font-size:11px; opacity:0.6; margin:0 0 16px; }
+      h2 { font-size:13px; margin:20px 0 8px; color:#c99bff; border-bottom:1px solid #3a2f55; padding-bottom:4px; }
+      .row { display:flex; flex-wrap:wrap; gap:10px; }
+      .cell { text-align:center; background:#1e1830; border:1px solid #33294f; padding:6px; border-radius:4px; }
+      .cell canvas { image-rendering:pixelated; display:block; margin:0 auto; background:#120f1c; border-radius:3px; }
+      .cap { font-family:monospace; font-size:9px; opacity:0.75; margin-top:4px; max-width:96px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+      .tag { font-size:8px; padding:0 3px; border-radius:2px; background:#3a2f55; }
+      .controls { font-family:monospace; font-size:12px; margin-bottom:8px; }
+      button { font-family:inherit; background:#9b05a8; color:#fff; border:0; padding:5px 10px; cursor:pointer; }
+    </style>
+  </head>
+  <body>
+    <h1>Hashimon — Creature Generator</h1>
+    <p class="sub">HashimonSprite.render(dna) &rarr; deterministic pixels. Same DNA, same monster, forever &middot; every element read from the hash.</p>
+    <div class="controls"><button id="reroll">New batch</button> <span id="stats"></span></div>
+
+    <h2 id="h-species">The catalog — one individual per species</h2>
+    <div class="row" id="species"></div>
+
+    <h2>Same species (Solar Cub), different DNA — uniqueness</h2>
+    <div class="row" id="individuals"></div>
+
+    <h2>One creature evolving — stage 1 &rarr; 33 (baby &rarr; monster)</h2>
+    <div class="row" id="evolution"></div>
+
+    <script src="/utils.js"></script>
+    <script src="/Content/hashimonDNA.js"></script>
+    <script src="/Content/hashimonTypes.js"></script>
+    <script src="/Content/hashimons.js"></script>
+    <script src="/Content/hashimonCompiler.js"></script>
+    <script src="/Content/hashimonSystem.js"></script>
+    <script src="/Content/hashimonSprite.js"></script>
+    <script>
+      const $ = id => document.getElementById(id);
+      let batch = 0;
+
+      function cell(hashimon, opts, caption, tags) {
+        const wrap = document.createElement("div");
+        wrap.className = "cell";
+        const cv = HashimonSprite.render(hashimon, opts);
+        wrap.appendChild(cv);
+        if (tags) { const t = document.createElement("div"); t.innerHTML = tags; t.style.margin = "3px 0 0"; wrap.appendChild(t); }
+        const cap = document.createElement("div"); cap.className = "cap"; cap.textContent = caption; wrap.appendChild(cap);
+        return wrap;
+      }
+
+      function render() {
+        const t0 = performance.now();
+        const speciesKeys = Object.keys(Hashimons);
+
+        //one individual per species
+        const sp = $("species"); sp.innerHTML = "";
+        speciesKeys.forEach((k, i) => {
+          const h = HashimonSystem.createInstance(k, { birthNonce: 1000 + batch * 97 + i });
+          const c = HashimonCompiler.compile(h);
+          sp.appendChild(cell(h, { scale: 5, stage: 8 },
+            h.name,
+            `<span class="tag">${c.types.primary.name}</span> <span class="tag">${c.stars}★</span>`));
+        });
+
+        //many individuals of one species
+        const iv = $("individuals"); iv.innerHTML = "";
+        const distinct = new Set();
+        for (let i = 0; i < 14; i++) {
+          const h = HashimonSystem.createInstance("solarCub", { birthNonce: 500000 + batch * 1000 + i });
+          const c = HashimonCompiler.compile(h);
+          distinct.add(c.look.color.base.hex + c.look.marking + c.look.eyes);
+          iv.appendChild(cell(h, { scale: 5, stage: 8 }, c.look.color.base.name, `<span class="tag">${c.stars}★</span>`));
+        }
+
+        //evolution of one creature
+        const ev = $("evolution"); ev.innerHTML = "";
+        const evo = HashimonSystem.createInstance("solarCub", { birthNonce: 424242 });
+        [1, 6, 12, 18, 24, 30, 33].forEach(st => {
+          ev.appendChild(cell(evo, { scale: 5, stage: st }, "stage " + st));
+        });
+
+        const ms = performance.now() - t0;
+        $("stats").textContent = `${speciesKeys.length + 21} sprites in ${ms.toFixed(0)}ms · ${distinct.size}/14 individuals visually distinct`;
+      }
+
+      $("reroll").addEventListener("click", () => { batch++; render(); });
+      render();
+    </script>
+  </body>
+</html>

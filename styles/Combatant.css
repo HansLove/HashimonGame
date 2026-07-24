@@ -36,10 +36,13 @@
 .Combatant_character {
   display:block;
   position: absolute;
-  left: -11px;
-  bottom: -7px;
-  width: 50%;
-
+  /* framed to show the generated creature's head/face in the small HUD window */
+  left: 0;
+  bottom: -8px;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  image-rendering: pixelated;
 }
 .Battle .Combatant_character_crop {
   display:none;
