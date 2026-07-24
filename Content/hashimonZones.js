@@ -32,6 +32,14 @@ window.HashimonZones = {
     types: { fuego: 5 },
     offTypeChance: 0.04,
   },
+
+  //--- Endless biomes: each generated map picks one, biasing its ecology so the
+  //terrain and the Hashimons you meet on it agree. ---
+  forest:  { name: "Meadow",  types: { vegetal: 4, tierra: 3, hongo: 3 }, offTypeChance: 0.07 },
+  circuit: { name: "Circuit", types: { pixel: 4, electrico: 4, metal: 2 }, offTypeChance: 0.07 },
+  tide:    { name: "Tide",    types: { agua: 4, aire: 3 },                 offTypeChance: 0.07 },
+  astral:  { name: "Astral",  types: { astro: 4, mental: 3, sueno: 3 },    offTypeChance: 0.07 },
+  ember:   { name: "Ember",   types: { fuego: 4, metal: 2 },               offTypeChance: 0.07 },
 }
 
 window.HashimonEncounters = {

@@ -59,6 +59,29 @@ class OverworldEvent {
     message.init( document.querySelector(".game-container") )
   }
 
+  //Generates the next endless map and walks the player into it. Entry (from the
+  //portal) omits a seed and starts a fresh run; each exit passes seed+1, so the
+  //chain is deterministic and never ends.
+  nextEndlessMap(resolve) {
+    const seed = this.event.seed != null
+      ? this.event.seed
+      : 1 + Math.floor(Math.random() * 1e9);
+
+    Object.values(this.map.gameObjects).forEach(obj => { obj.isMounted = false; });
+
+    const config = MapGenerator.generate(seed);
+    const sceneTransition = new SceneTransition();
+    sceneTransition.init(document.querySelector(".game-container"), () => {
+      this.map.overworld.startMap(config, {
+        x: config.entrance.x,
+        y: config.entrance.y,
+        direction: "up",
+      });
+      resolve();
+      sceneTransition.fadeOut();
+    })
+  }
+
   changeMap(resolve) {
     //Deactivate old objects
     Object.values(this.map.gameObjects).forEach(obj => {

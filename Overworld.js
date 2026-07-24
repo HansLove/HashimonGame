@@ -103,10 +103,16 @@ class Overworld {
   let initialHeroState = null;
   if (useSaveFile) {
     this.progress.load();
-    initialHeroState = {
-      x: this.progress.startingHeroX,
-      y: this.progress.startingHeroY,
-      direction: this.progress.startingHeroDirection,
+    //A save made inside an endless run points at a generated map id that no
+    //longer exists on reload; fall back to the start map rather than crash.
+    if (!window.OverworldMaps[this.progress.mapId]) {
+      this.progress.mapId = "Kitchen";
+    } else {
+      initialHeroState = {
+        x: this.progress.startingHeroX,
+        y: this.progress.startingHeroY,
+        direction: this.progress.startingHeroDirection,
+      }
     }
   } else {
     window.playerState.reset();

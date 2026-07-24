@@ -8,11 +8,20 @@ class OverworldMap {
     this.cutsceneSpaces = config.cutsceneSpaces || {};
     this.walls = config.walls || {};
 
-    this.lowerImage = new Image();
-    this.lowerImage.src = config.lowerSrc;
-
-    this.upperImage = new Image();
-    this.upperImage.src = config.upperSrc;
+    //Procedurally generated maps hand us pre-drawn canvases; bespoke maps give a
+    //PNG url to load. drawImage takes either, so the render path is unchanged.
+    if (config.lowerImage) {
+      this.lowerImage = config.lowerImage;
+    } else {
+      this.lowerImage = new Image();
+      this.lowerImage.src = config.lowerSrc;
+    }
+    if (config.upperImage) {
+      this.upperImage = config.upperImage;
+    } else {
+      this.upperImage = new Image();
+      this.upperImage.src = config.upperSrc;
+    }
 
     this.isCutscenePlaying = false;
     this.isPaused = false;
@@ -468,6 +477,15 @@ window.OverworldMaps = {
       return walls;
     }(),
     cutsceneSpaces: {
+      //Endless portal: steps the player into the infinite procedural maps.
+      [utils.asGridCoord(33,10)]: [
+        {
+          events: [
+            { type: "textMessage", text: "A Hashima gate hums with static. You step through..." },
+            { type: "nextEndlessMap" },
+          ]
+        }
+      ],
       //Wild encounter zone. Each step here rolls a Hashimon from Street's own
       //ecology (pixel / electric / metal), a unique individual every time.
       [utils.asGridCoord(13,10)]: [
