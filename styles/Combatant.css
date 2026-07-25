@@ -112,10 +112,10 @@
   color: white;
   margin: 0;
 }
-.Combatant_status[data-status="saucy"] {
-  color: red;
+.Combatant_status[data-status="overclock"] {
+  color: #ffd76a;
 }
-.Combatant_status[data-status="clumsy"] {
+.Combatant_status[data-status="glitchy"] {
   background: #582a79;
 }
 

@@ -244,9 +244,9 @@ window.HashimonSprite = (function () {
     const marks = {
       scratch:   [[0,0],[1,1],[2,2]],
       hashPulse: [[1,0],[0,1],[2,1],[1,2]],
-      damage1:   [[0,1],[1,0],[1,1],[1,2],[2,1]],
-      saucyStatus:[[0,0],[2,0],[1,1],[0,2],[2,2]],
-      clumsyStatus:[[0,0],[1,0],[2,0],[1,1],[1,2]],
+      strike:    [[0,1],[1,0],[1,1],[1,2],[2,1]],
+      overclock: [[0,0],[2,0],[1,1],[0,2],[2,2]],
+      hashGlitch:[[0,0],[1,0],[2,0],[1,1],[1,2]],
     };
     (marks[move] || [[1,1]]).forEach(([x, y]) => ctx.fillRect(gx + x, gy + y, 1, 1));
   }

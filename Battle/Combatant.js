@@ -78,18 +78,20 @@ class Combatant {
     const statusElement = this.hudElement.querySelector(".Combatant_status");
     if (this.status) {
       statusElement.innerText = this.status.type;
+      statusElement.setAttribute("data-status", this.status.type);
       statusElement.style.display = "block";
     } else {
       statusElement.innerText = "";
+      statusElement.removeAttribute("data-status");
       statusElement.style.display = "none";
     }
   }
 
   getReplacedEvents(originalEvents) {
 
-    if (this.status?.type === "clumsy" && utils.randomFromArray([true, false, false])) {
+    if (this.status?.type === "glitchy" && utils.randomFromArray([true, false, false])) {
       return [
-        { type: "textMessage", text: `${this.name} flops over!` },
+        { type: "textMessage", text: `${this.name}'s hash chain glitched!` },
       ]
     }
 
@@ -97,9 +99,9 @@ class Combatant {
   }
 
   getPostEvents() {
-    if (this.status?.type === "saucy") {
+    if (this.status?.type === "overclock") {
       return [
-        { type: "textMessage", text: "Feelin' saucy!" },
+        { type: "textMessage", text: "Hash output surging!" },
         { type: "stateChange", recover: 5, onCaster: true }
       ]
     } 

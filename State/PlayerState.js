@@ -1,4 +1,27 @@
 class PlayerState {
+  static MOVE_ALIASES = {
+    damage1: "strike",
+    saucyStatus: "overclock",
+    clumsyStatus: "hashGlitch",
+  };
+
+  static STATUS_ALIASES = {
+    saucy: "overclock",
+    clumsy: "glitchy",
+  };
+
+  migrateHashimon(hashimon) {
+    if (hashimon.moves) {
+      hashimon.moves = hashimon.moves.map(move =>
+        PlayerState.MOVE_ALIASES[move] || move
+      );
+    }
+    if (hashimon.status?.type) {
+      hashimon.status.type = PlayerState.STATUS_ALIASES[hashimon.status.type]
+        || hashimon.status.type;
+    }
+  }
+
   constructor() {
     //Single roster: everything you own lives here, whether it was your starter
     //or caught in the wild. `lineup` holds the ids you take into battle.
@@ -96,6 +119,7 @@ class PlayerState {
       if (!h.dna) {
         h.dna = HashimonDNA.derive(h.pow.templateId, h.pow.birthNonce, h.speciesKey);
       }
+      this.migrateHashimon(h);
     })
 
     return this.lineup.length > 0;

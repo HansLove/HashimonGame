@@ -17,50 +17,51 @@ window.Actions = {
       { type: "stateChange", damage: 12}
     ]
   },
-  damage1: {
-    name: "Attack!",
-    description: "Pillowy punch of dough",
+  strike: {
+    name: "Strike",
+    description: "A solid body blow",
     success: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}!"},
       { type: "animation", animation: "spin"},
       { type: "stateChange", damage: 10}
     ]
   },
-  saucyStatus: {
-    name: "Squeeze",
-    description: "Applies the Saucy status",
+  overclock: {
+    name: "Overclock",
+    description: "Boosts hashing output for a few turns",
     targetType: "friendly",
     success: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}!"},
-      { type: "stateChange", status: { type: "saucy", expiresIn: 3 } }
+      { type: "stateChange", status: { type: "overclock", expiresIn: 3 } }
     ]
   },
-  clumsyStatus: {
-    name: "Recovery",
-    description: "Slippery mess of deliciousness",
+  hashGlitch: {
+    name: "Hash Glitch",
+    description: "Corrupts the target's timing",
     success: [
       { type: "textMessage", text: "{CASTER} uses {ACTION}!"},
       { type: "animation", animation: "glob", color: "#dafd2a" },
-      { type: "stateChange", status: { type: "clumsy", expiresIn: 3 } },
-      { type: "textMessage", text: "{TARGET} is slipping all around!"},
+      { type: "stateChange", status: { type: "glitchy", expiresIn: 3 } },
+      { type: "textMessage", text: "{TARGET}'s hash chain stutters!"},
     ]
   },
   //Items
   item_recoverStatus: {
-    name: "Heating Lamp",
-    description: "Feeling fresh and warm",
+    name: "Reset Pulse",
+    description: "Clears status effects",
     targetType: "friendly",
     success: [
       { type: "textMessage", text: "{CASTER} uses a {ACTION}!"},
       { type: "stateChange", status: null },
-      { type: "textMessage", text: "Feeling fresh!", },
+      { type: "textMessage", text: "Status cleared!", },
     ]
   },
   item_recoverHp: {
-    name: "Meta-war",
+    name: "Block Balm",
+    description: "Restores a little HP",
     targetType: "friendly",
     success: [
-      { type:"textMessage", text: "{CASTER} sprinkles on some {ACTION}!", },
+      { type:"textMessage", text: "{CASTER} applies {ACTION}!", },
       { type:"stateChange", recover: 10, },
       { type:"textMessage", text: "{CASTER} recovers HP!", },
     ]
