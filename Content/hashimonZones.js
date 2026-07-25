@@ -108,10 +108,8 @@ window.HashimonEncounters = {
   //(it has a dna) and fields it directly, so the creature you fight is the exact
   //individual you may capture.
   toWildEnemy(roll) {
-    const sprite = HashimonSystem.getSpriteForStage(roll.individual);
     return {
       name: roll.individual.name,
-      src: sprite.src,
       isWild: true,
       wildSpecies: roll.speciesKey,
       wildIndividual: roll.individual,

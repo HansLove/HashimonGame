@@ -39,10 +39,8 @@
   top: 42px;
   right: -1px;
 }
-/* Wild Hashimon portraits are full images, not people spritesheets */
-.wild-battle .Battle_enemy img {
-  width: 32px;
-  height: auto;
+.Battle_enemy img {
+  transform: translateY(-64px);
 }
 
 /* Animations */

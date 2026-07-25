@@ -53,6 +53,21 @@ class Battle {
       this.activeCombatants[team] = this.activeCombatants[team] || id
   }
 
+  getHeroPortraitSrc() {
+    const hero = window.overworld?.map?.gameObjects?.hero;
+    if (hero?.sprite?.image?.src) {
+      return hero.sprite.image.src;
+    }
+    return "/images/characters/people/hero.png";
+  }
+
+  getTrainerPortraitSrc() {
+    if (this.enemy.personSeed && window.PersonGenerator) {
+      return PersonGenerator.generate(this.enemy.personSeed);
+    }
+    return this.enemy.trainerSrc || this.enemy.src;
+  }
+
   createElement() {
     this.element = document.createElement("div");
     this.element.classList.add("Battle");
@@ -62,18 +77,21 @@ class Battle {
       this.element.classList.add(this.arena);
     }
 
-    // Wild encounters show the Hashimon itself instead of a trainer sprite
     if (this.enemy.isWild) {
       this.element.classList.add("wild-battle");
     }
 
+    const heroPortrait = this.getHeroPortraitSrc();
+    const trainerPortrait = this.enemy.isWild ? "" : (`
+    <div class="Battle_enemy">
+      <img src="${this.getTrainerPortraitSrc()}" alt="${this.enemy.name}" />
+    </div>`);
+
     this.element.innerHTML = (`
     <div class="Battle_hero">
-      <img src="${'/images/characters/people/hero.png'}" alt="Hero" />
+      <img src="${heroPortrait}" alt="Hero" />
     </div>
-    <div class="Battle_enemy">
-      <img src=${this.enemy.src} alt=${this.enemy.name} />
-    </div>
+    ${trainerPortrait}
     `)
   }
 
