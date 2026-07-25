@@ -26,6 +26,7 @@
 }
 .Battle_hero img, .Battle_enemy img {
   pointer-events: none;
+  image-rendering: pixelated;
 }
 .Battle_hero {
   bottom: 57px;

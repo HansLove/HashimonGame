@@ -1,0 +1,268 @@
+{
+  "tile": 160,
+  "cols": 4,
+  "rows": 4,
+  "sheet": "hashimon-bestiary.png",
+  "creatures": [
+    {
+      "key": "s001",
+      "name": "Hashimon",
+      "species": "genesis",
+      "type": "Pixel",
+      "subtype": "Crypto",
+      "stars": 1,
+      "branch": "solar",
+      "description": "Your first block. Loyal and stubborn.",
+      "dna": "2dfd93b27d303272cbf06daf0a313e149418a35c8122076c1943b2714d4ff12a",
+      "file": "creatures/s001.png",
+      "sheet": {
+        "col": 0,
+        "row": 0,
+        "x": 0,
+        "y": 0,
+        "w": 160,
+        "h": 160
+      }
+    },
+    {
+      "key": "solarCub",
+      "name": "Solar Cub",
+      "species": "lion",
+      "type": "Fire",
+      "subtype": "Plasma",
+      "stars": 1,
+      "branch": "solar",
+      "description": "A wild ember of the solar branch.",
+      "dna": "0666eb748d71466048192a3bb6d9c2e16a73df4593b9c64c987f09a1711dd82b",
+      "file": "creatures/solarCub.png",
+      "sheet": {
+        "col": 1,
+        "row": 0,
+        "x": 160,
+        "y": 0,
+        "w": 160,
+        "h": 160
+      }
+    },
+    {
+      "key": "s002",
+      "name": "Bacon Brigade",
+      "species": "brigade",
+      "type": "Metal",
+      "subtype": "Magneto",
+      "stars": 2,
+      "branch": "solar",
+      "description": "A salty warrior who fears nothing.",
+      "dna": "29e3221f22d81bc2f42af051d51e0714e51ae1a0649161a03665265e41d25ecd",
+      "file": "creatures/s002.png",
+      "sheet": {
+        "col": 2,
+        "row": 0,
+        "x": 320,
+        "y": 0,
+        "w": 160,
+        "h": 160
+      }
+    },
+    {
+      "key": "glitchPup",
+      "name": "Glitchpup",
+      "species": "glitchpup",
+      "type": "Pixel",
+      "subtype": "Crypto",
+      "stars": 1,
+      "branch": "solar",
+      "description": "A stray that renders in the wrong resolution.",
+      "dna": "4d016abe75c9119976e9d2b814e3fc49da45a2616d93d5423fc6a5abaef8522b",
+      "file": "creatures/glitchPup.png",
+      "sheet": {
+        "col": 3,
+        "row": 0,
+        "x": 480,
+        "y": 0,
+        "w": 160,
+        "h": 160
+      }
+    },
+    {
+      "key": "voltKit",
+      "name": "Voltkit",
+      "species": "voltkit",
+      "type": "Electric",
+      "subtype": "Plus",
+      "stars": 2,
+      "branch": "storm",
+      "description": "Small, charged, and always twitching.",
+      "dna": "cd3239a27b6b09c9864ed090c27f002b193ee3adfacf336a837c92d9fccc9b27",
+      "file": "creatures/voltKit.png",
+      "sheet": {
+        "col": 0,
+        "row": 1,
+        "x": 0,
+        "y": 160,
+        "w": 160,
+        "h": 160
+      }
+    },
+    {
+      "key": "v001",
+      "name": "Call Me Kale",
+      "species": "kale",
+      "type": "Plant",
+      "subtype": "Plant",
+      "stars": 1,
+      "branch": "block",
+      "description": "Patient as a confirmed block.",
+      "dna": "b7fc2f8cde91d24aab16f5a16d7c4baa4353936b36cc42a385dbd9f12a2829fb",
+      "file": "creatures/v001.png",
+      "sheet": {
+        "col": 1,
+        "row": 1,
+        "x": 160,
+        "y": 160,
+        "w": 160,
+        "h": 160
+      }
+    },
+    {
+      "key": "v002",
+      "name": "Archie Artichoke",
+      "species": "artichoke",
+      "type": "Earth",
+      "subtype": "Plant",
+      "stars": 1,
+      "branch": "block",
+      "description": "Layers upon layers of defense.",
+      "dna": "f45685478d44112258df29636301a93b31fcdf6bac6b0db05ad68a42232e0cd6",
+      "file": "creatures/v002.png",
+      "sheet": {
+        "col": 2,
+        "row": 1,
+        "x": 320,
+        "y": 160,
+        "w": 160,
+        "h": 160
+      }
+    },
+    {
+      "key": "f001",
+      "name": "Portobello Express",
+      "species": "portobello",
+      "type": "Fungus",
+      "subtype": "Specter",
+      "stars": 1,
+      "branch": "void",
+      "description": "Grows in the dark of the mempool.",
+      "dna": "86e4bf2bcb115ede538f5d5b00cfdfbda87f9987371f4e6b2c96f67743edeaf6",
+      "file": "creatures/f001.png",
+      "sheet": {
+        "col": 3,
+        "row": 1,
+        "x": 480,
+        "y": 160,
+        "w": 160,
+        "h": 160
+      }
+    },
+    {
+      "key": "f002",
+      "name": "Ninzauu",
+      "species": "ninzauu",
+      "type": "Dream",
+      "subtype": "Nightmare",
+      "stars": 1,
+      "branch": "void",
+      "description": "Speed and ninja moves.",
+      "dna": "97ed9826ce42c57cbc6c2872147965a13d08c30bcf086dd25bc4374e245cb144",
+      "file": "creatures/f002.png",
+      "sheet": {
+        "col": 0,
+        "row": 2,
+        "x": 0,
+        "y": 320,
+        "w": 160,
+        "h": 160
+      }
+    },
+    {
+      "key": "astralFawn",
+      "name": "Astral Fawn",
+      "species": "astralfawn",
+      "type": "Astro",
+      "subtype": "Star",
+      "stars": 1,
+      "branch": "storm",
+      "description": "It walks a handspan above the road.",
+      "dna": "6013eb37980f9f1ee1d2eb6f787c604efc47554b92758ea97a6164380f32e4b9",
+      "file": "creatures/astralFawn.png",
+      "sheet": {
+        "col": 1,
+        "row": 2,
+        "x": 160,
+        "y": 320,
+        "w": 160,
+        "h": 160
+      }
+    },
+    {
+      "key": "psyMoth",
+      "name": "Psymoth",
+      "species": "psymoth",
+      "type": "Mental",
+      "subtype": "Psychic",
+      "stars": 1,
+      "branch": "storm",
+      "description": "Reads the block before it is mined.",
+      "dna": "2f385b131a1404a313020040a5b3d5158d11c47553c58f89a1fb4c1997846f7a",
+      "file": "creatures/psyMoth.png",
+      "sheet": {
+        "col": 2,
+        "row": 2,
+        "x": 320,
+        "y": 320,
+        "w": 160,
+        "h": 160
+      }
+    },
+    {
+      "key": "tideKit",
+      "name": "Tidekit",
+      "species": "tidekit",
+      "type": "Water",
+      "subtype": "Vapor",
+      "stars": 1,
+      "branch": "block",
+      "description": "Half cat, half contained tide.",
+      "dna": "002eb6aa56a75cd860d6dc7ba76ef460f82cbfe460e272ff62352088216b9d0f",
+      "file": "creatures/tideKit.png",
+      "sheet": {
+        "col": 3,
+        "row": 2,
+        "x": 480,
+        "y": 320,
+        "w": 160,
+        "h": 160
+      }
+    },
+    {
+      "key": "gustling",
+      "name": "Gustling",
+      "species": "gustling",
+      "type": "Air",
+      "subtype": "Storm",
+      "stars": 2,
+      "branch": "storm",
+      "description": "It never quite touches down.",
+      "dna": "3d53b153ff049d2dc2549bb8f682fbd9b1f6f79c46a55f20eb4ec75990d546ad",
+      "file": "creatures/gustling.png",
+      "sheet": {
+        "col": 0,
+        "row": 3,
+        "x": 0,
+        "y": 480,
+        "w": 160,
+        "h": 160
+      }
+    }
+  ]
+}

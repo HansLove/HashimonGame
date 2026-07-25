@@ -121,10 +121,12 @@
 
 .Hashimon {
   position: absolute;
-  /* transform: scale(2); */
-  width: 2vh;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  image-rendering: pixelated;
   transition: opacity 0.4s, transform 0.4s;
-  background: url(/images/characters/pizzas/pizza-shadow.png) no-repeat no-repeat;
+  background: url(/images/characters/pizzas/pizza-shadow.png) no-repeat center bottom;
 }
 .Hashimon[data-team="player"] {
   bottom: 73px;
