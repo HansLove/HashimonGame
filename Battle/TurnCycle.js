@@ -89,6 +89,21 @@ class TurnCycle {
 
       //Wild Hashimon defeated: offer to capture it
       if (winner === "player" && this.battle.enemy.isWild) {
+        if (!window.playerState.storyFlags.FIRST_WILD_WIN) {
+          window.playerState.storyFlags.FIRST_WILD_WIN = true;
+          window.questManager?.advanceIfComplete("FIRST_WILD_WIN");
+          window.playerState.save();
+        }
+
+        if (!window.playerState.storyFlags.FIRST_CAPTURE_HINT) {
+          await this.onNewEvent({
+            type: "textMessage",
+            text: "You won! Capture wild Hashimons to add them to your roster, or Let them go."
+          });
+          window.playerState.storyFlags.FIRST_CAPTURE_HINT = true;
+          window.playerState.save();
+        }
+
         const captured = await this.onNewEvent({
           type: "captureMenu"
         })
@@ -166,6 +181,15 @@ class TurnCycle {
       type: "textMessage",
       text: `${this.battle.enemy.name} wants to throw down!`
     })
+
+    if (!window.playerState.storyFlags.FIRST_BATTLE_HINT) {
+      await this.onNewEvent({
+        type: "textMessage",
+        text: "Choose Powers to attack. Items heal. Swap switches Hashimon."
+      });
+      window.playerState.storyFlags.FIRST_BATTLE_HINT = true;
+      window.playerState.save();
+    }
 
     //Start the first turn!
     this.turn();

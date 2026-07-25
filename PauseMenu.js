@@ -24,6 +24,11 @@ class PauseMenu {
           label: "My Collection",
           description: "Your captured Hashimons",
           handler: () => {
+            if (!playerState.storyFlags.OPENED_COLLECTION) {
+              playerState.storyFlags.OPENED_COLLECTION = true;
+              window.questManager?.advanceIfComplete("OPENED_COLLECTION");
+              playerState.save();
+            }
             //Hand control over to the collection overlay; resume the game when it closes
             this.esc?.unbind();
             this.keyboardMenu.end();
@@ -38,7 +43,7 @@ class PauseMenu {
         },
         {
           label: "Save",
-          description: "Save your progress",
+          description: "Save your map position (your party saves automatically)",
           handler: () => {
             this.progress.save();
             this.close();

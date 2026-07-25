@@ -84,6 +84,28 @@ class Overworld {
   this.progress.startingHeroY = this.map.gameObjects.hero.y;
   this.progress.startingHeroDirection = this.map.gameObjects.hero.direction;
 
+  this.mapLabel?.show(
+    window.questManager.getMapLabel(mapConfig.id),
+    document.querySelector(".game-container")
+  );
+
+  this.scheduleMapOnboarding(mapConfig.id);
+ }
+
+ scheduleMapOnboarding(mapId) {
+  const events = window.questManager.getMapOnboarding(mapId);
+  if (!events?.length) {
+    return;
+  }
+
+  const run = () => {
+    if (this.map.isCutscenePlaying) {
+      requestAnimationFrame(run);
+      return;
+    }
+    this.map.startCutscene(events);
+  };
+  run();
  }
 
  async init() {
@@ -118,9 +140,17 @@ class Overworld {
     window.playerState.reset();
   }
 
+  window.questManager.syncCompletedSteps();
+  utils.emitEvent("QuestUpdated");
+
   //Load the HUD
   this.hud = new Hud();
   this.hud.init(container);
+
+  this.objectiveHud = new ObjectiveHud();
+  this.objectiveHud.init(container);
+
+  this.mapLabel = new MapLabel();
 
   //Start the first map
   this.startMap(window.OverworldMaps[this.progress.mapId], initialHeroState );

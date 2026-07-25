@@ -141,6 +141,23 @@ class OverworldEvent {
 
   addStoryFlag(resolve) {
     window.playerState.storyFlags[this.event.flag] = true;
+    window.questManager?.advanceIfComplete(this.event.flag);
+    window.playerState.save();
+    resolve();
+  }
+
+  async playQuestCutscene(resolve) {
+    const fn = window.Quests.cutscenes[this.event.cutsceneKey];
+    const events = typeof fn === "function" ? fn() : fn;
+    for (let i = 0; i < events.length; i++) {
+      const eventHandler = new OverworldEvent({ event: events[i], map: this.map });
+      await eventHandler.init();
+    }
+    resolve();
+  }
+
+  startQuest(resolve) {
+    window.questManager.startQuest(this.event.questId);
     resolve();
   }
 

@@ -15,6 +15,8 @@
     <link href="/styles/SceneTransition.css" type="text/css" rel="stylesheet">
     <link href="/styles/KeyboardMenu.css" type="text/css" rel="stylesheet">
     <link href="/styles/Hud.css" type="text/css" rel="stylesheet">
+    <link href="/styles/ObjectiveHud.css" type="text/css" rel="stylesheet">
+    <link href="/styles/MapLabel.css" type="text/css" rel="stylesheet">
     <link href="/styles/TitleScreen.css" type="text/css" rel="stylesheet">
     <!-- Battle css -->
     <link href="/styles/Battle.css" type="text/css" rel="stylesheet">
@@ -29,7 +31,7 @@
     <div class="game-container">
       <canvas class="game-canvas" width="352" height="198"></canvas>
     </div>
-    <p class="how-to-play">Use Arrow Keys to move. Enter to prompt/talk.</p>
+    <p class="how-to-play">Arrows to move · Enter to talk · Esc to pause</p>
 
     <!-- Content -->
     <script src="/Content/hashimons.js"></script>
@@ -42,9 +44,11 @@
     <script src="/Content/hashimonZones.js"></script>
     <script src="/Content/actions.js"></script>
     <script src="/Content/enemies.js"></script>
+    <script src="/Content/quests.js"></script>
 
     <!-- State -->
     <script src="/State/PlayerState.js"></script>
+    <script src="/QuestManager.js"></script>
 
     <!-- Scripts -->
     <script src="/utils.js"></script>
@@ -64,6 +68,8 @@
     <script src="/SceneTransition.js"></script>
     <script src="/KeyboardMenu.js"></script>
     <script src="/Hud.js"></script>
+    <script src="/ObjectiveHud.js"></script>
+    <script src="/MapLabel.js"></script>
     <script src="/PauseMenu.js"></script>
     <script src="/HashimonCollection.js"></script>
     <script src="/CraftingMenu.js"></script>

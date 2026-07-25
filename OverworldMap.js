@@ -273,8 +273,14 @@ window.OverworldMaps = {
         src: "/images/characters/people/npc8.png",
         talking: [
           {
+            required: ["SEEN_INTRO"],
             events: [
-              { type: "textMessage", text: "** They don't want to talk to you **",},
+              { type: "textMessage", text: "The Street won't go easy on you. Head north when you're ready.", faceHero: "kitchenNpcA" },
+            ]
+          },
+          {
+            events: [
+              { type: "playQuestCutscene", cutsceneKey: "kitchenIntro" },
             ]
           }
         ]
@@ -320,22 +326,8 @@ window.OverworldMaps = {
         }
       ],
       [utils.asGridCoord(10,6)]: [{
-        // disqualify: ["SEEN_INTRO"],
         events: [
-          // { type: "addStoryFlag", flag: "SEEN_INTRO"},
-          // { type: "textMessage", text: "Welcome to the HASH!"},
-          // { type: "walk", who: "kitchenNpcA", direction: "down"},
-          // { type: "stand", who: "kitchenNpcA", direction: "right", time: 200},
-          // { type: "stand", who: "hero", direction: "left", time: 200},
-          // { type: "textMessage", text: "You dont have it baby"},
-          // { type: "textMessage", text: "This is a dangerus place!"},
-          // { type: "textMessage", text: "Don't even get me started on the mushrooms."},
-          // { type: "textMessage", text: "You will never make it in pizza!"},
-          // { type: "stand", who: "kitchenNpcA", direction: "right", time: 200},
-          // { type: "walk", who: "kitchenNpcA", direction: "up"},
-          // { type: "stand", who: "kitchenNpcA", direction: "up", time: 300},
-          // { type: "stand", who: "hero", direction: "down", time: 400},
-          // { type: "textMessage", text: "* The competition is fierce! You should spend some time leveling up your Pizza lineup and skills. *"},
+          { type: "addStoryFlag", flag: "LEFT_KITCHEN" },
           {
             type: "changeMap",
             map: "Street",
@@ -412,6 +404,12 @@ window.OverworldMaps = {
         ],
         talking: [
           {
+            required: ["SEEN_INTRO"],
+            events: [
+              { type: "textMessage", text: "Wild Hashimons hide in the grass east of here. Step on the tall patches to fight!", faceHero: "streetNpcA" },
+            ]
+          },
+          {
             events: [
               { type: "textMessage", text: "One time i saw a 10 stars Hashimon. A wild one roams just east of here...", faceHero: "streetNpcA" },
             ]
@@ -455,6 +453,7 @@ window.OverworldMaps = {
               { type: "textMessage", text: "You should have just stayed home!", faceHero: "streetNpcC" },
               { type: "battle", enemyId: "streetBattle" },
               { type: "addStoryFlag", flag: "streetBattle"},
+              { type: "playQuestCutscene", cutsceneKey: "postTrainerCollection" },
             ]
           },
         ]

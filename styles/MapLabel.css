@@ -1,0 +1,19 @@
+.MapLabel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 6px 12px;
+  background: rgba(41, 29, 77, 0.85);
+  border: 2px solid var(--menu-border-color);
+  color: var(--dialog-background);
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.MapLabel.visible {
+  opacity: 1;
+}

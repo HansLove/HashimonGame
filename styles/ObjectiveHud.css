@@ -1,0 +1,28 @@
+.ObjectiveHud {
+  position: absolute;
+  right: 4px;
+  top: 4px;
+  max-width: 130px;
+  padding: 4px 6px;
+  background: var(--menu-background);
+  border: 2px solid var(--menu-border-color);
+  color: var(--menu-font-color);
+  font-size: 8px;
+  line-height: 1.3;
+  image-rendering: pixelated;
+  z-index: 5;
+}
+
+.ObjectiveHud.hidden {
+  display: none;
+}
+
+.ObjectiveHud_title {
+  font-weight: bold;
+  margin-bottom: 2px;
+  color: var(--border-color);
+}
+
+.ObjectiveHud_text {
+  opacity: 0.9;
+}

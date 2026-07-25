@@ -33,6 +33,7 @@ class PlayerState {
       { actionId: "item_recoverHp", instanceId: "item3" },
     ]
     this.storyFlags = {};
+    this.questProgress = { activeQuestId: "early_start", completedSteps: [] };
 
     if (!this.load()) {
       this.seedStarter();
@@ -51,6 +52,7 @@ class PlayerState {
     this.hashimons = {};
     this.lineup = [];
     this.storyFlags = {};
+    this.questProgress = { activeQuestId: "early_start", completedSteps: [] };
     this.items = [
       { actionId: "item_recoverHp", instanceId: "item1" },
       { actionId: "item_recoverHp", instanceId: "item2" },
@@ -99,6 +101,7 @@ class PlayerState {
       lineup: this.lineup,
       items: this.items,
       storyFlags: this.storyFlags,
+      questProgress: this.questProgress,
     }))
   }
 
@@ -111,6 +114,7 @@ class PlayerState {
     this.lineup = data.lineup || [];
     this.items = data.items || this.items;
     this.storyFlags = data.storyFlags || {};
+    this.questProgress = data.questProgress || { activeQuestId: "early_start", completedSteps: [] };
 
     //Hashimons captured before DNA existed get theirs derived now. It comes from
     //their unchanged PoW identity, so they end up with the DNA they always

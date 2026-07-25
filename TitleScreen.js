@@ -8,7 +8,7 @@ class TitleScreen {
     return [
       { 
         label: "Start Hashimon",
-        description: "Play the number one GameFi",
+        description: "Every block has a soul. Arrows move, Enter talks, Esc pauses.",
         handler: () => {
           this.close();
           resolve();
