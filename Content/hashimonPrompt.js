@@ -45,18 +45,16 @@ window.HashimonPrompt = {
     return "Full monster mode: oversized and many-featured, awe-inspiring and dangerous, the kind of creature myths warn about.";
   },
 
+  //Stars ARE the tier (earned leading-zero nibbles), so the described form
+  //evolves in lockstep with proven work — full monster by ~tier 6.
   maturityBlock(stage, maxStage, stars) {
-    const ratio = maxStage > 1 ? (stage - 1) / (maxStage - 1) : 0;
+    const ratio = Math.min(1, stars / 6);
     let morph = this.MORPHOLOGY[0];
     this.MORPHOLOGY.forEach(m => { if (ratio >= m.at) { morph = m; } });
 
-    //Rarity is realized through maturity: potential (stars) times progress (ratio).
-    const rarityWeight = Math.min(1, (stars - 1) / 6);   //1 star -> 0, 7+ -> 1
-    const monsterScore = ratio * (0.35 + 0.65 * rarityWeight);
-
     return {
       form: morph.form,
-      text: `${morph.form} (stage ${stage} of ${maxStage}): ${morph.body} ${this.monsterLine(monsterScore)}`,
+      text: `${morph.form} (rank ${stars}, stage ${stage} of ${maxStage}): ${morph.body} ${this.monsterLine(ratio)}`,
     };
   },
 

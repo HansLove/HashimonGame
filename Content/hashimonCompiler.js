@@ -179,7 +179,9 @@ window.HashimonCompiler = {
       dna,
       types: this.compileTypes(dna, species),
       stats: this.compileStats(dna),
-      stars: this.compileStars(dna),
+      //Stars are EARNED, not innate: how many leading zero nibbles the best real
+      //share has (see HashimonSystem.tierOf). A freshly caught creature has 0.
+      stars: Math.floor((hashimon.pow.bestShareBits || 0) / 4),
       look:  this.compileLook(dna, species),
       pow: {
         templateId: hashimon.pow.templateId,

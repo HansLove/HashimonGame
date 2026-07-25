@@ -1,13 +1,10 @@
 //Hashimon core: instance creation, simulated proof of work, and evolution math.
 //All tuning knobs live in HashimonConfig so pacing is easy to adjust.
 window.HashimonConfig = {
-  maxStage: 33,
-  stageStep: 10,        //evolution progress required per stage
-  sharePoints: 2,       //progress granted per valid share
-  difficultyPoints: 3,  //progress granted per doubling of best share difficulty
-  secondsPerShare: 10,  //simulated mining time added per share
-  blockDifficulty: 1000000, //simulated difficulty that counts as mining a real block
-  statGrowthPerStage: 0.15, //+15% per stage over the species base (x5.8 at stage 33)
+  maxStage: 33,             //theoretical max (33 leading-zero nibbles = never reached)
+  bitsPerStar: 4,           //a star/stage = one more leading-zero HEX nibble (4 bits)
+  visualMaxTier: 6,         //tier at which the sprite/prompt reaches full "monster"
+  statGrowthPerStage: 0.18, //+18% per stage/star over the species base
 }
 
 window.HashimonSystem = {
@@ -115,19 +112,23 @@ window.HashimonSystem = {
     if (hashimon.hp > hashimon.maxHp) { hashimon.hp = hashimon.maxHp; }
   },
 
-  calculateEvolutionProgress(hashimon) {
-    const difficultyBonus = Math.floor(
-      Math.log2(Math.max(1, hashimon.pow.bestShareDifficulty))
-    ) * HashimonConfig.difficultyPoints;
-    return hashimon.pow.validShares * HashimonConfig.sharePoints + difficultyBonus;
+  //A Hashimon's rank is EARNED, not counted: it is how many leading zero hex
+  //nibbles its best real share has. Each extra nibble is 16x rarer, so a rank is
+  //hard to reach and every one is a genuine milestone. Stars == stage == tier.
+  //  best share 00001a0e...  -> 4 leading zeros -> tier 4 -> 4 stars, stage 4.
+  //Reaching tier 5 (a 20-bit share) is ~1M hashes: viable at home. Tier 33 is a
+  //132-bit share: the theoretical maximum nobody will ever hit.
+  tierOf(hashimon) {
+    return Math.floor((hashimon.pow.bestShareBits || 0) / HashimonConfig.bitsPerStar);
+  },
+
+  //0..1 evolution weight for the sprite and the prompt, full "monster" by ~tier 6.
+  visualRatio(hashimon) {
+    return Math.min(1, this.tierOf(hashimon) / HashimonConfig.visualMaxTier);
   },
 
   calculateStage(hashimon) {
-    const progress = this.calculateEvolutionProgress(hashimon);
-    return Math.min(
-      hashimon.maxStage || HashimonConfig.maxStage,
-      1 + Math.floor(progress / HashimonConfig.stageStep)
-    );
+    return Math.min(hashimon.maxStage || HashimonConfig.maxStage, Math.max(1, this.tierOf(hashimon)));
   },
 
   //Returns the form LABEL from the species' spriteStages, and the SRC from the
@@ -145,18 +146,21 @@ window.HashimonSystem = {
     };
   },
 
-  //Recalculates progress + stage from PoW data. Returns whether the stage went up.
+  //Recalculates rank + stage from the best real share. Returns whether it evolved.
   refreshEvolution(hashimon) {
     const oldStage = hashimon.stage;
-    const newStage = this.calculateStage(hashimon);
-    hashimon.evolution.progress = this.calculateEvolutionProgress(hashimon);
+    const bits = hashimon.pow.bestShareBits || 0;
+    const tier = Math.floor(bits / HashimonConfig.bitsPerStar);
+    const newStage = Math.min(hashimon.maxStage || HashimonConfig.maxStage, Math.max(1, tier));
+
+    hashimon.stars = tier;                                   //earned stars == stage == tier
     hashimon.stage = newStage;
-    hashimon.evolution.nextThreshold = newStage >= hashimon.maxStage
-      ? hashimon.evolution.progress
-      : newStage * HashimonConfig.stageStep;
+    //Progress = bits already banked toward the NEXT leading zero (0..3 of 4).
+    hashimon.evolution.progress = bits - tier * HashimonConfig.bitsPerStar;
+    hashimon.evolution.nextThreshold = HashimonConfig.bitsPerStar;
 
     if (newStage !== oldStage) { this.applyStageScaling(hashimon); }
-    return { oldStage, newStage, stageUp: newStage > oldStage };
+    return { oldStage, newStage, stageUp: newStage > oldStage, tier, bits };
   },
 
   //Share luck: heavy-tail roll, most shares are low difficulty, rare ones are huge.

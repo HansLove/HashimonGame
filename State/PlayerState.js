@@ -24,6 +24,21 @@ class PlayerState {
     if (hashimon.speciesKey && window.HashimonMoves) {
       hashimon.moves = HashimonMoves.kitFor(hashimon.speciesKey);
     }
+    //PoW fields for the real grinder (older saves predate them).
+    if (hashimon.pow) {
+      const p = hashimon.pow;
+      if (p.extranonce2 == null) { p.extranonce2 = 0; }
+      if (p.totalHashes == null) { p.totalHashes = 0; }
+      if (p.bestShareNonce === undefined) { p.bestShareNonce = null; }
+      if (p.bestShareBits == null) {
+        //derive from any legacy bestShareDifficulty; a "demo" hash counts as 0
+        p.bestShareBits = /^0000[^0]/.test(p.bestShareHash || "") ? 0
+          : Math.max(0, Math.floor(Math.log2(Math.max(1, p.bestShareDifficulty || 1))));
+      }
+      //Rank/stage is now EARNED from the best real share — recompute so saves
+      //made under the old share-count model drop to their true tier.
+      if (window.HashimonSystem) { HashimonSystem.refreshEvolution(hashimon); }
+    }
   }
 
   constructor() {

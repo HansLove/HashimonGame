@@ -75,8 +75,10 @@ window.HashimonSprite = (function () {
     const scale = opts.scale || 4;
     //Accept a compiled spec, or a live Hashimon (compile it).
     const spec = input.look ? input : HashimonCompiler.compile(input);
-    const stage = opts.stage || spec.stage || 1;
-    const maxStage = spec.maxStage || 33;
+    //The creature's EARNED tier (leading-zero nibbles of its best share == stars)
+    //drives its evolution, on a scale where ~tier 6 is a full monster. opts.tier
+    //can force a form for previews/galleries.
+    const tier = opts.tier != null ? opts.tier : (spec.stars || 0);
     const dna = spec.dna;
     const rnd = stream(dna);
 
@@ -89,10 +91,10 @@ window.HashimonSprite = (function () {
     const typeKey = spec.types.primary.key;
     const motif = MOTIF[typeKey] || "orb";
 
-    //Evolution shapes the body: babies are round with a big head, adults taller,
-    //high stage + rarity pushes toward a bigger, spikier "monster".
-    const ratio = maxStage > 1 ? (stage - 1) / (maxStage - 1) : 0;
-    const monster = ratio * (0.35 + 0.65 * Math.min(1, (spec.stars - 1) / 6));
+    //Evolution shapes the body: tier 0-1 is a round baby, mid tiers an adult,
+    //~tier 6 a full spiky monster. Each earned leading zero is a visible jump.
+    const ratio = Math.min(1, tier / 6);
+    const monster = ratio;
 
     const cv = document.createElement("canvas");
     cv.width = BASE * scale; cv.height = BASE * scale;
@@ -124,9 +126,8 @@ window.HashimonSprite = (function () {
     const headBig = ratio < 0.2;
     const eyeR = headBig ? 3 : 2;                    // babies get big eyes
 
-    //--- aura (behind), intensity from rarity + PoW ---
-    const zeros = (spec.pow && spec.pow.zeros) || 0;
-    const auraStrength = Math.min(1, (spec.stars - 1) / 5 + zeros / 12);
+    //--- aura (behind), intensity from the earned tier (proven work) ---
+    const auraStrength = Math.min(1, tier / 5);
     if (auraStrength > 0.05) {
       const ar = rx + 3 + Math.round(auraStrength * 2);
       for (let a = 0; a < 26; a++) {

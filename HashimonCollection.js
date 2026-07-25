@@ -60,10 +60,9 @@ class HashimonCollection {
     const sprite = HashimonSystem.getSpriteForStage(h);
     const genetics = HashimonCompiler.compile(h);
     const verified = HashimonMining.verify(h);   //recompute the best share = proof it's real
-    const stageStart = (h.stage - 1) * HashimonConfig.stageStep;
-    const inStage = h.evolution.progress - stageStart;
-    const span = Math.max(1, h.evolution.nextThreshold - stageStart);
-    const percent = h.stage >= h.maxStage ? 100 : Math.min(100, Math.round(inStage / span * 100));
+    const tier = genetics.stars;                 //stars == stage == leading-zero nibbles
+    //Progress = bits already banked toward the next leading zero (0..4).
+    const percent = Math.min(100, Math.round((h.evolution.progress / h.evolution.nextThreshold) * 100));
 
     this.element.innerHTML = (`
       <h2>${h.name} &mdash; Laboratory</h2>
@@ -77,14 +76,14 @@ class HashimonCollection {
           <p><span>Stage</span> ${h.stage} / ${h.maxStage}</p>
           <p><span>Type</span> ${genetics.types.fusion || [genetics.types.primary.name, genetics.types.secondary && genetics.types.secondary.name].filter(Boolean).join(" / ")}</p>
           <p><span>Subtype</span> ${genetics.types.subtype}</p>
-          <p><span>Stars</span> ${"★".repeat(genetics.stars)}${"☆".repeat(Math.max(0, 5 - genetics.stars))} (${genetics.stars})</p>
+          <p><span>Stars</span> ${"★".repeat(Math.min(5, tier))}${"☆".repeat(Math.max(0, 5 - tier))} (${tier})</p>
           <p><span>HP</span> ${h.hp} / ${h.maxHp}</p>
           <p><span>Power / Def</span> ${h.stats.power} / ${h.stats.defense}</p>
           <p><span>DNA</span> ${genetics.dna.slice(0, 12)}&hellip;</p>
           <p><span>Template</span> ${h.pow.templateId}</p>
           <p><span>Birth nonce</span> ${h.pow.birthNonce}</p>
           <p><span>Valid shares</span> ${h.pow.validShares}</p>
-          <p><span>Best share</span> ${h.pow.bestShareBits || 0} bits</p>
+          <p><span>Best share</span> ${h.pow.bestShareBits || 0} bits &middot; ${tier} zeros</p>
           <p><span>Best share hash</span> ${h.pow.bestShareHash.slice(0, 18)}&hellip;</p>
           <p><span>Hashes invested</span> ${(h.pow.totalHashes || 0).toLocaleString()}</p>
           <p><span>Mining</span> ${h.pow.miningSeconds}s</p>
@@ -93,7 +92,7 @@ class HashimonCollection {
         </div>
       </div>
       <div class="HashimonCollection_progress">
-        <p>Evolution: ${h.evolution.progress} / ${h.evolution.nextThreshold}</p>
+        <p>${tier >= h.maxStage ? "Max rank" : `Next star: ${h.evolution.progress} / ${h.evolution.nextThreshold} bits`}</p>
         <div class="HashimonCollection_progress-bar">
           <div class="HashimonCollection_progress-fill" style="width:${percent}%"></div>
         </div>
@@ -122,9 +121,9 @@ class HashimonCollection {
         const r = HashimonMining.mine(h);
         window.playerState.save();
 
-        let message = `${r.hashes.toLocaleString()} hashes &middot; ${r.hashrate.toLocaleString()} H/s &middot; +${r.newShares} shares`;
-        if (r.newBest) { message += ` &middot; new best ${r.bestBits} bits`; }
-        if (r.stageUp) { message += ` &middot; Evolved to stage ${r.newStage}! (+stats)`; utils.emitEvent("PlayerStateUpdated"); }
+        let message = `${r.hashes.toLocaleString()} hashes &middot; ${r.hashrate.toLocaleString()} H/s`;
+        if (r.newBest) { message += ` &middot; new best ${r.bestBits} bits (${r.tier} zeros)`; }
+        if (r.stageUp) { message += ` &middot; ⭐ NEW STAR! Rank ${r.newStage} — it evolved!`; utils.emitEvent("PlayerStateUpdated"); }
         if (r.foundBlock) { message += " &middot; BLOCK FOUND!!"; }
         this.lastShareMessage = message;
         this.renderDetail(id);
