@@ -46,7 +46,7 @@ window.HashimonSystem = {
         progress: 0,
         nextThreshold: HashimonConfig.stageStep,
       },
-      moves: [ ...species.moves ],
+      moves: [...(overrides.moves || HashimonMoves.resolve(speciesKey, species))],
     };
 
     //A unique birth nonce (wild catches pass one) makes every individual its own

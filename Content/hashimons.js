@@ -9,6 +9,8 @@
 //  archetype     -> body plan fed to the image model.
 //  zones         -> which maps this species can be encountered in.
 //  branch/starClass are legacy battle-icon fields, kept so combat keeps working.
+//  moves         -> assigned by HashimonMoves (see Content/hashimonMoves.js).
+//                   Set `moves: [...]` here only to override the curated kit.
 window.HashimonBranches = {
   solar: { icon: "/images/icons/spicy.png" },
   block: { icon: "/images/icons/veggie.png" },
@@ -25,7 +27,6 @@ window.Hashimons = {
     type: "pixel", archetype: "canine",
     branch: "solar", starClass: "yellow",
     baseHp: 50, baseStats: { power: 8, defense: 7, speed: 7, energy: 10 },
-    moves: ["scratch", "hashPulse", "overclock"],
     templateId: "template_genesis_001", birthNonce: 100001,
     spriteStages: [
       { minStage: 1,  label: "Hatchling", src: "/images/characters/pizzas/hashimon_1.png" },
@@ -42,7 +43,6 @@ window.Hashimons = {
     type: "fuego", archetype: "lion",
     branch: "solar", starClass: "yellow",
     baseHp: 35, baseStats: { power: 8, defense: 7, speed: 6, energy: 10 },
-    moves: ["scratch", "hashPulse"],
     templateId: "template_solar_001", birthNonce: 481927,
     zones: ["kitchen"],
     spriteStages: [
@@ -62,7 +62,6 @@ window.Hashimons = {
     type: "metal", archetype: "ursine",
     branch: "solar", starClass: "orange",
     baseHp: 50, baseStats: { power: 9, defense: 6, speed: 7, energy: 8 },
-    moves: ["strike", "overclock", "hashGlitch"],
     templateId: "template_metal_001", birthNonce: 200002,
     zones: ["street"],
     spriteStages: [{ minStage: 1, label: "Bacon Brigade", src: "/images/characters/pizzas/hashimon_2.png" }],
@@ -75,7 +74,6 @@ window.Hashimons = {
     type: "pixel", archetype: "canine",
     branch: "solar", starClass: "green",
     baseHp: 42, baseStats: { power: 8, defense: 6, speed: 9, energy: 8 },
-    moves: ["scratch", "strike"],
     templateId: "template_pixel_002", birthNonce: 707011,
     zones: ["street"],
     spriteStages: [{ minStage: 1, label: "Glitchpup", src: "/images/characters/pizzas/c001.png" }],
@@ -88,7 +86,6 @@ window.Hashimons = {
     type: "electrico", archetype: "rodent",
     branch: "storm", starClass: "yellow",
     baseHp: 40, baseStats: { power: 9, defense: 5, speed: 10, energy: 9 },
-    moves: ["hashPulse", "strike"],
     templateId: "template_electric_001", birthNonce: 303044,
     zones: ["street"],
     spriteStages: [{ minStage: 1, label: "Voltkit", src: "/images/characters/pizzas/c002.png" }],
@@ -102,7 +99,6 @@ window.Hashimons = {
     type: "vegetal", archetype: "amphibian",
     branch: "block", starClass: "green",
     baseHp: 50, baseStats: { power: 7, defense: 9, speed: 5, energy: 9 },
-    moves: ["strike", "overclock"],
     templateId: "template_plant_001", birthNonce: 300003,
     zones: ["greenKitchen"],
     spriteStages: [{ minStage: 1, label: "Call Me Kale", src: "/images/characters/pizzas/v001.png" }],
@@ -115,7 +111,6 @@ window.Hashimons = {
     type: "tierra", archetype: "chelonian",
     branch: "block", starClass: "green",
     baseHp: 50, baseStats: { power: 6, defense: 10, speed: 5, energy: 9 },
-    moves: ["strike", "overclock"],
     templateId: "template_earth_001", birthNonce: 400004,
     zones: ["greenKitchen"],
     spriteStages: [{ minStage: 1, label: "Archie Artichoke", src: "/images/characters/pizzas/v003.png" }],
@@ -128,7 +123,6 @@ window.Hashimons = {
     type: "hongo", archetype: "fungal",
     branch: "void", starClass: "violet",
     baseHp: 50, baseStats: { power: 8, defense: 7, speed: 8, energy: 7 },
-    moves: ["strike", "hashGlitch"],
     templateId: "template_fungus_001", birthNonce: 500005,
     zones: ["greenKitchen"],
     spriteStages: [{ minStage: 1, label: "Portobello Express", src: "/images/characters/pizzas/f001.png" }],
@@ -142,7 +136,6 @@ window.Hashimons = {
     type: "sueno", archetype: "chiropteran",
     branch: "void", starClass: "violet",
     baseHp: 50, baseStats: { power: 8, defense: 6, speed: 10, energy: 7 },
-    moves: ["scratch", "hashGlitch"],
     templateId: "template_dream_001", birthNonce: 600006,
     zones: ["streetNorth"],
     spriteStages: [{ minStage: 1, label: "Ninzauu", src: "/images/characters/pizzas/f002.png" }],
@@ -155,7 +148,6 @@ window.Hashimons = {
     type: "astro", archetype: "deer",
     branch: "storm", starClass: "violet",
     baseHp: 46, baseStats: { power: 7, defense: 7, speed: 8, energy: 10 },
-    moves: ["hashPulse", "strike"],
     templateId: "template_astro_001", birthNonce: 808022,
     zones: ["streetNorth"],
     spriteStages: [{ minStage: 1, label: "Astral Fawn", src: "/images/characters/pizzas/s003.png" }],
@@ -168,7 +160,6 @@ window.Hashimons = {
     type: "mental", archetype: "insect",
     branch: "storm", starClass: "blue",
     baseHp: 44, baseStats: { power: 7, defense: 6, speed: 9, energy: 10 },
-    moves: ["hashPulse", "strike"],
     templateId: "template_mental_001", birthNonce: 909033,
     zones: ["streetNorth"],
     spriteStages: [{ minStage: 1, label: "Psymoth", src: "/images/characters/pizzas/c003.png" }],
@@ -182,7 +173,6 @@ window.Hashimons = {
     type: "agua", archetype: "feline",
     branch: "block", starClass: "blue",
     baseHp: 48, baseStats: { power: 7, defense: 8, speed: 7, energy: 9 },
-    moves: ["scratch", "strike"],
     templateId: "template_water_001", birthNonce: 111055,
     zones: ["diningRoom"],
     spriteStages: [{ minStage: 1, label: "Tidekit", src: "/images/characters/pizzas/v002.png" }],
@@ -195,7 +185,6 @@ window.Hashimons = {
     type: "aire", archetype: "bird",
     branch: "storm", starClass: "blue",
     baseHp: 44, baseStats: { power: 7, defense: 6, speed: 10, energy: 9 },
-    moves: ["hashPulse", "strike"],
     templateId: "template_air_001", birthNonce: 222066,
     zones: ["diningRoom"],
     spriteStages: [{ minStage: 1, label: "Gustling", src: "/images/characters/pizzas/f003.png" }],

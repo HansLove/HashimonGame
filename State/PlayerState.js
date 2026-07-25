@@ -20,6 +20,10 @@ class PlayerState {
       hashimon.status.type = PlayerState.STATUS_ALIASES[hashimon.status.type]
         || hashimon.status.type;
     }
+    //Refresh move kits so saves pick up enriched species assignments.
+    if (hashimon.speciesKey && window.HashimonMoves) {
+      hashimon.moves = HashimonMoves.kitFor(hashimon.speciesKey);
+    }
   }
 
   constructor() {

@@ -214,7 +214,10 @@ window.HashimonSprite = (function () {
     }
 
     //--- power glyph (primary move) bottom-left, small ---
-    const move = (spec.moves && spec.moves[0]) || (input.moves && input.moves[0]);
+    const speciesKey = input.speciesKey;
+    const move = (window.HashimonMoves && speciesKey)
+      ? HashimonMoves.primaryMove(speciesKey, Hashimons[speciesKey])
+      : (input.moves && input.moves[0]);
     drawPowerGlyph(ctx, move, accent);
 
     return cv;
@@ -242,11 +245,24 @@ window.HashimonSprite = (function () {
     ctx.fillStyle = accent;
     const gx = 2, gy = 27;
     const marks = {
-      scratch:   [[0,0],[1,1],[2,2]],
-      hashPulse: [[1,0],[0,1],[2,1],[1,2]],
-      strike:    [[0,1],[1,0],[1,1],[1,2],[2,1]],
-      overclock: [[0,0],[2,0],[1,1],[0,2],[2,2]],
-      hashGlitch:[[0,0],[1,0],[2,0],[1,1],[1,2]],
+      scratch:      [[0,0],[1,1],[2,2]],
+      hashPulse:    [[1,0],[0,1],[2,1],[1,2]],
+      strike:       [[0,1],[1,0],[1,1],[1,2],[2,1]],
+      overclock:    [[0,0],[2,0],[1,1],[0,2],[2,2]],
+      hashGlitch:   [[0,0],[1,0],[2,0],[1,1],[1,2]],
+      genesisBlock: [[0,1],[1,0],[2,1],[1,2],[0,2],[2,2]],
+      pixelBurst:   [[0,0],[1,0],[2,0],[0,2],[2,2]],
+      emberClaw:    [[0,0],[1,1],[2,0],[1,2]],
+      alloyRam:     [[0,1],[1,0],[2,1],[1,1],[2,2]],
+      voltArc:      [[1,0],[0,1],[2,1],[1,2],[0,2]],
+      tidalCrash:   [[0,1],[1,2],[2,1],[1,0],[2,2]],
+      gustSlice:    [[0,0],[1,1],[2,2],[0,2]],
+      starfall:     [[1,0],[0,1],[1,1],[2,1],[1,2]],
+      mindProbe:    [[0,0],[2,0],[1,1],[0,2],[2,2]],
+      dreamStep:    [[0,1],[2,1],[1,0],[1,2]],
+      sporeCloud:   [[0,0],[1,0],[2,0],[0,1],[2,1]],
+      rootGuard:    [[0,0],[0,2],[2,0],[2,2],[1,1]],
+      leafDrain:    [[1,0],[0,1],[1,1],[2,1],[1,2]],
     };
     (marks[move] || [[1,1]]).forEach(([x, y]) => ctx.fillRect(gx + x, gy + y, 1, 1));
   }
