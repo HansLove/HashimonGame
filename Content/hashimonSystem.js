@@ -37,7 +37,11 @@ window.HashimonSystem = {
         templateId: species.templateId,
         birthNonce: species.birthNonce,
         bestShareDifficulty: 1,
+        bestShareBits: 0,
         bestShareHash: "0000demo",
+        bestShareNonce: null,
+        extranonce2: 0,        //the grind counter this creature resumes from
+        totalHashes: 0,        //real hashes ever invested = proof of effort
         validShares: 0,
         miningSeconds: 0,
         foundBlock: false,

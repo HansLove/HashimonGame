@@ -59,6 +59,7 @@ class HashimonCollection {
 
     const sprite = HashimonSystem.getSpriteForStage(h);
     const genetics = HashimonCompiler.compile(h);
+    const verified = HashimonMining.verify(h);   //recompute the best share = proof it's real
     const stageStart = (h.stage - 1) * HashimonConfig.stageStep;
     const inStage = h.evolution.progress - stageStart;
     const span = Math.max(1, h.evolution.nextThreshold - stageStart);
@@ -83,9 +84,11 @@ class HashimonCollection {
           <p><span>Template</span> ${h.pow.templateId}</p>
           <p><span>Birth nonce</span> ${h.pow.birthNonce}</p>
           <p><span>Valid shares</span> ${h.pow.validShares}</p>
-          <p><span>Best share diff</span> ${h.pow.bestShareDifficulty}</p>
+          <p><span>Best share</span> ${h.pow.bestShareBits || 0} bits</p>
           <p><span>Best share hash</span> ${h.pow.bestShareHash.slice(0, 18)}&hellip;</p>
+          <p><span>Hashes invested</span> ${(h.pow.totalHashes || 0).toLocaleString()}</p>
           <p><span>Mining</span> ${h.pow.miningSeconds}s</p>
+          <p><span>Verified</span> ${verified === null ? "&mdash;" : (verified ? "✓ real work" : "✗ mismatch")}</p>
           <p><span>Found block</span> ${h.pow.foundBlock ? "YES!" : "no"}</p>
         </div>
       </div>
@@ -97,7 +100,7 @@ class HashimonCollection {
       </div>
       <p class="HashimonCollection_share-message">${this.lastShareMessage}</p>
       <div class="HashimonCollection_footer">
-        <button data-share>Simulate share</button>
+        <button data-share>Mine</button>
         <button data-prompt>Give life</button>
         <button data-back>Back</button>
         <button data-close>Close</button>
@@ -108,23 +111,24 @@ class HashimonCollection {
       this.renderPrompt(id);
     })
 
-    this.element.querySelector("button[data-share]").addEventListener("click", () => {
-      const result = HashimonSystem.simulateShare(h);
-      window.playerState.save();
+    //Real proof of work: the device grinds actual double-SHA-256 over this
+    //creature's DNA for a burst, and the genuine best hash is recorded on it.
+    this.element.querySelector("button[data-share]").addEventListener("click", (e) => {
+      const btn = e.currentTarget;
+      btn.disabled = true; btn.innerText = "Mining…";
+      this.element.querySelector(".HashimonCollection_share-message").innerText = "Grinding hashes…";
+      //let the label paint before the synchronous grind
+      setTimeout(() => {
+        const r = HashimonMining.mine(h);
+        window.playerState.save();
 
-      let message = `Share #${h.pow.validShares} &middot; difficulty ${result.difficulty}`;
-      if (result.isNewBest) {
-        message += " &middot; New best share!";
-      }
-      if (result.stageUp) {
-        message += ` &middot; Evolved to stage ${result.newStage}! (+stats)`;
-        utils.emitEvent("PlayerStateUpdated");
-      }
-      if (result.foundBlock) {
-        message += " &middot; BLOCK FOUND!!";
-      }
-      this.lastShareMessage = message;
-      this.renderDetail(id);
+        let message = `${r.hashes.toLocaleString()} hashes &middot; ${r.hashrate.toLocaleString()} H/s &middot; +${r.newShares} shares`;
+        if (r.newBest) { message += ` &middot; new best ${r.bestBits} bits`; }
+        if (r.stageUp) { message += ` &middot; Evolved to stage ${r.newStage}! (+stats)`; utils.emitEvent("PlayerStateUpdated"); }
+        if (r.foundBlock) { message += " &middot; BLOCK FOUND!!"; }
+        this.lastShareMessage = message;
+        this.renderDetail(id);
+      }, 20);
     })
     this.element.querySelector("button[data-back]").addEventListener("click", () => {
       this.renderList();

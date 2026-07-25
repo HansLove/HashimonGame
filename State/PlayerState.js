@@ -37,7 +37,8 @@ class PlayerState {
       { actionId: "item_recoverHp", instanceId: "item3" },
     ]
     this.storyFlags = {};
-    this.questProgress = { activeQuestId: "early_start", completedSteps: [] };
+    this.questProgress = { activeQuestId: null, completedSteps: [] };
+    this.personSeed = "hero_genesis";
 
     if (!this.load()) {
       this.seedStarter();
@@ -56,7 +57,8 @@ class PlayerState {
     this.hashimons = {};
     this.lineup = [];
     this.storyFlags = {};
-    this.questProgress = { activeQuestId: "early_start", completedSteps: [] };
+    this.questProgress = { activeQuestId: null, completedSteps: [] };
+    this.personSeed = "hero_genesis";
     this.items = [
       { actionId: "item_recoverHp", instanceId: "item1" },
       { actionId: "item_recoverHp", instanceId: "item2" },
@@ -106,6 +108,7 @@ class PlayerState {
       items: this.items,
       storyFlags: this.storyFlags,
       questProgress: this.questProgress,
+      personSeed: this.personSeed,
     }))
   }
 
@@ -118,7 +121,12 @@ class PlayerState {
     this.lineup = data.lineup || [];
     this.items = data.items || this.items;
     this.storyFlags = data.storyFlags || {};
-    this.questProgress = data.questProgress || { activeQuestId: "early_start", completedSteps: [] };
+    this.questProgress = data.questProgress || { activeQuestId: null, completedSteps: [] };
+    if (this.questProgress.activeQuestId === "early_start") {
+      this.questProgress.activeQuestId = null;
+      this.questProgress.completedSteps = [];
+    }
+    this.personSeed = data.personSeed || "hero_genesis";
 
     //Hashimons captured before DNA existed get theirs derived now. It comes from
     //their unchanged PoW identity, so they end up with the DNA they always

@@ -8,11 +8,13 @@
   background-size: cover;
   image-rendering: pixelated;
 }
-.Battle.green-kitchen {
+.Battle.mempool-gardens {
   background-image: url(/images/maps/GreenKitchenBattle.png);
+  filter: hue-rotate(25deg) saturate(1.2) brightness(1.08);
 }
-.Battle.dining-room {
+.Battle.archive-vault {
   background-image: url(/images/maps/DiningRoomBattle.png);
+  filter: hue-rotate(160deg) saturate(0.9) brightness(1.05);
 }
 
 

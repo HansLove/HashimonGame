@@ -1,8 +1,9 @@
 class OverworldMap {
   constructor(config) {
     this.overworld = null;
-    this.gameObjects = {}; // Live objects are in here
-    this.configObjects = config.configObjects; // Configuration content
+    this.gameObjects = {};
+    this.configObjects = config.configObjects;
+    this.mapId = config.id || "unknown";
 
     
     this.cutsceneSpaces = config.cutsceneSpaces || {};
@@ -28,19 +29,25 @@ class OverworldMap {
   }
 
   drawLowerImage(ctx, cameraPerson) {
+    const filter = window.MapThemes?.[this.mapId];
+    if (filter) { ctx.filter = filter; }
     ctx.drawImage(
       this.lowerImage, 
       utils.withGrid(10.5) - cameraPerson.x, 
       utils.withGrid(6) - cameraPerson.y
       )
+    if (filter) { ctx.filter = "none"; }
   }
 
   drawUpperImage(ctx, cameraPerson) {
+    const filter = window.MapThemes?.[this.mapId];
+    if (filter) { ctx.filter = filter; }
     ctx.drawImage(
       this.upperImage, 
       utils.withGrid(10.5) - cameraPerson.x, 
       utils.withGrid(6) - cameraPerson.y
     )
+    if (filter) { ctx.filter = "none"; }
   } 
 
   isSpaceTaken(currentX, currentY, direction) {
@@ -67,6 +74,9 @@ class OverworldMap {
 
       let instance;
       if (object.type === "Person") {
+        if (window.PersonGenerator) {
+          object.src = PersonGenerator.resolvePerson(object, this.mapId, key);
+        }
         instance = new Person(object);
       }
       if (object.type === "HashimonStone") {
@@ -146,7 +156,6 @@ window.OverworldMaps = {
         type: "Person",
         x: utils.withGrid(10),
         y: utils.withGrid(8),
-        src: "/images/characters/people/npc1.png",
         behaviorLoop: [
           { type: "walk", direction: "left", },
           { type: "walk", direction: "down", },
@@ -177,7 +186,6 @@ window.OverworldMaps = {
         type: "Person",
         x: utils.withGrid(4),
         y: utils.withGrid(8),
-        src: "/images/characters/people/npc1.png",
         behaviorLoop: [
           { type: "stand", direction: "left", time: 500, },
           { type: "stand", direction: "down", time: 500, },
@@ -193,7 +201,7 @@ window.OverworldMaps = {
         type: "Person",
         x: utils.withGrid(8),
         y: utils.withGrid(5),
-        src: "/images/characters/people/erio.png",
+        template: "validator",
         talking: [
           {
             events: [
@@ -262,25 +270,18 @@ window.OverworldMaps = {
       hero: {
         type: "Person",
         isPlayerControlled: true,
-        x: utils.withGrid(10),
-        y: utils.withGrid(5),
+        x: utils.withGrid(8),
+        y: utils.withGrid(8),
       },
       kitchenNpcA: {
         type: "Person",
         x: utils.withGrid(9),
         y: utils.withGrid(5),
         direction: "up",
-        src: "/images/characters/people/npc8.png",
         talking: [
           {
-            required: ["SEEN_INTRO"],
             events: [
-              { type: "textMessage", text: "The Street won't go easy on you. Head north when you're ready.", faceHero: "kitchenNpcA" },
-            ]
-          },
-          {
-            events: [
-              { type: "playQuestCutscene", cutsceneKey: "kitchenIntro" },
+              { type: "textMessage", text: "Welcome to the Genesis Block. Press Escape anytime to open your menu and view My Collection.", faceHero: "kitchenNpcA" },
             ]
           }
         ]
@@ -289,11 +290,10 @@ window.OverworldMaps = {
         type: "Person",
         x: utils.withGrid(3),
         y: utils.withGrid(6),
-        src: "/images/characters/people/npc3.png",
         talking: [
           {
             events: [
-              { type: "textMessage", text: "People take their jobs here very seriously.", faceHero: "kitchenNpcB" },
+              { type: "textMessage", text: "Every validator here treats the chain like sacred code.", faceHero: "kitchenNpcB" },
             ]
           }
         ],
@@ -327,7 +327,6 @@ window.OverworldMaps = {
       ],
       [utils.asGridCoord(10,6)]: [{
         events: [
-          { type: "addStoryFlag", flag: "LEFT_KITCHEN" },
           {
             type: "changeMap",
             map: "Street",
@@ -397,14 +396,12 @@ window.OverworldMaps = {
         type: "Person",
         x: utils.withGrid(9),
         y: utils.withGrid(11),
-        src: "/images/characters/people/npc2.png",
         behaviorLoop: [
           { type: "stand", direction: "right", time: 1400, },
           { type: "stand", direction: "up", time: 900, },
         ],
         talking: [
           {
-            required: ["SEEN_INTRO"],
             events: [
               { type: "textMessage", text: "Wild Hashimons hide in the grass east of here. Step on the tall patches to fight!", faceHero: "streetNpcA" },
             ]
@@ -420,7 +417,6 @@ window.OverworldMaps = {
         type: "Person",
         x: utils.withGrid(31),
         y: utils.withGrid(12),
-        src: "/images/characters/people/npc7.png",
         behaviorLoop: [
           { type: "stand", direction: "up", time: 400, },
           { type: "stand", direction: "left", time: 800, },
@@ -431,7 +427,7 @@ window.OverworldMaps = {
         talking: [
           {
             events: [
-              { type: "textMessage", text: "I can't decide on my favorite toppings.", faceHero: "streetNpcB" },
+              { type: "textMessage", text: "I can't decide which node rig to run.", faceHero: "streetNpcB" },
             ]
           }
         ]
@@ -440,7 +436,6 @@ window.OverworldMaps = {
         type: "Person",
         x: utils.withGrid(22),
         y: utils.withGrid(10),
-        src: "/images/characters/people/npc8.png",
         talking: [
           {
             required: ["streetBattle"],
@@ -453,7 +448,6 @@ window.OverworldMaps = {
               { type: "textMessage", text: "You should have just stayed home!", faceHero: "streetNpcC" },
               { type: "battle", enemyId: "streetBattle" },
               { type: "addStoryFlag", flag: "streetBattle"},
-              { type: "playQuestCutscene", cutsceneKey: "postTrainerCollection" },
             ]
           },
         ]
@@ -560,11 +554,10 @@ window.OverworldMaps = {
         type: "Person",
         x: utils.withGrid(6),
         y: utils.withGrid(5),
-        src: "/images/characters/people/erio.png",
         talking: [
           {
             events: [
-              { type: "textMessage", text: "All of the chef rivalries have been good for business.", faceHero: "shopNpcA" },
+              { type: "textMessage", text: "All the validator rivalries have been good for business.", faceHero: "shopNpcA" },
             ]
           }
         ]
@@ -573,14 +566,13 @@ window.OverworldMaps = {
         type: "Person",
         x: utils.withGrid(5),
         y: utils.withGrid(9),
-        src: "/images/characters/people/npc2.png",
         behaviorLoop: [
           { type: "stand", direction: "left", time: 400, },
         ],
         talking: [
           {
             events: [
-              { type: "textMessage", text: "Which peel will make me a better chef?", faceHero: "shopNpcB" },
+              { type: "textMessage", text: "Which mining rig will make me a better node runner?", faceHero: "shopNpcB" },
             ]
           }
         ]
@@ -686,7 +678,6 @@ window.OverworldMaps = {
         type: "Person",
         x: utils.withGrid(8),
         y: utils.withGrid(8),
-        src: "/images/characters/people/npc2.png",
         behaviorLoop: [
           { type: "stand", direction: "up", time: 400, },
           { type: "stand", direction: "left", time: 800, },
@@ -696,7 +687,7 @@ window.OverworldMaps = {
         talking: [
           {
             events: [
-              { type: "textMessage", text: "Chef Rootie uses the best seasoning.", faceHero: "greenKitchenNpcA" },
+              { type: "textMessage", text: "Rootie runs the best validation protocol in the gardens.", faceHero: "greenKitchenNpcA" },
             ]
           }
         ]
@@ -705,7 +696,6 @@ window.OverworldMaps = {
         type: "Person",
         x: utils.withGrid(1),
         y: utils.withGrid(8),
-        src: "/images/characters/people/npc3.png",
         behaviorLoop: [
           { type: "stand", direction: "up", time: 900, },
           { type: "walk", direction: "down"},
@@ -721,7 +711,7 @@ window.OverworldMaps = {
         talking: [
           {
             events: [
-              { type: "textMessage", text: "Finally... a Hashimon lab that gets me!", faceHero: "greenKitchenNpcB" },
+              { type: "textMessage", text: "Finally... a Hashimon lab that speaks my language!", faceHero: "greenKitchenNpcB" },
             ]
           }
         ]
@@ -730,16 +720,16 @@ window.OverworldMaps = {
         type: "Person",
         x: utils.withGrid(3),
         y: utils.withGrid(5),
-        src: "/images/characters/people/secondBoss.png",
+        template: "boss",
         talking: [
           {
             required: ["chefRootie"],
-            events: [ {type: "textMessage", faceHero:["greenKitchenNpcC"], text: "My veggies need more growth."} ]
+            events: [ {type: "textMessage", faceHero:["greenKitchenNpcC"], text: "My data seeds need more growth cycles."} ]
           },
           {
             events: [
-              { type: "textMessage", text: "Veggies are the fuel for the heart and soul!", faceHero: "greenKitchenNpcC" },
-              { type: "battle", enemyId: "chefRootie", arena: "green-kitchen" },
+              { type: "textMessage", text: "Organic data is the fuel for the heart and soul!", faceHero: "greenKitchenNpcC" },
+              { type: "battle", enemyId: "chefRootie", arena: "mempool-gardens" },
               { type: "addStoryFlag", flag: "chefRootie"},
             ]
           }
@@ -825,7 +815,6 @@ window.OverworldMaps = {
         type: "Person",
         x: utils.withGrid(9),
         y: utils.withGrid(6),
-        src: "/images/characters/people/npc1.png",
         behaviorLoop: [
           { type: "walk", direction: "left", },
           { type: "walk", direction: "down", },
@@ -846,7 +835,6 @@ window.OverworldMaps = {
         type: "Person",
         x: utils.withGrid(4),
         y: utils.withGrid(12),
-        src: "/images/characters/people/npc3.png",
         behaviorLoop: [
           { type: "stand", direction: "up", time: 400, },
           { type: "stand", direction: "left", time: 800, },
@@ -857,7 +845,7 @@ window.OverworldMaps = {
         talking: [
           {
             events: [
-              { type: "textMessage", text: "I love the fresh smell of garlic in the air.", faceHero: "streetNorthNpcB" },
+              { type: "textMessage", text: "I love the fresh hum of relay towers in the air.", faceHero: "streetNorthNpcB" },
             ]
           }
         ]
@@ -866,7 +854,6 @@ window.OverworldMaps = {
         type: "Person",
         x: utils.withGrid(12),
         y: utils.withGrid(9),
-        src: "/images/characters/people/npc8.png",
         talking: [
           {
             required: ["streetNorthBattle"],
@@ -991,7 +978,6 @@ window.OverworldMaps = {
         type: "Person",
         x: utils.withGrid(12),
         y: utils.withGrid(8),
-        src: "/images/characters/people/npc8.png",
         talking: [
           {
             required: ["diningRoomBattle"],
@@ -1001,8 +987,8 @@ window.OverworldMaps = {
           },
           {
             events: [
-              { type: "textMessage", text: "You think you have what it takes to cook here?!", faceHero: "diningRoomNpcA" },
-              { type: "battle", enemyId: "diningRoomBattle", arena: "dining-room" },
+              { type: "textMessage", text: "You think you have what it takes to access the vault?!", faceHero: "diningRoomNpcA" },
+              { type: "battle", enemyId: "diningRoomBattle", arena: "archive-vault" },
               { type: "addStoryFlag", flag: "diningRoomBattle"},
             ]
           },
@@ -1012,11 +998,10 @@ window.OverworldMaps = {
         type: "Person",
         x: utils.withGrid(9),
         y: utils.withGrid(5),
-        src: "/images/characters/people/npc4.png",
         talking: [
           {
             events: [
-              { type: "textMessage", text: "People come from all over to dine here.", faceHero: "diningRoomNpcB" },
+              { type: "textMessage", text: "Explorers come from all over to archive their Hashimons here.", faceHero: "diningRoomNpcB" },
             ]
           },
         ]
@@ -1025,7 +1010,6 @@ window.OverworldMaps = {
         type: "Person",
         x: utils.withGrid(2),
         y: utils.withGrid(8),
-        src: "/images/characters/people/npc7.png",
         behaviorLoop: [
           { type: "stand", direction: "right", time: 800, },
           { type: "stand", direction: "down", time: 700, },
@@ -1034,7 +1018,7 @@ window.OverworldMaps = {
         talking: [
           {
             events: [
-              { type: "textMessage", text: "I was so lucky to score a reservation!", faceHero: "diningRoomNpcC" },
+              { type: "textMessage", text: "I was so lucky to score a vault slot!", faceHero: "diningRoomNpcC" },
             ]
           },
         ]
@@ -1043,7 +1027,6 @@ window.OverworldMaps = {
         type: "Person",
         x: utils.withGrid(8),
         y: utils.withGrid(9),
-        src: "/images/characters/people/npc1.png",
         behaviorLoop: [
           { type: "stand", direction: "right", time: 1200, },
           { type: "stand", direction: "down", time: 900, },

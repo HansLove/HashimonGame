@@ -58,14 +58,17 @@ class Battle {
     if (hero?.sprite?.image?.src) {
       return hero.sprite.image.src;
     }
-    return "/images/characters/people/hero.png";
+    if (window.PersonGenerator && window.playerState?.personSeed) {
+      return PersonGenerator.generate(playerState.personSeed, "explorer");
+    }
+    return PersonGenerator?.generate("hero_genesis", "explorer") || "";
   }
 
   getTrainerPortraitSrc() {
     if (this.enemy.personSeed && window.PersonGenerator) {
-      return PersonGenerator.generate(this.enemy.personSeed);
+      return PersonGenerator.generate(this.enemy.personSeed, this.enemy.template);
     }
-    return this.enemy.trainerSrc || this.enemy.src;
+    return this.enemy.trainerSrc || this.enemy.src || "";
   }
 
   createElement() {

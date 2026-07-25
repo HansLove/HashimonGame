@@ -1,14 +1,9 @@
 //Procedural people. Composites an ordered stack of 128x128 sheets (4x4 grid of
 //32x32 frames) and recolors each by palette zone, driven by a deterministic seed.
 //
-//Today the stack has a single layer: a whole hand-drawn character sheet. The
-//existing art is flat (every sprite has its own silhouette and palette), so
-//shape variety comes from picking a different base, and colour variety from the
-//zone tinting below. When per-part art exists (body / hair / top / hat as
-//separate transparent sheets on the same grid), add them to PersonLayers and
-//nothing else has to change: they just composite in order.
+//Base art lives in images/characters/people/crypto/ — crypto/miner aesthetic,
+//not the legacy Pizza Legends chef sheets.
 
-//Deterministic RNG so a seed always yields the same person across reloads.
 function mulberry32(a) {
   return function () {
     a |= 0; a = a + 0x6D2B79F5 | 0;
@@ -28,17 +23,19 @@ function hashSeed(seed) {
   return h >>> 0;
 }
 
-//Splits a pixel into a tintable zone. Thresholds were derived from the actual
-//palettes of the ten source sheets: the only colour all of them share is the
-//near-black outline, so everything else keys off hue/saturation/luminance.
 window.PersonPalette = {
   classify(r, g, b) {
     const {h, s, l} = PersonPalette.rgbToHsl(r, g, b);
     const hd = h * 360;
-    if (l < 0.10) { return "outline"; }                   //the real black linework
-    if (s < 0.12) { return "neutral"; }                   //greys & whites: hats, aprons
-    if (hd >= 10 && hd <= 50 && l >= 0.40) { return "skin"; }
-    if (hd >= 10 && hd <= 50 && l < 0.40) { return "hair"; } //dark browns
+    if (l < 0.12) { return "outline"; }
+    if (s < 0.15 && l > 0.55) { return "neutral"; }
+    if (s < 0.15) { return "neutral"; }
+    //Terminal greens / cyans / visors
+    if (hd >= 95 && hd <= 175 && s > 0.35) { return "accent"; }
+    if (hd >= 10 && hd <= 50 && l >= 0.42) { return "skin"; }
+    if (hd >= 10 && hd <= 50 && l < 0.42) { return "hair"; }
+    if (hd >= 25 && hd <= 45 && s > 0.5 && l > 0.45) { return "accent"; } //gold/orange badges
+    if (hd >= 270 && hd <= 330 && s > 0.35) { return "accent"; }           //purple boss trim
     return "outfit";
   },
 
@@ -77,40 +74,34 @@ window.PersonPalette = {
   },
 }
 
-//The layer stack. `tint` maps a palette zone to how far it may drift.
-//A zone left out of `tint` is passed through untouched (outline always is).
+const CRYPTO_TEMPLATES = [
+  "/images/characters/people/crypto/explorer.png",
+  "/images/characters/people/crypto/miner.png",
+  "/images/characters/people/crypto/hacker.png",
+  "/images/characters/people/crypto/node.png",
+  "/images/characters/people/crypto/trader.png",
+  "/images/characters/people/crypto/validator.png",
+  "/images/characters/people/crypto/boss.png",
+];
+
 window.PersonLayers = [
   {
     name: "base",
-    options: [
-      "/images/characters/people/hero.png",
-      "/images/characters/people/erio.png",
-      "/images/characters/people/npc1.png",
-      "/images/characters/people/npc2.png",
-      "/images/characters/people/npc3.png",
-      "/images/characters/people/npc4.png",
-      "/images/characters/people/npc5.png",
-      "/images/characters/people/npc7.png",
-      "/images/characters/people/npc8.png",
-      "/images/characters/people/secondBoss.png",
-    ],
+    options: CRYPTO_TEMPLATES,
     tint: {
-      //hue: absolute rotation range (0..1). sat/lum: multipliers.
-      outfit:  { hue: [0, 1], sat: [0.85, 1.15], lum: [0.9, 1.1] },
-      hair:    { hue: [0, 1], sat: [0.7, 1.2] },
-      //Skin only drifts a little, otherwise people turn green.
-      skin:    { hueDelta: [-0.03, 0.05], lum: [0.9, 1.08] },
-      //Whites stay mostly white; a faint tint keeps uniforms from looking cloned.
-      neutral: { hue: [0, 1], satAdd: [0, 0.18] },
+      outfit:  { hue: [0.28, 0.62], sat: [0.85, 1.1], lum: [0.88, 1.05] },
+      accent:  { hue: [0.30, 0.55], sat: [0.9, 1.2], lum: [0.92, 1.08] },
+      hair:    { hue: [0.02, 0.12], sat: [0.7, 1.1], lum: [0.85, 1.05] },
+      skin:    { hueDelta: [-0.03, 0.05], lum: [0.92, 1.06] },
+      neutral: { hue: [0.45, 0.65], satAdd: [0, 0.12], lum: [0.85, 0.98] },
     },
   },
 ]
 
 window.PersonGenerator = {
-  sheets: {},   //src -> HTMLImageElement
-  cache: {},    //seed -> dataURL
+  sheets: {},
+  cache: {},
 
-  //Must resolve before generate() can run. Safe to call repeatedly.
   async preload() {
     const srcs = [...new Set(PersonLayers.flatMap(l => l.options).filter(Boolean))];
     await Promise.all(srcs.map(src => new Promise((resolve, reject) => {
@@ -123,7 +114,35 @@ window.PersonGenerator = {
     return this;
   },
 
-  //Rolls the concrete recolor for one layer from the seeded rng.
+  seedFor(mapId, objectId) {
+    return `${mapId || "map"}_${objectId || "person"}`;
+  },
+
+  //Stable template pick from seed (boss trainers can force boss template via config)
+  templateForSeed(seed, forcedTemplate) {
+    if (forcedTemplate) {
+      const path = `/images/characters/people/crypto/${forcedTemplate}.png`;
+      if (CRYPTO_TEMPLATES.includes(path)) { return path; }
+    }
+    const rng = mulberry32(hashSeed(seed));
+    return CRYPTO_TEMPLATES[Math.floor(rng() * CRYPTO_TEMPLATES.length)];
+  },
+
+  resolvePerson(config, mapId, objectId) {
+    if (config.src) { return config.src; }
+
+    let seed = config.personSeed;
+    if (config.isPlayerControlled && window.playerState?.personSeed) {
+      seed = window.playerState.personSeed;
+      return this.generate(seed, config.template || "explorer");
+    }
+    if (!seed) {
+      seed = this.seedFor(mapId, objectId);
+    }
+
+    return this.generate(seed, config.template);
+  },
+
   planFor(layer, rng) {
     const plan = {};
     Object.keys(layer.tint || {}).forEach(zone => {
@@ -155,11 +174,10 @@ window.PersonGenerator = {
       if (px[i + 3] < 200) { continue; }
       const zone = PersonPalette.classify(px[i], px[i + 1], px[i + 2]);
       const rule = plan[zone];
-      if (!rule) { continue; }   //outline and anything unlisted stays as drawn
+      if (!rule) { continue; }
 
       let {h, s, l} = PersonPalette.rgbToHsl(px[i], px[i + 1], px[i + 2]);
-      //An absolute hue repaints the zone; a delta nudges it off its original.
-      h = rule.hue !== null ? (rule.hue + h * 0.15) % 1 : (h + rule.hueDelta + 1) % 1;
+      h = rule.hue !== null ? (rule.hue + h * 0.12) % 1 : (h + rule.hueDelta + 1) % 1;
       s = Math.min(1, Math.max(0, s * rule.sat + rule.satAdd));
       l = Math.min(1, Math.max(0, l * rule.lum));
 
@@ -170,8 +188,7 @@ window.PersonGenerator = {
     return canvas;
   },
 
-  //Returns a 128x128 canvas: the composited, recolored spritesheet.
-  build(seed) {
+  build(seed, forcedTemplate) {
     const rng = mulberry32(hashSeed(seed));
     const canvas = document.createElement("canvas");
     canvas.width = 128;
@@ -180,7 +197,9 @@ window.PersonGenerator = {
 
     const used = [];
     PersonLayers.forEach(layer => {
-      const src = layer.options[Math.floor(rng() * layer.options.length)];
+      const src = forcedTemplate
+        ? this.templateForSeed(seed, forcedTemplate)
+        : CRYPTO_TEMPLATES[Math.floor(rng() * CRYPTO_TEMPLATES.length)];
       if (!src) { return; }
       const img = this.sheets[src];
       if (!img) { throw new Error("PersonGenerator.preload() no se ha completado"); }
@@ -190,17 +209,15 @@ window.PersonGenerator = {
     return { canvas, used };
   },
 
-  //The API: a seed in, a spritesheet dataURL out. Feed it straight to Sprite's
-  //`src`, which needs no changes. Same seed -> same person, across reloads.
-  generate(seed) {
-    if (this.cache[seed]) { return this.cache[seed]; }
-    const {canvas} = this.build(seed);
+  generate(seed, forcedTemplate) {
+    const key = `${seed}:${forcedTemplate || ""}`;
+    if (this.cache[key]) { return this.cache[key]; }
+    const {canvas} = this.build(seed, forcedTemplate);
     const src = canvas.toDataURL();
-    this.cache[seed] = src;
+    this.cache[key] = src;
     return src;
   },
 
-  //Convenience for populating a crowd.
   generateMany(count, seedPrefix = "person") {
     return Array.from({length: count}, (_, i) => ({
       seed: `${seedPrefix}_${i}`,

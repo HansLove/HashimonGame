@@ -3,7 +3,6 @@
 window.Enemies = {
   "wildSolarCub": {
     name: "Solar Cub salvaje",
-    src: "/images/characters/pizzas/hashimon_1.png",
     isWild: true,
     wildSpecies: "solarCub",
     captureFlag: "CAUGHT_SOLAR_CUB",
@@ -13,7 +12,8 @@ window.Enemies = {
   },
   "erio": {
     name: "Erio",
-    src: "/images/characters/people/erio.png",
+    personSeed: "trainer_erio",
+    template: "validator",
     hashimons: {
       "a": { speciesKey: "s001", maxHp: 50, level: 1 },
       "b": { speciesKey: "s002", maxHp: 50, level: 1 },
@@ -21,28 +21,32 @@ window.Enemies = {
   },
   "beth": {
     name: "Beth",
-    src: "/images/characters/people/npc1.png",
+    personSeed: "trainer_beth",
+    template: "hacker",
     hashimons: {
       "a": { speciesKey: "f001", maxHp: 50, hp: 1, level: 1 },
     }
   },
   "chefRootie": {
     name: "Rootie",
-    src: "/images/characters/people/secondBoss.png",
+    personSeed: "trainer_rootie",
+    template: "boss",
     hashimons: {
       "a": { speciesKey: "f002", maxHp: 30, level: 2 },
     }
   },
   "streetNorthBattle": {
     name: "Hash Thug",
-    src: "/images/characters/people/npc8.png",
+    personSeed: "trainer_street_north",
+    template: "hacker",
     hashimons: {
       "a": { speciesKey: "s001", maxHp: 20, level: 1 },
     }
   },
   "diningRoomBattle": {
     name: "Hash Thug",
-    src: "/images/characters/people/npc8.png",
+    personSeed: "trainer_dining_room",
+    template: "node",
     hashimons: {
       "a": { speciesKey: "s001", maxHp: 15, level: 1 },
       "b": { speciesKey: "s002", maxHp: 15, level: 1 },
@@ -50,7 +54,8 @@ window.Enemies = {
   },
   "streetBattle": {
     name: "Hash Thug",
-    src: "/images/characters/people/npc8.png",
+    personSeed: "trainer_street",
+    template: "miner",
     hashimons: {
       "a": { speciesKey: "f002", maxHp: 25, level: 1 },
     }

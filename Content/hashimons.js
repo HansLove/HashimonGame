@@ -35,7 +35,7 @@ window.Hashimons = {
     ],
   },
 
-  //--- Fire / Kitchen ---
+  //--- Fire / Genesis ---
   solarCub: {
     name: "Solar Cub",
     description: "A wild ember of the solar branch.",
@@ -91,7 +91,7 @@ window.Hashimons = {
     spriteStages: [{ minStage: 1, label: "Voltkit", src: "/images/characters/pizzas/c002.png" }],
   },
 
-  //--- Plant / GreenKitchen ---
+  //--- Plant / Mempool Gardens ---
   v001: {
     name: "Call Me Kale",
     description: "Patient as a confirmed block.",
@@ -103,7 +103,7 @@ window.Hashimons = {
     zones: ["greenKitchen"],
     spriteStages: [{ minStage: 1, label: "Call Me Kale", src: "/images/characters/pizzas/v001.png" }],
   },
-  //--- Earth / GreenKitchen ---
+  //--- Earth / Mempool Gardens ---
   v002: {
     name: "Archie Artichoke",
     description: "Layers upon layers of defense.",
@@ -115,7 +115,7 @@ window.Hashimons = {
     zones: ["greenKitchen"],
     spriteStages: [{ minStage: 1, label: "Archie Artichoke", src: "/images/characters/pizzas/v003.png" }],
   },
-  //--- Fungus / GreenKitchen ---
+  //--- Fungus / Mempool Gardens ---
   f001: {
     name: "Portobello Express",
     description: "Grows in the dark of the mempool.",
@@ -165,7 +165,7 @@ window.Hashimons = {
     spriteStages: [{ minStage: 1, label: "Psymoth", src: "/images/characters/pizzas/c003.png" }],
   },
 
-  //--- Water / DiningRoom ---
+  //--- Water / Archive Vault ---
   tideKit: {
     name: "Tidekit",
     description: "Half cat, half contained tide.",
@@ -177,7 +177,7 @@ window.Hashimons = {
     zones: ["diningRoom"],
     spriteStages: [{ minStage: 1, label: "Tidekit", src: "/images/characters/pizzas/v002.png" }],
   },
-  //--- Air / DiningRoom ---
+  //--- Air / Archive Vault ---
   gustling: {
     name: "Gustling",
     description: "It never quite touches down.",

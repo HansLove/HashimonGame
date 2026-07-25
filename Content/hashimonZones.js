@@ -7,28 +7,28 @@
 //vegetable garden unless the rare off-type roll fires.
 window.HashimonZones = {
   street: {
-    name: "Anchovy Avenue",
+    name: "Hash Lane",
     //weight -> relative likelihood of that type appearing here
     types: { pixel: 4, electrico: 4, metal: 2 },
     offTypeChance: 0.06,
   },
   greenKitchen: {
-    name: "Green Kitchen",
+    name: "Mempool Gardens",
     types: { vegetal: 4, tierra: 3, hongo: 3 },
     offTypeChance: 0.05,
   },
   streetNorth: {
-    name: "North Quarter",
+    name: "Relay District",
     types: { astro: 4, mental: 3, sueno: 3 },
     offTypeChance: 0.06,
   },
   diningRoom: {
-    name: "Dining Hall",
+    name: "Crystal Archive",
     types: { agua: 4, aire: 3 },
     offTypeChance: 0.05,
   },
   kitchen: {
-    name: "The Kitchen",
+    name: "The Forge",
     types: { fuego: 5 },
     offTypeChance: 0.04,
   },

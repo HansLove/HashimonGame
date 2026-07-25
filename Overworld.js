@@ -50,12 +50,21 @@ class Overworld {
      this.map.checkForActionCutscene()
    })
    new KeyPressListener("Escape", () => {
-     if (!this.map.isCutscenePlaying) {
-      this.map.startCutscene([
-        { type: "pause" }
-      ])
-     }
+     if (this.map.isPaused) { return; }
+     this.openPauseMenu();
    })
+ }
+
+ openPauseMenu() {
+   this.map.isPaused = true;
+   const menu = new PauseMenu({
+     progress: this.progress,
+     onComplete: () => {
+       this.map.isPaused = false;
+       this.startGameLoop();
+     }
+   });
+   menu.init(document.querySelector(".game-container"));
  }
 
  bindHeroPositionCheck() {
@@ -77,6 +86,16 @@ class Overworld {
     hero.x = heroInitialState.x;
     hero.y = heroInitialState.y;
     hero.direction = heroInitialState.direction;
+    //Old saves spawned on the Kitchen exit tile; move to a safe spot.
+    if (mapConfig.id === "Kitchen") {
+      const oldSpawn = `${utils.withGrid(10)},${utils.withGrid(5)}`;
+      const exitTile = utils.asGridCoord(10, 6);
+      const pos = `${hero.x},${hero.y}`;
+      if (pos === oldSpawn || pos === exitTile) {
+        hero.x = utils.withGrid(8);
+        hero.y = utils.withGrid(8);
+      }
+    }
   }
 
   this.progress.mapId = mapConfig.id;
@@ -88,24 +107,6 @@ class Overworld {
     window.questManager.getMapLabel(mapConfig.id),
     document.querySelector(".game-container")
   );
-
-  this.scheduleMapOnboarding(mapConfig.id);
- }
-
- scheduleMapOnboarding(mapId) {
-  const events = window.questManager.getMapOnboarding(mapId);
-  if (!events?.length) {
-    return;
-  }
-
-  const run = () => {
-    if (this.map.isCutscenePlaying) {
-      requestAnimationFrame(run);
-      return;
-    }
-    this.map.startCutscene(events);
-  };
-  run();
  }
 
  async init() {
@@ -138,6 +139,10 @@ class Overworld {
     }
   } else {
     window.playerState.reset();
+  }
+
+  if (window.PersonGenerator) {
+    await PersonGenerator.preload();
   }
 
   window.questManager.syncCompletedSteps();
