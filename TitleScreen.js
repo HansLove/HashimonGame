@@ -34,14 +34,17 @@ class TitleScreen {
         <div class="TitleScreen_glow TitleScreen_glow--left"></div>
         <div class="TitleScreen_glow TitleScreen_glow--right"></div>
       </div>
-      <div class="TitleScreen_content">
-        <div class="TitleScreen_hero">
-          <img class="TitleScreen_mascot" src="/landing-export/creatures/s001.png" alt="" />
-          <img class="TitleScreen_mascot TitleScreen_mascot--ghost" src="/landing-export/creatures/glitchPup.png" alt="" />
+      <div class="TitleScreen_layout">
+        <div class="TitleScreen_content">
+          <div class="TitleScreen_hero">
+            <img class="TitleScreen_mascot" src="/landing-export/creatures/s001.png" alt="" />
+            <img class="TitleScreen_mascot TitleScreen_mascot--ghost" src="/landing-export/creatures/glitchPup.png" alt="" />
+          </div>
+          <img class="TitleScreen_logo" src="/images/hashimon-logo.svg" alt="Hashimon" />
+          <p class="TitleScreen_tagline">Catch · Mine · Evolve on the chain</p>
+          <p class="TitleScreen_sub">Wild Hashimons roam the mempool. Your DNA is your proof.</p>
         </div>
-        <img class="TitleScreen_logo" src="/images/hashimon-logo.svg" alt="Hashimon" />
-        <p class="TitleScreen_tagline">Catch · Mine · Evolve on the chain</p>
-        <p class="TitleScreen_sub">Wild Hashimons roam the mempool. Your DNA is your proof.</p>
+        <div class="TitleScreen_actions"></div>
       </div>
     `)
 
@@ -56,9 +59,13 @@ class TitleScreen {
     return new Promise(resolve => {
       this.createElement();
       container.appendChild(this.element);
-      this.keyboardMenu = new KeyboardMenu();
-      this.keyboardMenu.init(this.element);
-      this.keyboardMenu.setOptions(this.getOptions(resolve))
+
+      const actions = this.element.querySelector(".TitleScreen_actions");
+      this.keyboardMenu = new KeyboardMenu({
+        descriptionContainer: actions,
+      });
+      this.keyboardMenu.init(actions);
+      this.keyboardMenu.setOptions(this.getOptions(resolve));
     })
   }
 

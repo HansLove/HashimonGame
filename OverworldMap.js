@@ -26,32 +26,74 @@ class OverworldMap {
 
     this.isCutscenePlaying = false;
     this.isPaused = false;
+
+    this.isEndless = config.isEndless || false;
+    this.bounds = config.bounds || null;
+    this.floorColor = config.floorColor || null;
+    this.biomeName = config.biomeName || null;
   }
 
-  drawLowerImage(ctx, cameraPerson) {
+  getDrawOffset(cameraPerson) {
+    const defaultX = utils.withGrid(10.5);
+    const defaultY = utils.withGrid(6);
+    if (!this.isEndless) {
+      return { x: defaultX, y: defaultY };
+    }
+
+    const canvasW = 352;
+    const canvasH = 198;
+    const mapW = this.lowerImage.width || canvasW;
+    const mapH = this.lowerImage.height || canvasH;
+    let ax = defaultX;
+    let ay = defaultY;
+
+    if (mapW > canvasW) {
+      ax = Math.max(cameraPerson.x + canvasW - mapW, Math.min(cameraPerson.x, ax));
+    }
+    if (mapH > canvasH) {
+      ay = Math.max(cameraPerson.y + canvasH - mapH, Math.min(cameraPerson.y, ay));
+    }
+
+    return { x: ax, y: ay };
+  }
+
+  drawLowerImage(ctx, cameraPerson, drawOffset) {
+    const anchor = drawOffset || this.getDrawOffset(cameraPerson);
+    const ox = anchor.x - cameraPerson.x;
+    const oy = anchor.y - cameraPerson.y;
+
+    if (this.isEndless && this.floorColor) {
+      ctx.fillStyle = this.floorColor;
+      ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    }
+
     const filter = window.MapThemes?.[this.mapId];
     if (filter) { ctx.filter = filter; }
-    ctx.drawImage(
-      this.lowerImage, 
-      utils.withGrid(10.5) - cameraPerson.x, 
-      utils.withGrid(6) - cameraPerson.y
-      )
+    ctx.drawImage(this.lowerImage, ox, oy);
     if (filter) { ctx.filter = "none"; }
   }
 
-  drawUpperImage(ctx, cameraPerson) {
+  drawUpperImage(ctx, cameraPerson, drawOffset) {
+    const anchor = drawOffset || this.getDrawOffset(cameraPerson);
+    const ox = anchor.x - cameraPerson.x;
+    const oy = anchor.y - cameraPerson.y;
+
     const filter = window.MapThemes?.[this.mapId];
     if (filter) { ctx.filter = filter; }
-    ctx.drawImage(
-      this.upperImage, 
-      utils.withGrid(10.5) - cameraPerson.x, 
-      utils.withGrid(6) - cameraPerson.y
-    )
+    ctx.drawImage(this.upperImage, ox, oy);
     if (filter) { ctx.filter = "none"; }
-  } 
+  }
 
   isSpaceTaken(currentX, currentY, direction) {
     const {x,y} = utils.nextPosition(currentX, currentY, direction);
+
+    if (this.isEndless && this.bounds) {
+      const { cols, rows, tile } = this.bounds;
+      if (x < 0 || y < 0 || x >= cols * tile || y >= rows * tile) {
+        return true;
+      }
+    }
+
     if (this.walls[`${x},${y}`]) {
       return true;
     }

@@ -155,6 +155,69 @@ window.MapGenerator = (function () {
 
   const BLOCKING = { wall: 1, obstacle: 1, water: 1 };
 
+  const WALKABLE = { floor: 1, path: 1, deco: 1, grass: 1, exit: 1 };
+
+  const BIOME_NPC = {
+    meadow:  { template: "explorer",  lines: ["The mempool gardens stretch on forever...", "Wild Hashimons love the tall grass here."] },
+    circuit: { template: "miner",     lines: ["Hash rate's good out here.", "Nodes this deep rarely sync clean."] },
+    tide:    { template: "trader",    lines: ["Rare catches wash up in the tall grass.", "Trade fast — the tide shifts the ecology."] },
+    astral:  { template: "validator", lines: ["The chain feels thin this far out.", "Stars align differently in the astral biome."] },
+    ember:   { template: "hacker",    lines: ["Only the strong Hashimons survive.", "Ember zones burn through weak shares."] },
+  };
+
+  function isWalkable(grid, cols, rows, c, r) {
+    if (c < 1 || r < 1 || c >= cols - 1 || r >= rows - 1) { return false; }
+    return !!WALKABLE[grid[r][c]];
+  }
+
+  function spawnNpcs(rng, grid, cols, rows, mid, biomeKey, seed) {
+    const profile = BIOME_NPC[biomeKey] || BIOME_NPC.meadow;
+    const npcCount = 1 + Math.floor(rng() * 2);
+    const candidates = [];
+
+    for (let r = 2; r < rows - 2; r++) {
+      for (let c = 1; c < cols - 1; c++) {
+        if (!isWalkable(grid, cols, rows, c, r)) { continue; }
+        if (Math.abs(c - mid) <= 1) { continue; }
+        candidates.push([c, r]);
+      }
+    }
+
+    const configObjects = {};
+    for (let i = 0; i < npcCount && candidates.length; i++) {
+      const pick = candidates.splice(Math.floor(rng() * candidates.length), 1)[0];
+      const [c, r] = pick;
+      const id = `endlessNpc${String.fromCharCode(65 + i)}`;
+      const dirs = ["up", "down", "left", "right"];
+      const d1 = dirs[Math.floor(rng() * dirs.length)];
+      const d2 = dirs[Math.floor(rng() * dirs.length)];
+
+      configObjects[id] = {
+        type: "Person",
+        x: utils.withGrid(c),
+        y: utils.withGrid(r),
+        direction: d1,
+        personSeed: `endless_${seed}_${id}`,
+        template: profile.template,
+        behaviorLoop: [
+          { type: "stand", direction: d1, time: 600 + Math.floor(rng() * 800) },
+          { type: "walk", direction: d1 },
+          { type: "stand", direction: d2, time: 400 + Math.floor(rng() * 600) },
+          { type: "walk", direction: d2 },
+        ],
+        talking: [{
+          events: [{
+            type: "textMessage",
+            text: profile.lines[i % profile.lines.length],
+            faceHero: id,
+          }],
+        }],
+      };
+    }
+
+    return configObjects;
+  }
+
   function generate(seed) {
     const si = hashSeed("endless:" + seed);
     const rng = mulberry32(si);
@@ -169,10 +232,9 @@ window.MapGenerator = (function () {
     const grid = [];
     for (let r = 0; r < rows; r++) { grid.push(new Array(cols).fill("floor")); }
 
-    //Border walls, with a gap at the bottom (entrance) and an exit gate at top.
+    //Border walls; exit gate at top. South is fully sealed — entry is via teleport.
     for (let c = 0; c < cols; c++) { grid[0][c] = "wall"; grid[rows - 1][c] = "wall"; }
     for (let r = 0; r < rows; r++) { grid[r][0] = "wall"; grid[r][cols - 1] = "wall"; }
-    grid[rows - 1][mid] = "floor";
     grid[0][mid] = "exit";
 
     //Carve a guaranteed corridor entrance -> exit so the map is never blocked.
@@ -257,18 +319,23 @@ window.MapGenerator = (function () {
     });
 
     const entrance = { x: utils.withGrid(mid), y: utils.withGrid(rows - 2) };
+    const npcObjects = spawnNpcs(rng, grid, cols, rows, mid, biomeKey, seed);
+
     return {
       id: "endless_" + seed,
       seed,
       biome: biomeKey,
       biomeName: biome.name,
       isEndless: true,
+      floorColor: biome.floor[0],
+      bounds: { cols, rows, tile: TILE },
       lowerImage: lower,
       upperImage: upper,
       walls,
       entrance,
       configObjects: {
         hero: { type: "Person", isPlayerControlled: true, x: entrance.x, y: entrance.y, direction: "up" },
+        ...npcObjects,
       },
       cutsceneSpaces,
     };

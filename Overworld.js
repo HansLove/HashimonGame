@@ -13,6 +13,7 @@ class Overworld {
 
       //Establish the camera person
       const cameraPerson = this.map.gameObjects.hero;
+      const drawOffset = this.map.getDrawOffset(cameraPerson);
 
       //Update all objects
       Object.values(this.map.gameObjects).forEach(object => {
@@ -23,17 +24,17 @@ class Overworld {
       })
 
       //Draw Lower layer
-      this.map.drawLowerImage(this.ctx, cameraPerson);
+      this.map.drawLowerImage(this.ctx, cameraPerson, drawOffset);
 
       //Draw Game Objects
       Object.values(this.map.gameObjects).sort((a,b) => {
         return a.y - b.y;
       }).forEach(object => {
-        object.sprite.draw(this.ctx, cameraPerson);
+        object.sprite.draw(this.ctx, cameraPerson, drawOffset);
       })
 
       //Draw Upper layer
-      this.map.drawUpperImage(this.ctx, cameraPerson);
+      this.map.drawUpperImage(this.ctx, cameraPerson, drawOffset);
       
       if (!this.map.isPaused) {
         requestAnimationFrame(() => {
@@ -77,6 +78,10 @@ class Overworld {
  }
 
  startMap(mapConfig, heroInitialState=null) {
+  if (mapConfig.isEndless) {
+    window.OverworldMaps[mapConfig.id] = mapConfig;
+  }
+
   this.map = new OverworldMap(mapConfig);
   this.map.overworld = this;
   this.map.mountObjects();
@@ -104,7 +109,7 @@ class Overworld {
   this.progress.startingHeroDirection = this.map.gameObjects.hero.direction;
 
   this.mapLabel?.show(
-    window.questManager.getMapLabel(mapConfig.id),
+    mapConfig.biomeName || window.questManager.getMapLabel(mapConfig.id),
     document.querySelector(".game-container")
   );
  }
@@ -129,8 +134,14 @@ class Overworld {
     //A save made inside an endless run points at a generated map id that no
     //longer exists on reload; fall back to the start map rather than crash.
     if (!window.OverworldMaps[this.progress.mapId]) {
-      this.progress.mapId = "Kitchen";
-    } else {
+      const endlessMatch = /^endless_(\d+)$/.exec(this.progress.mapId);
+      if (endlessMatch) {
+        window.OverworldMaps[this.progress.mapId] = MapGenerator.generate(Number(endlessMatch[1]));
+      } else {
+        this.progress.mapId = "Kitchen";
+      }
+    }
+    if (window.OverworldMaps[this.progress.mapId]) {
       initialHeroState = {
         x: this.progress.startingHeroX,
         y: this.progress.startingHeroY,
