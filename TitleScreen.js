@@ -7,16 +7,16 @@ class TitleScreen {
     const safeFile = this.progress.getSaveFile();
     return [
       { 
-        label: "Start Hashimon",
-        description: "Every block has a soul. Arrows move, Enter talks, Esc pauses.",
+        label: "New Adventure",
+        description: "Enter the chain. Every block has a soul.",
         handler: () => {
           this.close();
           resolve();
         }
       },
       safeFile ? {
-        label: "Continue Game",
-        description: "Resume your adventure",
+        label: "Continue",
+        description: "Resume your saved journey",
         handler: () => {
           this.close();
           resolve(safeFile);
@@ -29,7 +29,20 @@ class TitleScreen {
     this.element = document.createElement("div");
     this.element.classList.add("TitleScreen");
     this.element.innerHTML = (`
-      <img class="TitleScreen_logo" src="/images/logo.png" alt="Hashimon" />
+      <div class="TitleScreen_backdrop" aria-hidden="true">
+        <div class="TitleScreen_grid"></div>
+        <div class="TitleScreen_glow TitleScreen_glow--left"></div>
+        <div class="TitleScreen_glow TitleScreen_glow--right"></div>
+      </div>
+      <div class="TitleScreen_content">
+        <div class="TitleScreen_hero">
+          <img class="TitleScreen_mascot" src="/landing-export/creatures/s001.png" alt="" />
+          <img class="TitleScreen_mascot TitleScreen_mascot--ghost" src="/landing-export/creatures/glitchPup.png" alt="" />
+        </div>
+        <img class="TitleScreen_logo" src="/images/hashimon-logo.svg" alt="Hashimon" />
+        <p class="TitleScreen_tagline">Catch · Mine · Evolve on the chain</p>
+        <p class="TitleScreen_sub">Wild Hashimons roam the mempool. Your DNA is your proof.</p>
+      </div>
     `)
 
   }

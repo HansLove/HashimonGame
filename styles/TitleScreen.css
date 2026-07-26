@@ -4,32 +4,139 @@
   right: 0;
   top: 0;
   bottom: 0;
-  background: #000;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 20%, #1a0f3d 0%, #090612 55%, #030208 100%);
+}
+
+.TitleScreen_backdrop {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.TitleScreen_grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.18;
+  background-image:
+    linear-gradient(rgba(0, 229, 255, 0.35) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 229, 255, 0.35) 1px, transparent 1px);
+  background-size: 16px 16px;
+  mask-image: radial-gradient(ellipse at 50% 40%, black 20%, transparent 75%);
+}
+
+.TitleScreen_glow {
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  filter: blur(28px);
+  opacity: 0.55;
+}
+.TitleScreen_glow--left {
+  left: -20px;
+  top: 30px;
+  background: #9b05a8;
+}
+.TitleScreen_glow--right {
+  right: -10px;
+  top: 50px;
+  background: #00e5ff;
+}
+
+.TitleScreen_content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 6px;
+}
+
+.TitleScreen_hero {
+  position: relative;
+  width: 72px;
+  height: 34px;
+  margin-bottom: 2px;
+}
+
+.TitleScreen_mascot {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 6px rgba(0, 229, 255, 0.45));
+  animation: TitleScreen_float 2.4s ease-in-out infinite;
+}
+.TitleScreen_mascot:first-child {
+  left: 8px;
+  top: 8px;
+}
+.TitleScreen_mascot--ghost {
+  right: 8px;
+  top: 4px;
+  animation-delay: -1.1s;
+  filter: drop-shadow(0 0 6px rgba(155, 5, 168, 0.55));
+}
+
+@keyframes TitleScreen_float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
 }
 
 .TitleScreen_logo {
   display: block;
+  width: 230px;
+  max-width: 92%;
+  height: auto;
+  image-rendering: auto;
   margin: 0 auto;
-  width: 128px;
-  image-rendering: pixelated;
+}
+
+.TitleScreen_tagline {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #00e5ff;
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.35);
+}
+
+.TitleScreen_sub {
+  margin: 4px 16px 8px;
+  font-size: 9px;
+  line-height: 1.35;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.72);
+  max-width: 300px;
 }
 
 .TitleScreen .KeyboardMenu {
   position: relative;
-  width: 100px;
-  margin: 0 auto;
-  background: transparent;
-  border: 0;
+  width: 160px;
+  margin: 4px auto 0;
+  background: rgba(18, 12, 42, 0.72);
+  border: 2px solid rgba(0, 229, 255, 0.35);
+  border-radius: 4px;
+  box-shadow: 0 0 12px rgba(155, 5, 168, 0.25);
 }
 .TitleScreen button {
   color: #fff;
   justify-content: center;
-  padding:0;
+  padding: 4px 8px;
+  font-size: 11px;
+}
+.TitleScreen button:focus,
+.TitleScreen button:hover {
+  background: rgba(155, 5, 168, 0.55);
 }
 
 .TitleScreen .DescriptionBox {
-  background: transparent;
-  color: #fff;
-  border: 0;
+  background: rgba(9, 6, 18, 0.85);
+  color: #d8f7ff;
+  border: 1px solid rgba(0, 229, 255, 0.25);
+  border-radius: 4px;
   text-align: center;
+  font-size: 10px;
+  line-height: 1.35;
 }
