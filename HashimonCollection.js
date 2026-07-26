@@ -1,9 +1,47 @@
 //"Mi colección" overlay: list of captured Hashimons + ficha/laboratorio view
 //with the "Simular share" proof-of-work simulation.
+let albumSyncTimer = null;
+
+function debouncedAlbumSync() {
+  if (!window.HashimonAlbumBridge) { return; }
+  clearTimeout(albumSyncTimer);
+  albumSyncTimer = setTimeout(() => {
+    HashimonAlbumBridge.syncFromGame().catch(() => {});
+  }, 400);
+}
+
 class HashimonCollection {
   constructor({ onComplete }) {
     this.onComplete = onComplete;
     this.lastShareMessage = "";
+    this._onPlayerStateUpdated = () => debouncedAlbumSync();
+  }
+
+  async loadAlbumThumbnails(scope = this.element) {
+    if (!window.HashimonAlbumBridge || !scope) { return; }
+    const imgs = scope.querySelectorAll("[data-album-for]");
+    for (const img of imgs) {
+      const art = await HashimonAlbumBridge.getBestArtFor(img.dataset.albumFor);
+      if (art?.url) {
+        img.src = art.url;
+        img.classList.add("visible");
+      }
+    }
+  }
+
+  syncAlbumNow() {
+    if (!window.HashimonAlbumBridge) {
+      toastAlbumExport("Album bridge not available.");
+      return Promise.resolve(false);
+    }
+    return HashimonAlbumBridge.syncFromGame().then((result) => {
+      if (result.ok) {
+        toastAlbumExport(`Album synced — ${result.creatureCount} creatures. Open Album from here (not Import old pack).`);
+      } else {
+        toastAlbumExport("No game save found to sync.");
+      }
+      return result.ok;
+    });
   }
 
   createElement() {
@@ -21,13 +59,16 @@ class HashimonCollection {
       const sprite = HashimonSystem.getSpriteForStage(h);
       const inLineup = window.playerState.lineup.indexOf(h.id) !== -1;
       return (`
-        <div class="HashimonCollection_row">
-          <img class="HashimonCollection_portrait" src="${sprite.src}" alt="${h.name}" />
+        <div class="HashimonCollection_row" data-hashimon-id="${h.id}">
+          <div class="HashimonCollection_portraits">
+            <img class="HashimonCollection_portrait" src="${sprite.src}" alt="${h.name}" />
+            <img class="HashimonCollection_album-thumb" data-album-for="${h.id}" alt="" />
+          </div>
           <div class="HashimonCollection_row-info">
             <p class="HashimonCollection_row-name">
               ${h.name}${inLineup ? ` <span class="HashimonCollection_badge">in party</span>` : ""}
             </p>
-            <p>${h.species} &middot; stage ${h.stage}/${h.maxStage} &middot; ${h.branch}</p>
+            <p>${h.speciesLabel || HashimonNames.speciesLabel(h.speciesKey)} &middot; stage ${h.stage}/${h.maxStage} &middot; ${h.branch}</p>
             <p>Best share: ${h.pow.bestShareDifficulty}</p>
           </div>
           <button data-detail="${h.id}">View sheet</button>
@@ -39,9 +80,48 @@ class HashimonCollection {
       <h2>My Collection</h2>
       ${hashimons.length ? rows : `<p class="HashimonCollection_empty">You haven't captured any Hashimon yet.</p>`}
       <div class="HashimonCollection_footer">
+        <button data-open-album>Open Album</button>
+        <button data-sync-album>Sync Album</button>
+        <button data-export-album>Export Album</button>
         <button data-close>Close</button>
       </div>
     `);
+
+    this.loadAlbumThumbnails();
+
+    this.element.querySelector("[data-open-album]")?.addEventListener("click", () => {
+      window.open("/album/index.html", "_blank");
+    });
+
+    this.element.querySelector("[data-sync-album]")?.addEventListener("click", async () => {
+      const btn = this.element.querySelector("[data-sync-album]");
+      btn.disabled = true;
+      btn.textContent = "Syncing…";
+      await this.syncAlbumNow();
+      btn.disabled = false;
+      btn.textContent = "Sync Album";
+    });
+
+    this.element.querySelector("[data-export-album]")?.addEventListener("click", async () => {
+      const btn = this.element.querySelector("[data-export-album]");
+      if (!window.HashimonAlbumExport) {
+        this.lastShareMessage = "Album export not available.";
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = "Exporting…";
+      try {
+        const result = await HashimonAlbumExport.downloadZip(window.playerState.hashimons);
+        await this.syncAlbumNow();
+        this.lastShareMessage = `Album downloaded! ${result.slotCount} slots · open /album/`;
+        toastAlbumExport(this.lastShareMessage);
+      } catch (e) {
+        this.lastShareMessage = "Export failed. Run the game via http://localhost.";
+        toastAlbumExport(this.lastShareMessage);
+      }
+      btn.disabled = false;
+      btn.textContent = "Export Album";
+    });
 
     this.element.querySelectorAll("button[data-detail]").forEach(button => {
       button.addEventListener("click", () => {
@@ -64,15 +144,26 @@ class HashimonCollection {
     //Progress = bits already banked toward the next leading zero (0..4).
     const percent = Math.min(100, Math.round((h.evolution.progress / h.evolution.nextThreshold) * 100));
 
+    const speciesLabel = h.speciesLabel || HashimonNames.speciesLabel(h.speciesKey);
+
     this.element.innerHTML = (`
       <h2>${h.name} &mdash; Laboratory</h2>
+      <div class="HashimonCollection_rename">
+        <input class="HashimonCollection_rename-input" data-rename-input type="text" maxlength="20" value="${h.name.replace(/"/g, "&quot;")}" />
+        <button data-save-name>Save name</button>
+        <button data-suggest-name>Suggest</button>
+      </div>
+      <p class="HashimonCollection_rename-msg"></p>
       <div class="HashimonCollection_detail">
         <div class="HashimonCollection_detail-left">
-          <img class="HashimonCollection_sprite" src="${sprite.src}" alt="${h.name}" />
+          <div class="HashimonCollection_portraits HashimonCollection_portraits--detail">
+            <img class="HashimonCollection_sprite" src="${sprite.src}" alt="${h.name}" />
+            <img class="HashimonCollection_album-thumb HashimonCollection_album-thumb--detail" data-album-for="${id}" alt="" />
+          </div>
           <p class="HashimonCollection_form">${sprite.label}</p>
         </div>
         <div class="HashimonCollection_detail-fields">
-          <p><span>Species</span> ${h.species}</p>
+          <p><span>Species</span> ${speciesLabel}</p>
           <p><span>Stage</span> ${h.stage} / ${h.maxStage}</p>
           <p><span>Type</span> ${genetics.types.fusion || [genetics.types.primary.name, genetics.types.secondary && genetics.types.secondary.name].filter(Boolean).join(" / ")}</p>
           <p><span>Subtype</span> ${genetics.types.subtype}</p>
@@ -106,9 +197,31 @@ class HashimonCollection {
       </div>
     `);
 
+    this.loadAlbumThumbnails();
+
     this.element.querySelector("button[data-prompt]").addEventListener("click", () => {
       this.renderPrompt(id);
     })
+
+    const renameMsg = this.element.querySelector(".HashimonCollection_rename-msg");
+    this.element.querySelector("button[data-save-name]").addEventListener("click", () => {
+      const input = this.element.querySelector("[data-rename-input]");
+      const result = window.playerState.renameHashimon(id, input.value);
+      renameMsg.textContent = result.ok ? `Named ${result.name}.` : result.error;
+      if (result.ok) {
+        this.element.querySelector("h2").textContent = `${result.name} — Laboratory`;
+        debouncedAlbumSync();
+      }
+    });
+    this.element.querySelector("button[data-suggest-name]").addEventListener("click", () => {
+      const result = window.playerState.suggestName(id);
+      if (result.ok) {
+        this.element.querySelector("[data-rename-input]").value = result.name;
+        this.element.querySelector("h2").textContent = `${result.name} — Laboratory`;
+        renameMsg.textContent = `Suggested ${result.name}.`;
+        debouncedAlbumSync();
+      }
+    });
 
     //Real proof of work: the device grinds actual double-SHA-256 over this
     //creature's DNA for a burst, and the genuine best hash is recorded on it.
@@ -126,6 +239,7 @@ class HashimonCollection {
         if (r.stageUp) { message += ` &middot; ⭐ NEW STAR! Rank ${r.newStage} — it evolved!`; utils.emitEvent("PlayerStateUpdated"); }
         if (r.foundBlock) { message += " &middot; BLOCK FOUND!!"; }
         this.lastShareMessage = message;
+        debouncedAlbumSync();
         this.renderDetail(id);
       }, 20);
     })
@@ -204,6 +318,7 @@ class HashimonCollection {
 
   close() {
     this.esc?.unbind();
+    document.removeEventListener("PlayerStateUpdated", this._onPlayerStateUpdated);
     this.element.remove();
     this.onComplete();
   }
@@ -212,9 +327,24 @@ class HashimonCollection {
     this.createElement();
     this.renderList();
     container.appendChild(this.element);
+    debouncedAlbumSync();
+    document.addEventListener("PlayerStateUpdated", this._onPlayerStateUpdated);
 
     this.esc = new KeyPressListener("Escape", () => {
       this.close();
     })
   }
+}
+
+function toastAlbumExport(message) {
+  let el = document.querySelector(".HashimonCollection_export-toast");
+  if (!el) {
+    el = document.createElement("p");
+    el.className = "HashimonCollection_export-toast";
+    document.querySelector(".game-container")?.appendChild(el);
+  }
+  el.textContent = message;
+  el.classList.add("visible");
+  clearTimeout(toastAlbumExport._t);
+  toastAlbumExport._t = setTimeout(() => el.classList.remove("visible"), 3500);
 }

@@ -24,6 +24,17 @@ class PlayerState {
     if (hashimon.speciesKey && window.HashimonMoves) {
       hashimon.moves = HashimonMoves.kitFor(hashimon.speciesKey);
     }
+    //Species label + unique nickname migration for older saves.
+    if (window.HashimonNames && hashimon.speciesKey) {
+      if (!hashimon.speciesLabel) {
+        hashimon.speciesLabel = HashimonNames.speciesLabel(hashimon.speciesKey);
+      }
+      if (hashimon.customName == null) { hashimon.customName = false; }
+      const catalogName = Hashimons[hashimon.speciesKey]?.name;
+      if (!hashimon.customName && catalogName && hashimon.name === catalogName) {
+        hashimon.name = HashimonNames.generate(hashimon);
+      }
+    }
     //PoW fields for the real grinder (older saves predate them).
     if (hashimon.pow) {
       const p = hashimon.pow;
@@ -111,6 +122,28 @@ class PlayerState {
     this.lineup.unshift(futureFrontId);
     this.save();
     utils.emitEvent("LineupChanged");
+  }
+
+  renameHashimon(id, newName) {
+    const hashimon = this.hashimons[id];
+    if (!hashimon) { return { ok: false, error: "Hashimon not found." }; }
+    const result = HashimonNames.validate(newName);
+    if (!result.ok) { return result; }
+    hashimon.name = result.name;
+    hashimon.customName = true;
+    this.save();
+    utils.emitEvent("PlayerStateUpdated");
+    return { ok: true, name: result.name };
+  }
+
+  suggestName(id) {
+    const hashimon = this.hashimons[id];
+    if (!hashimon) { return { ok: false, error: "Hashimon not found." }; }
+    hashimon.name = HashimonNames.generate(hashimon);
+    hashimon.customName = false;
+    this.save();
+    utils.emitEvent("PlayerStateUpdated");
+    return { ok: true, name: hashimon.name };
   }
 
   //The roster autosaves on every change so captures and mined shares survive a

@@ -10,6 +10,6 @@
   margin-bottom: 10px;
 }
 
-.Hud .Combatant_type {
-  display:none;
+.Hud .Combatant_life-container > rect {
+  transition: width 0.2s;
 }

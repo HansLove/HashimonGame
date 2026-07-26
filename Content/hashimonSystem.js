@@ -16,7 +16,9 @@ window.HashimonSystem = {
     const hashimon = {
       id: `${speciesKey}_${Date.now()}${Math.floor(Math.random() * 9999)}`,
       speciesKey,
-      name: species.name,
+      name: "",
+      speciesLabel: species.name,
+      customName: false,
       description: species.description,
       species: species.species,
       stage: 1,
@@ -62,6 +64,9 @@ window.HashimonSystem = {
       hashimon.pow.templateId, hashimon.pow.birthNonce, speciesKey
     );
 
+    hashimon.name = overrides.name || HashimonNames.generate(hashimon);
+    if (overrides.customName) { hashimon.customName = true; }
+
     if (overrides.stage) {
       hashimon.stage = overrides.stage;
       this.applyStageScaling(hashimon);
@@ -78,12 +83,23 @@ window.HashimonSystem = {
 
   //Turns an instance into the shape Combatant expects.
   toCombatantConfig(hashimon) {
+    const compiled = HashimonCompiler.compile(hashimon);
+    const types = compiled.types;
+    let typeLabel = types.primary.name;
+    if (types.fusion) {
+      typeLabel = types.fusion;
+    } else if (types.secondary) {
+      typeLabel = `${types.primary.name}/${types.secondary.name}`;
+    }
+
     return {
       name: hashimon.name,
       description: hashimon.description,
       src: this.getSpriteForStage(hashimon).src,
       icon: HashimonBranches[hashimon.branch].icon,
       type: hashimon.branch,
+      typeLabel,
+      stars: this.tierOf(hashimon),
       actions: hashimon.moves,
       stats: { ...hashimon.stats },
       hp: hashimon.hp,

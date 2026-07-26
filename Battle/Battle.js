@@ -46,6 +46,7 @@ class Battle {
       this.combatants[id] = new Combatant({
         ...HashimonSystem.toCombatantConfig(hashimon),
         team,
+        hashimonId: hashimon.id,
         isPlayerControlled: team === "player"
       }, this)
 

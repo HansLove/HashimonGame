@@ -68,9 +68,23 @@ window.HashimonPrompt = {
   },
 
   typeLine(types) {
-    if (types.fusion) { return `${types.fusion} type (a fusion of ${types.primary.name} and ${types.secondary.name})`; }
-    if (types.secondary) { return `dual ${types.primary.name}/${types.secondary.name} type, ${types.subtype} variant`; }
+    if (types.fusion) {
+      const variant = types.subtype ? `, ${types.subtype} variant` : "";
+      return `${types.fusion} type (fusion of ${types.primary.name} + ${types.secondary.name})${variant}`;
+    }
+    if (types.secondary) {
+      return `dual ${types.primary.name}/${types.secondary.name} type, ${types.subtype} variant`;
+    }
     return `${types.primary.name} type, ${types.subtype} variant`;
+  },
+
+  typeFlavor(types) {
+    if (types.fusionFlavor) { return types.fusionFlavor; }
+    if (types.fusion && types.secondary) {
+      const def = HashimonTypeUtils.resolveFusion(types.primary.key, types.secondary.key);
+      if (def?.flavor) { return def.flavor; }
+    }
+    return HashimonTypeUtils.subtypeFlavor(types.primary.key, types.subtype);
   },
 
   //"a" vs "an" from the following word's first sound (letter heuristic is enough
@@ -81,6 +95,17 @@ window.HashimonPrompt = {
 
   starLine(stars) {
     return "★".repeat(stars) + "☆".repeat(Math.max(0, 5 - stars)) + ` (${stars}-star rarity)`;
+  },
+
+  //Preview a Hashimon at a specific earned tier (for album slot prompts).
+  toPromptAtTier(hashimon, tier, styleKey = "creature") {
+    const clone = JSON.parse(JSON.stringify(hashimon));
+    const bits = tier * HashimonConfig.bitsPerStar;
+    clone.pow = { ...clone.pow, bestShareBits: bits };
+    const tail = (clone.pow.bestShareHash || "abcd1234").replace(/^0+/, "") || "a";
+    clone.pow.bestShareHash = "0".repeat(tier) + tail;
+    clone.stage = Math.max(1, tier);
+    return this.toPrompt(clone, styleKey);
   },
 
   //--- Prose prompt -------------------------------------------------------
@@ -98,7 +123,7 @@ window.HashimonPrompt = {
 `${maturity.text}`,
 ``,
 `ELEMENT`,
-`It is ${this.article(this.typeLine(types))} ${this.typeLine(types)}. Its body shows ${look.material}, and it stands out for ${look.feature}. Around it: ${look.aura}.`,
+`It is ${this.article(this.typeLine(types))} ${this.typeLine(types)}. ${this.typeFlavor(types)} Its body shows ${look.material}, and it stands out for ${look.feature}. Around it: ${look.aura}.`,
 ``,
 `COLOR (exact, do not substitute)`,
 `Dominant color ${look.color.base.name} ${look.color.base.hex} (HSL ${look.color.base.h}, ${look.color.base.s}%, ${look.color.base.l}%).`,

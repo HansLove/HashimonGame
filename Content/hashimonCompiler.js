@@ -91,30 +91,32 @@ window.HashimonCompiler = {
   //SHARED, recognizable part. If a species declares no type, the type is derived
   //from DNA as a fallback. The sub-type always varies by individual.
   compileTypes(dna, species) {
-    const keys = Object.keys(HashimonTypes);
+    const primaryKeys = window.HashimonPrimaryKeys || Object.keys(HashimonTypes);
     let primary, secondary;
 
     if (species && species.type) {
-      primary = species.type;
-      secondary = species.type2 || null;
+      primary = HashimonTypeUtils.normalizeTypeKey(species.type);
+      secondary = species.type2 ? HashimonTypeUtils.normalizeTypeKey(species.type2) : null;
     } else {
-      primary = HashimonDNA.pick(dna, 1, 2, keys);
-      //"Numero de tipos (max 2)". Parity of [3] decides mono or dual; [4] gates
-      //it so pure types stay common.
+      primary = HashimonDNA.pick(dna, 1, 2, primaryKeys);
       const wantsDual = !HashimonDNA.isEven(dna, 3) && HashimonDNA.at(dna, 4) >= 6;
-      secondary = wantsDual ? HashimonDNA.pick(dna, 5, 2, keys.filter(k => k !== primary)) : null;
+      secondary = wantsDual
+        ? HashimonDNA.pick(dna, 5, 2, primaryKeys.filter(k => k !== primary))
+        : null;
     }
 
-    const fusion = secondary
-      ? HashimonFusions.find(f => f.parents.includes(primary) && f.parents.includes(secondary))
-      : null;
+    const fusionDef = secondary ? HashimonTypeUtils.resolveFusion(primary, secondary) : null;
+    const primaryDef = HashimonTypes[primary];
+    const subtypePool = fusionDef?.subtypes?.length
+      ? fusionDef.subtypes
+      : primaryDef.subtypes;
 
-    const sub = HashimonTypes[primary].subtypes;
     return {
-      primary:   { key: primary, name: HashimonTypes[primary].name },
+      primary:   { key: primary, name: primaryDef.name },
       secondary: secondary ? { key: secondary, name: HashimonTypes[secondary].name } : null,
-      subtype:   sub[HashimonDNA.modulo(dna, 7, sub.length)],
-      fusion:    fusion ? fusion.name : null,
+      subtype:   subtypePool[HashimonDNA.modulo(dna, 7, subtypePool.length)],
+      fusion:    fusionDef ? fusionDef.name : null,
+      fusionFlavor: fusionDef?.flavor || null,
     };
   },
 
@@ -148,7 +150,10 @@ window.HashimonCompiler = {
   compileLook(dna, species) {
     const types = this.compileTypes(dna, species);
     const color = this.compileColor(dna, species);
-    const t = HashimonTypes[types.primary.key].visual;
+    const fusionDef = types.secondary
+      ? HashimonTypeUtils.resolveFusion(types.primary.key, types.secondary.key)
+      : null;
+    const t = fusionDef?.visual || HashimonTypes[types.primary.key].visual;
 
     //Archetype is the species' shared silhouette; only the fallback rolls DNA.
     const archetype = species && species.archetype

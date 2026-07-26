@@ -33,11 +33,39 @@
   padding: 2px 0;
   border-bottom: 1px solid var(--menu-border-color);
 }
+.HashimonCollection_portraits {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.HashimonCollection_portraits--detail {
+  justify-content: center;
+}
 .HashimonCollection_portrait {
   width: 24px;
   height: 24px;
   object-fit: contain;
   image-rendering: pixelated;
+}
+.HashimonCollection_album-thumb {
+  width: 0;
+  height: 24px;
+  object-fit: cover;
+  border-radius: 2px;
+  border: 1px solid var(--menu-border-color);
+  opacity: 0;
+  transition: width 0.15s, opacity 0.15s;
+}
+.HashimonCollection_album-thumb.visible {
+  width: 24px;
+  opacity: 1;
+}
+.HashimonCollection_album-thumb--detail {
+  height: 36px;
+}
+.HashimonCollection_album-thumb--detail.visible {
+  width: 36px;
 }
 .HashimonCollection_row-info {
   flex: 1;
@@ -103,11 +131,66 @@
   color: #9b05a8;
 }
 
+.HashimonCollection_rename {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 2px 0 4px;
+}
+.HashimonCollection_rename-input {
+  flex: 1;
+  font-family: inherit;
+  font-size: 7px;
+  padding: 2px 4px;
+  border: 1px solid var(--menu-border-color);
+  background: #fffdf5;
+  color: var(--menu-font-color);
+  max-width: 120px;
+}
+.HashimonCollection_rename-msg {
+  min-height: 6px;
+  font-size: 5px;
+  color: #9b05a8;
+  margin: 0 0 2px;
+}
+
 .HashimonCollection_footer {
   display: flex;
   gap: 4px;
   justify-content: center;
   padding: 3px 0 1px;
+}
+
+.HashimonCollection_footer [data-export-album],
+.HashimonCollection_footer [data-open-album],
+.HashimonCollection_footer [data-sync-album] {
+  background: #120c2a;
+  color: #00e5ff;
+  border-color: #9b05a8;
+}
+
+.HashimonCollection_export-toast {
+  position: absolute;
+  left: 50%;
+  bottom: 4px;
+  transform: translateX(-50%) translateY(8px);
+  z-index: 5;
+  margin: 0;
+  padding: 4px 8px;
+  font-size: 5px;
+  color: #00e5ff;
+  background: rgba(18, 12, 42, 0.92);
+  border: 1px solid #9b05a8;
+  border-radius: 3px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  max-width: 90%;
+  text-align: center;
+}
+.HashimonCollection_export-toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 /* --- Dar vida: prompt para la IA del jugador --- */

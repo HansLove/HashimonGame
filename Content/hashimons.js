@@ -4,8 +4,12 @@
 //markings and rarity come from its own DNA (see the compiler). This is the
 //Pokemon model: the species is shared, the individual is unique.
 //
-//  type / type2  -> one of the 16 whitepaper types (keys). Fixes what element
+//  name          -> species label shown in the dex (NOT the individual nickname).
+//                   Unique nicknames are generated per instance from DNA.
+//
+//  type / type2  -> one of the 13 primary types (keys). Fixes what element
 //                   the creature reads as. type2 makes it dual (max 2).
+//                   Robot, Plasma and Plant are fusion-only — use type2 pairs.
 //  archetype     -> body plan fed to the image model.
 //  zones         -> which maps this species can be encountered in.
 //  branch/starClass are legacy battle-icon fields, kept so combat keeps working.
@@ -96,7 +100,7 @@ window.Hashimons = {
     name: "Call Me Kale",
     description: "Patient as a confirmed block.",
     species: "kale",
-    type: "vegetal", archetype: "amphibian",
+    type: "tierra", type2: "agua", archetype: "amphibian",
     branch: "block", starClass: "green",
     baseHp: 50, baseStats: { power: 7, defense: 9, speed: 5, energy: 9 },
     templateId: "template_plant_001", birthNonce: 300003,
