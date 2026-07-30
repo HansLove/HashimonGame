@@ -28,12 +28,15 @@ window.HashimonPrompt = {
   //Body plan from stage; monstrousness gated by stage AND amplified by rarity.
   //A low-stage creature stays a cute baby no matter how rare; only as it matures
   //does its rarity express as full "monster mode".
+  //Evolution is slow: a hatchling stays a small child for many ranks; an adult
+  //arrives only around rank 12-13, and the full monster near rank 15.
   MORPHOLOGY: [
-    { at: 0.00, form: "Newborn form", body: "an oversized head on a small body, short stubby limbs, soft and rounded, endearing." },
-    { at: 0.18, form: "Juvenile form", body: "growing into its proportions, limbs lengthening, its first real features emerging." },
-    { at: 0.48, form: "Adult form", body: "fully grown and self-assured, defined musculature, a confident stance." },
-    { at: 0.85, form: "Mythic form", body: "majestic proportions, elaborate ornamentation, an imposing presence." },
-    { at: 1.00, form: "Sovereign form", body: "the absolute final stage: towering, fully realized, overwhelming." },
+    { at: 0.00, form: "Hatchling",     body: "just hatched: an oversized head on a tiny body, stubby limbs, huge eyes, extremely cute and small." },
+    { at: 0.33, form: "Child form",    body: "still a small child: big-headed and round, soft playful proportions, clearly very young." },
+    { at: 0.55, form: "Juvenile form", body: "a growing juvenile: limbs lengthening, features settling in, an adolescent build." },
+    { at: 0.75, form: "Adult form",    body: "fully grown and confident, balanced adult proportions and defined musculature." },
+    { at: 0.90, form: "Mythic form",   body: "majestic and ornate, an imposing, elaborated presence." },
+    { at: 1.00, form: "Monster form",  body: "the apex: towering, heavily armored and spiked, overwhelming and dangerous." },
   ],
 
   monsterLine(score) {
@@ -45,16 +48,22 @@ window.HashimonPrompt = {
     return "Full monster mode: oversized and many-featured, awe-inspiring and dangerous, the kind of creature myths warn about.";
   },
 
-  //Stars ARE the tier (earned leading-zero nibbles), so the described form
-  //evolves in lockstep with proven work — full monster by ~tier 6.
+  //Stars ARE the tier (earned leading-zero nibbles). Tier 0 is an unhatched egg;
+  //the form then evolves slowly with proven work, full monster only near rank 15.
   maturityBlock(stage, maxStage, stars) {
-    const ratio = Math.min(1, stars / 6);
+    if (stars <= 0) {
+      return {
+        form: "Egg",
+        text: "Unhatched egg (0 stars): render ONLY a smooth 3D egg tinted in the creature's own colours, with faint speckles and a soft top-left sheen — no limbs, no face, not yet hatched.",
+      };
+    }
+    const ratio = Math.min(1, stars / 15);
     let morph = this.MORPHOLOGY[0];
     this.MORPHOLOGY.forEach(m => { if (ratio >= m.at) { morph = m; } });
 
     return {
       form: morph.form,
-      text: `${morph.form} (rank ${stars}, stage ${stage} of ${maxStage}): ${morph.body} ${this.monsterLine(ratio)}`,
+      text: `${morph.form} (rank ${stars}, stage ${stage} of ${maxStage}): ${morph.body} ${this.monsterLine(Math.max(0, (stars - 10) / 5))}`,
     };
   },
 

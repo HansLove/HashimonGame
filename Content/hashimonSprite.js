@@ -91,10 +91,12 @@ window.HashimonSprite = (function () {
     const typeKey = spec.types.primary.key;
     const motif = MOTIF[typeKey] || "orb";
 
-    //Evolution shapes the body: tier 0-1 is a round baby, mid tiers an adult,
-    //~tier 6 a full spiky monster. Each earned leading zero is a visible jump.
-    const ratio = Math.min(1, tier / 6);
-    const monster = ratio;
+    //Evolution is SLOW: an egg at tier 0, a small child by ~tier 5, an adult by
+    //~12-13, a full spiky monster only near tier 15. Stretched so 5 stars is
+    //still a child, not a monster.
+    const evo = Math.min(1, tier / 15);              // overall growth (0..1)
+    const monster = Math.max(0, Math.min(1, (tier - 10) / 5)); // spikes/fangs: tier 11..15
+    const ratio = evo;
 
     const cv = document.createElement("canvas");
     cv.width = BASE * scale; cv.height = BASE * scale;
@@ -116,18 +118,22 @@ window.HashimonSprite = (function () {
       }
     };
 
-    //--- body proportions from stage ---
-    //Size grows clearly with the stage even for common creatures (baby -> big);
-    //rarity (monster) adds spikes/fangs on top. So evolution always reads.
-    const growth = 0.35 + 0.65 * ratio;              // 0.35 baby .. 1.0 elder
-    const rx = Math.round(4 + growth * 6 + monster * 1.5 + (rnd() - 0.5) * 1.2);
-    const ry = Math.round(4 + growth * 7);
+    //--- Tier 0: an unhatched egg in the creature's own colours (no creature yet) ---
+    if (tier <= 0) {
+      drawEgg(put, disc, C, base, accent, outline, rnd);
+      return cv;
+    }
+
+    //--- body proportions from the earned tier (stretched: child small, monster huge) ---
+    const growth = 0.28 + 0.72 * evo;                // small child .. towering monster
+    const rx = Math.round(3 + growth * 8 + monster * 1.5 + (rnd() - 0.5) * 1.0);
+    const ry = Math.round(3 + growth * 9);
     const cy = 22 - Math.round(growth * 4);
-    const headBig = ratio < 0.2;
-    const eyeR = headBig ? 3 : 2;                    // babies get big eyes
+    const headBig = tier <= 6;                        // big cute head through the child years
+    const eyeR = headBig ? 3 : 2;                     // children get big eyes
 
     //--- aura (behind), intensity from the earned tier (proven work) ---
-    const auraStrength = Math.min(1, tier / 5);
+    const auraStrength = Math.min(1, tier / 12);
     if (auraStrength > 0.05) {
       const ar = rx + 3 + Math.round(auraStrength * 2);
       for (let a = 0; a < 26; a++) {
@@ -193,8 +199,8 @@ window.HashimonSprite = (function () {
     };
     drawEye(eyes);
 
-    //mouth
-    if (monster > 0.55) { for (let x = -1; x <= 1; x++) put(C + x, eyeY + 4, "#20202e", true); put(C - 1, eyeY + 3, "#20202e"); } //fanged/grim
+    //mouth (grim/fanged only once it's turning monster, ~tier 12+)
+    if (monster > 0.4) { for (let x = -1; x <= 1; x++) put(C + x, eyeY + 4, "#20202e", true); put(C - 1, eyeY + 3, "#20202e"); }
     else { put(C, eyeY + 4, shade(base, 0.5)); }
 
     //--- limbs ---
@@ -206,8 +212,8 @@ window.HashimonSprite = (function () {
     //--- element motif in accent ---
     drawMotif(put, disc, motif, C, top, cy, ry, rx, accent, base, rnd);
 
-    //--- late-stage ornament: mythic crown at high stage, monster spikes with rarity ---
-    if (ratio > 0.75 || monster > 0.5) {
+    //--- monster spikes: only in the last tiers (~11-15) ---
+    if (monster > 0.15) {
       const spikeH = 1 + Math.round(monster * 3);
       for (let x = 1; x < rx - 1; x += 3) {
         for (let s = 1; s <= spikeH; s++) { put(C - x, cy - ry - s, shade(accent, 0.9), true); }
@@ -222,6 +228,37 @@ window.HashimonSprite = (function () {
     drawPowerGlyph(ctx, move, accent);
 
     return cv;
+  }
+
+  //Tier 0 = an unhatched egg: a smooth 3D-shaded egg in the creature's own base
+  //colour, DNA-driven accent speckles, a top-left sheen and a soft shadow.
+  function drawEgg(put, disc, C, base, accent, outline, rnd) {
+    const ecy = 17, ery = 9, erx = 7;
+    const rim = shade(base, 0.78), lite = mix(base, "#ffffff", 0.30), sheen = mix(base, "#ffffff", 0.55);
+    //soft shadow on the ground
+    disc(C, ecy + ery + 1, 5, 1, "rgba(0,0,0,0.22)");
+    for (let y = -ery; y <= ery; y++) {
+      const t = (y + ery) / (2 * ery);                       // 0 top .. 1 bottom
+      //egg profile: pointed top, round bottom
+      const w = Math.round(erx * Math.sqrt(Math.max(0, 1 - (y / ery) * (y / ery))) * (0.60 + 0.40 * t));
+      for (let x = 0; x <= w; x++) {
+        let col = base;
+        if (y < -2 && x < w - 1) { col = lite; }              // lit upper body
+        if (x >= w - 1) { col = rim; }                        // shaded rim
+        put(C + x, ecy + y, col);
+      }
+      put(C + w + 1, ecy + y, outline);                      // outline
+    }
+    put(C, ecy - ery - 1, outline); put(C, ecy + ery + 1, outline);   //caps
+    //3D sheen, top-left, only on one side
+    disc(C - 2, ecy - 3, 2, 2, sheen);
+    put(C - 3, ecy - 4, sheen, true);
+    //accent speckles so eggs differ by DNA/type
+    for (let i = 0; i < 6; i++) {
+      const sx = Math.round((rnd() - 0.5) * erx * 1.6);
+      const sy = Math.round(-1 + rnd() * (ery + 3));
+      put(C + sx, ecy + sy, accent, true);
+    }
   }
 
   function drawMotif(put, disc, motif, C, top, cy, ry, rx, accent, base, rnd) {
