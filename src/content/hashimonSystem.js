@@ -3,7 +3,10 @@
 window.HashimonConfig = {
   maxStage: 33,             //theoretical max (33 leading-zero nibbles = never reached)
   bitsPerStar: 4,           //a star/stage = one more leading-zero HEX nibble (4 bits)
-  visualMaxTier: 6,         //tier at which the sprite/prompt reaches full "monster"
+  visualMaxTier: 15,        //tier at which the sprite/prompt reaches full "monster".
+                            //Egg at 0 · child by ~5 (home CPU) · adult ~12-13 (mining
+                            //rig) · monster ~15 (rig left running). Stretched so the
+                            //transformation is SLOW, not baby->monster in 5 stars.
   statGrowthPerStage: 0.18, //+18% per stage/star over the species base
 }
 

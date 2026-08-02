@@ -1,5 +1,7 @@
 # Hashimon Album App
 
+python3 -m http.server 8081
+
 Offline evolution sticker album for your exported Hashimons.
 
 ## Quick start

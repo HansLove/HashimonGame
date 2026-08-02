@@ -52,6 +52,7 @@ class HashimonCollection {
 
   renderList() {
     this.lastShareMessage = "";
+    this.element?.classList.remove("HashimonCollection--prompt");
     //The roster is the collection now: starter and captures live side by side.
     const hashimons = Object.values(window.playerState.hashimons);
 
@@ -136,6 +137,7 @@ class HashimonCollection {
   renderDetail(id) {
     const h = window.playerState.hashimons[id];
     if (!h) { return this.renderList(); }
+    this.element?.classList.remove("HashimonCollection--prompt");
 
     const sprite = HashimonSystem.getSpriteForStage(h);
     const genetics = HashimonCompiler.compile(h);
@@ -251,6 +253,22 @@ class HashimonCollection {
     })
   }
 
+  async copyPromptToClipboard(textarea, rawText, feedbackEl) {
+    textarea.focus();
+    textarea.select();
+    let ok = false;
+    try {
+      await navigator.clipboard.writeText(rawText);
+      ok = true;
+    } catch (e) {
+      ok = document.execCommand("copy");
+    }
+    feedbackEl.textContent = ok
+      ? "Copied! Paste it into your AI chat."
+      : "Select the text and copy with Cmd+C.";
+    return ok;
+  }
+
   //The compiler's output, ready to paste into whichever AI the player uses.
   //V1 has no artwork pipeline: the player is the renderer.
   renderPrompt(id, styleKey = "creature", tab = "prompt") {
@@ -264,6 +282,9 @@ class HashimonCollection {
         ${HashimonPrompt.STYLES[key].label}
       </button>`).join("");
 
+    const copyLabel = tab === "values" ? "Copy values" : "Copy prompt";
+
+    this.element.classList.add("HashimonCollection--prompt");
     this.element.innerHTML = (`
       <h2>${h.name} &mdash; Give life</h2>
       <p class="HashimonCollection_hint">
@@ -274,33 +295,23 @@ class HashimonCollection {
         <button data-tab="prompt" ${tab === "prompt" ? 'class="active"' : ""}>Prompt</button>
         <button data-tab="values" ${tab === "values" ? 'class="active"' : ""}>Values</button>
         ${tab === "prompt" ? `<span class="HashimonCollection_styles">${styleButtons}</span>` : ""}
+        <button data-copy class="HashimonCollection_copy-prompt">${copyLabel}</button>
       </div>
       <textarea class="HashimonCollection_prompt" readonly>${text
         .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</textarea>
       <p class="HashimonCollection_share-message" data-copied></p>
       <div class="HashimonCollection_footer">
-        <button data-copy>Copy</button>
         <button data-back-detail>Back to sheet</button>
         <button data-close>Close</button>
       </div>
     `);
 
     const textarea = this.element.querySelector(".HashimonCollection_prompt");
+    const copiedMsg = this.element.querySelector("[data-copied]");
 
-    this.element.querySelector("button[data-copy]").addEventListener("click", async () => {
-      textarea.select();
-      let ok = false;
-      try {
-        await navigator.clipboard.writeText(text);
-        ok = true;
-      } catch (e) {
-        //Clipboard API needs a secure context; fall back to the old command.
-        ok = document.execCommand("copy");
-      }
-      this.element.querySelector("[data-copied]").innerText = ok
-        ? "Copied! Paste it into your AI chat."
-        : "Select the text and copy with Cmd+C.";
-    })
+    this.element.querySelector("button[data-copy]").addEventListener("click", () => {
+      this.copyPromptToClipboard(textarea, text, copiedMsg);
+    });
 
     this.element.querySelectorAll("button[data-tab]").forEach(b => {
       b.addEventListener("click", () => this.renderPrompt(id, styleKey, b.dataset.tab));

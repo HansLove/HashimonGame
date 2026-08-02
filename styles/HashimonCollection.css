@@ -209,7 +209,15 @@
 .HashimonCollection_styles {
   display: flex;
   gap: 3px;
+}
+.HashimonCollection_copy-prompt {
   margin-left: auto;
+  background: #120c2a;
+  color: #00e5ff;
+  border-color: #9b05a8;
+}
+.HashimonCollection--prompt {
+  max-height: 220px;
 }
 .HashimonCollection button.active {
   background: var(--menu-selected-background);
