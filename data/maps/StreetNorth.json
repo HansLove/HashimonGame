@@ -1,0 +1,226 @@
+{
+  "id": "StreetNorth",
+  "lowerSrc": "/images/maps/StreetNorthLower.png",
+  "upperSrc": "/images/maps/StreetNorthUpper.png",
+  "configObjects": {
+    "hero": {
+      "type": "Person",
+      "isPlayerControlled": true,
+      "x": 48,
+      "y": 128
+    },
+    "streetNorthNpcA": {
+      "type": "Person",
+      "x": 144,
+      "y": 96,
+      "behaviorLoop": [
+        {
+          "type": "walk",
+          "direction": "left"
+        },
+        {
+          "type": "walk",
+          "direction": "down"
+        },
+        {
+          "type": "walk",
+          "direction": "right"
+        },
+        {
+          "type": "stand",
+          "direction": "right",
+          "time": 800
+        },
+        {
+          "type": "walk",
+          "direction": "up"
+        },
+        {
+          "type": "stand",
+          "direction": "up",
+          "time": 400
+        }
+      ],
+      "talking": [
+        {
+          "events": [
+            {
+              "type": "textMessage",
+              "text": "This place is famous for block branch Hashimons!",
+              "faceHero": "streetNorthNpcA"
+            }
+          ]
+        }
+      ]
+    },
+    "streetNorthNpcB": {
+      "type": "Person",
+      "x": 64,
+      "y": 192,
+      "behaviorLoop": [
+        {
+          "type": "stand",
+          "direction": "up",
+          "time": 400
+        },
+        {
+          "type": "stand",
+          "direction": "left",
+          "time": 800
+        },
+        {
+          "type": "stand",
+          "direction": "down",
+          "time": 400
+        },
+        {
+          "type": "stand",
+          "direction": "left",
+          "time": 800
+        },
+        {
+          "type": "stand",
+          "direction": "right",
+          "time": 800
+        }
+      ],
+      "talking": [
+        {
+          "events": [
+            {
+              "type": "textMessage",
+              "text": "I love the fresh hum of relay towers in the air.",
+              "faceHero": "streetNorthNpcB"
+            }
+          ]
+        }
+      ]
+    },
+    "streetNorthNpcC": {
+      "type": "Person",
+      "x": 192,
+      "y": 144,
+      "talking": [
+        {
+          "required": [
+            "streetNorthBattle"
+          ],
+          "events": [
+            {
+              "type": "textMessage",
+              "text": "Could you be the Legendary one?",
+              "faceHero": "streetNorthNpcC"
+            }
+          ]
+        },
+        {
+          "events": [
+            {
+              "type": "textMessage",
+              "text": "This is my turf!",
+              "faceHero": "streetNorthNpcC"
+            },
+            {
+              "type": "battle",
+              "enemyId": "streetNorthBattle"
+            },
+            {
+              "type": "addStoryFlag",
+              "flag": "streetNorthBattle"
+            }
+          ]
+        }
+      ]
+    },
+    "hashimonStone": {
+      "type": "HashimonStone",
+      "x": 32,
+      "y": 144,
+      "storyFlag": "STONE_STREET_NORTH",
+      "hashimons": [
+        "v001",
+        "f001"
+      ]
+    }
+  },
+  "walls": {
+    "32,112": true,
+    "48,112": true,
+    "48,96": true,
+    "64,80": true,
+    "80,80": true,
+    "96,80": true,
+    "128,80": true,
+    "144,80": true,
+    "160,80": true,
+    "176,96": true,
+    "192,96": true,
+    "208,96": true,
+    "112,128": true,
+    "128,128": true,
+    "112,144": true,
+    "128,144": true,
+    "112,160": true,
+    "128,160": true,
+    "144,160": true,
+    "160,160": true,
+    "32,240": true,
+    "48,240": true,
+    "64,240": true,
+    "80,240": true,
+    "96,240": true,
+    "96,256": true,
+    "128,256": true,
+    "128,240": true,
+    "144,240": true,
+    "160,240": true,
+    "176,240": true,
+    "192,240": true,
+    "208,240": true,
+    "16,128": true,
+    "16,144": true,
+    "16,160": true,
+    "16,176": true,
+    "16,192": true,
+    "16,208": true,
+    "16,224": true,
+    "224,112": true,
+    "224,128": true,
+    "224,144": true,
+    "224,160": true,
+    "224,176": true,
+    "224,192": true,
+    "224,208": true,
+    "224,224": true,
+    "112,272": true,
+    "112,64": true
+  },
+  "cutsceneSpaces": {
+    "112,80": [
+      {
+        "events": [
+          {
+            "type": "changeMap",
+            "map": "GreenKitchen",
+            "x": 80,
+            "y": 192,
+            "direction": "up"
+          }
+        ]
+      }
+    ],
+    "112,256": [
+      {
+        "events": [
+          {
+            "type": "changeMap",
+            "map": "Street",
+            "x": 400,
+            "y": 80,
+            "direction": "down"
+          }
+        ]
+      }
+    ]
+  }
+}

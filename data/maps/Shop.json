@@ -1,0 +1,136 @@
+{
+  "id": "Shop",
+  "lowerSrc": "/images/maps/PizzaShopLower.png",
+  "upperSrc": "/images/maps/PizzaShopUpper.png",
+  "configObjects": {
+    "hero": {
+      "type": "Person",
+      "isPlayerControlled": true,
+      "x": 48,
+      "y": 112
+    },
+    "shopNpcA": {
+      "type": "Person",
+      "x": 96,
+      "y": 80,
+      "talking": [
+        {
+          "events": [
+            {
+              "type": "textMessage",
+              "text": "All the validator rivalries have been good for business.",
+              "faceHero": "shopNpcA"
+            }
+          ]
+        }
+      ]
+    },
+    "shopNpcB": {
+      "type": "Person",
+      "x": 80,
+      "y": 144,
+      "behaviorLoop": [
+        {
+          "type": "stand",
+          "direction": "left",
+          "time": 400
+        }
+      ],
+      "talking": [
+        {
+          "events": [
+            {
+              "type": "textMessage",
+              "text": "Which mining rig will make me a better node runner?",
+              "faceHero": "shopNpcB"
+            }
+          ]
+        }
+      ]
+    },
+    "hashimonStone": {
+      "type": "HashimonStone",
+      "x": 16,
+      "y": 64,
+      "storyFlag": "STONE_SHOP",
+      "hashimons": [
+        "v002",
+        "f002"
+      ]
+    }
+  },
+  "cutsceneSpaces": {
+    "80,192": [
+      {
+        "events": [
+          {
+            "type": "changeMap",
+            "map": "Street",
+            "x": 464,
+            "y": 144,
+            "direction": "down"
+          }
+        ]
+      }
+    ]
+  },
+  "walls": {
+    "32,64": true,
+    "32,80": true,
+    "32,96": true,
+    "48,96": true,
+    "64,96": true,
+    "80,96": true,
+    "112,96": true,
+    "128,96": true,
+    "144,96": true,
+    "144,80": true,
+    "144,64": true,
+    "48,128": true,
+    "48,144": true,
+    "48,160": true,
+    "64,128": true,
+    "64,144": true,
+    "64,160": true,
+    "112,128": true,
+    "112,144": true,
+    "128,128": true,
+    "128,144": true,
+    "16,192": true,
+    "32,192": true,
+    "48,192": true,
+    "64,192": true,
+    "96,192": true,
+    "112,192": true,
+    "128,192": true,
+    "144,192": true,
+    "160,192": true,
+    "0,64": true,
+    "0,80": true,
+    "0,96": true,
+    "0,112": true,
+    "0,128": true,
+    "0,144": true,
+    "0,160": true,
+    "0,176": true,
+    "176,64": true,
+    "176,80": true,
+    "176,96": true,
+    "176,112": true,
+    "176,128": true,
+    "176,144": true,
+    "176,160": true,
+    "176,176": true,
+    "16,48": true,
+    "32,48": true,
+    "48,48": true,
+    "64,48": true,
+    "80,48": true,
+    "96,48": true,
+    "112,48": true,
+    "128,48": true,
+    "144,48": true,
+    "160,48": true,
+    "80,208": true
+  }
+}

@@ -1,0 +1,300 @@
+{
+  "id": "Street",
+  "lowerSrc": "/images/maps/StreetLower.png",
+  "upperSrc": "/images/maps/StreetUpper.png",
+  "configObjects": {
+    "hero": {
+      "type": "Person",
+      "isPlayerControlled": true,
+      "x": 480,
+      "y": 160
+    },
+    "streetNpcA": {
+      "type": "Person",
+      "x": 144,
+      "y": 176,
+      "behaviorLoop": [
+        {
+          "type": "stand",
+          "direction": "right",
+          "time": 1400
+        },
+        {
+          "type": "stand",
+          "direction": "up",
+          "time": 900
+        }
+      ],
+      "talking": [
+        {
+          "events": [
+            {
+              "type": "textMessage",
+              "text": "Wild Hashimons hide in the grass east of here. Step on the tall patches to fight!",
+              "faceHero": "streetNpcA"
+            }
+          ]
+        },
+        {
+          "events": [
+            {
+              "type": "textMessage",
+              "text": "One time i saw a 10 stars Hashimon. A wild one roams just east of here...",
+              "faceHero": "streetNpcA"
+            }
+          ]
+        }
+      ]
+    },
+    "streetNpcB": {
+      "type": "Person",
+      "x": 496,
+      "y": 192,
+      "behaviorLoop": [
+        {
+          "type": "stand",
+          "direction": "up",
+          "time": 400
+        },
+        {
+          "type": "stand",
+          "direction": "left",
+          "time": 800
+        },
+        {
+          "type": "stand",
+          "direction": "down",
+          "time": 400
+        },
+        {
+          "type": "stand",
+          "direction": "left",
+          "time": 800
+        },
+        {
+          "type": "stand",
+          "direction": "right",
+          "time": 800
+        }
+      ],
+      "talking": [
+        {
+          "events": [
+            {
+              "type": "textMessage",
+              "text": "I can't decide which node rig to run.",
+              "faceHero": "streetNpcB"
+            }
+          ]
+        }
+      ]
+    },
+    "streetNpcC": {
+      "type": "Person",
+      "x": 352,
+      "y": 160,
+      "talking": [
+        {
+          "required": [
+            "streetBattle"
+          ],
+          "events": [
+            {
+              "type": "textMessage",
+              "text": "You are quite capable.",
+              "faceHero": "streetNpcC"
+            }
+          ]
+        },
+        {
+          "events": [
+            {
+              "type": "textMessage",
+              "text": "You should have just stayed home!",
+              "faceHero": "streetNpcC"
+            },
+            {
+              "type": "battle",
+              "enemyId": "streetBattle"
+            },
+            {
+              "type": "addStoryFlag",
+              "flag": "streetBattle"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "walls": {
+    "64,144": true,
+    "80,128": true,
+    "96,144": true,
+    "112,144": true,
+    "128,144": true,
+    "144,144": true,
+    "160,144": true,
+    "176,144": true,
+    "192,144": true,
+    "208,128": true,
+    "224,128": true,
+    "240,112": true,
+    "256,112": true,
+    "272,112": true,
+    "288,112": true,
+    "304,112": true,
+    "320,112": true,
+    "336,112": true,
+    "352,112": true,
+    "368,112": true,
+    "384,112": true,
+    "384,96": true,
+    "384,80": true,
+    "416,80": true,
+    "416,96": true,
+    "416,112": true,
+    "432,112": true,
+    "448,128": true,
+    "448,144": true,
+    "464,128": true,
+    "480,144": true,
+    "496,144": true,
+    "512,144": true,
+    "528,144": true,
+    "256,144": true,
+    "272,144": true,
+    "400,144": true,
+    "416,144": true,
+    "256,160": true,
+    "272,160": true,
+    "400,160": true,
+    "416,160": true,
+    "256,176": true,
+    "272,176": true,
+    "400,176": true,
+    "416,176": true,
+    "288,176": true,
+    "304,176": true,
+    "64,224": true,
+    "80,224": true,
+    "96,224": true,
+    "112,224": true,
+    "128,224": true,
+    "144,224": true,
+    "160,224": true,
+    "176,224": true,
+    "192,224": true,
+    "208,224": true,
+    "224,224": true,
+    "240,224": true,
+    "256,224": true,
+    "272,224": true,
+    "288,224": true,
+    "304,224": true,
+    "320,224": true,
+    "336,224": true,
+    "352,224": true,
+    "368,224": true,
+    "384,224": true,
+    "400,224": true,
+    "416,224": true,
+    "432,224": true,
+    "448,224": true,
+    "464,224": true,
+    "480,224": true,
+    "496,224": true,
+    "512,224": true,
+    "528,224": true,
+    "48,160": true,
+    "48,176": true,
+    "48,192": true,
+    "48,208": true,
+    "544,160": true,
+    "544,176": true,
+    "544,192": true,
+    "544,208": true,
+    "400,64": true
+  },
+  "cutsceneSpaces": {
+    "528,160": [
+      {
+        "events": [
+          {
+            "type": "textMessage",
+            "text": "A Hashima gate hums with static. You step through..."
+          },
+          {
+            "type": "nextEndlessMap"
+          }
+        ]
+      }
+    ],
+    "208,160": [
+      {
+        "events": [
+          {
+            "type": "textMessage",
+            "text": "A wild Hashimon appeared!"
+          },
+          {
+            "type": "wildEncounter",
+            "zone": "street"
+          }
+        ]
+      }
+    ],
+    "208,176": [
+      {
+        "events": [
+          {
+            "type": "textMessage",
+            "text": "A wild Hashimon appeared!"
+          },
+          {
+            "type": "wildEncounter",
+            "zone": "street"
+          }
+        ]
+      }
+    ],
+    "80,144": [
+      {
+        "events": [
+          {
+            "type": "changeMap",
+            "map": "DiningRoom",
+            "x": 96,
+            "y": 192,
+            "direction": "up"
+          }
+        ]
+      }
+    ],
+    "464,144": [
+      {
+        "events": [
+          {
+            "type": "changeMap",
+            "map": "Shop",
+            "x": 80,
+            "y": 192,
+            "direction": "up"
+          }
+        ]
+      }
+    ],
+    "400,80": [
+      {
+        "events": [
+          {
+            "type": "changeMap",
+            "map": "StreetNorth",
+            "x": 112,
+            "y": 256,
+            "direction": "up"
+          }
+        ]
+      }
+    ]
+  }
+}

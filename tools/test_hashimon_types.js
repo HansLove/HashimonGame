@@ -1,22 +1,27 @@
 #!/usr/bin/env node
 /** Smoke test for Hashimon type taxonomy (run from repo root). */
-const fs = require("fs");
-const path = require("path");
-const vm = require("vm");
+import fs from "fs";
+import path from "path";
+import vm from "vm";
+import { fileURLToPath } from "url";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, "..");
 const ctx = vm.createContext({ window: {} });
 ctx.window = ctx;
 
 function load(file) {
-  vm.runInContext(fs.readFileSync(path.join(root, file), "utf8"), ctx, { filename: file });
+  let code = fs.readFileSync(path.join(root, file), "utf8");
+  code = code.replace(/^export\s+(const\s+\w+\s*=.*|{[^}]+});?\s*$/gm, "");
+  vm.runInContext(code, ctx, { filename: file });
 }
 
 [
-  "Content/hashimons.js",
-  "Content/hashimonDNA.js",
-  "Content/hashimonTypes.js",
-  "Content/hashimonCompiler.js",
+  "src/content/hashimons.js",
+  "src/content/hashimonDNA.js",
+  "src/content/hashimonTypes.data.js",
+  "src/content/hashimonTypes.js",
+  "src/content/hashimonCompiler.js",
 ].forEach(load);
 
 const { HashimonPrimaryKeys, HashimonTypes, HashimonFusionMap, HashimonTypeUtils, HashimonCompiler, Hashimons, HashimonDNA } = ctx;

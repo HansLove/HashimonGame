@@ -225,4 +225,6 @@ window.HashimonCompiler = {
     return "#" + [f(0), f(8), f(4)].map(v => v.toString(16).padStart(2, "0")).join("");
   },
 
-}
+};
+
+export const HashimonCompiler = window.HashimonCompiler;

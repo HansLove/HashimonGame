@@ -147,4 +147,6 @@ window.HashimonDNA = {
     return n;
   },
 
-}
+};
+
+export const HashimonDNA = window.HashimonDNA;

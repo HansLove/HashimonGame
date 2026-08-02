@@ -1,0 +1,232 @@
+{
+  "id": "DiningRoom",
+  "lowerSrc": "/images/maps/DiningRoomLower.png",
+  "upperSrc": "/images/maps/DiningRoomUpper.png",
+  "configObjects": {
+    "hero": {
+      "type": "Person",
+      "isPlayerControlled": true,
+      "x": 80,
+      "y": 128
+    },
+    "diningRoomNpcA": {
+      "type": "Person",
+      "x": 192,
+      "y": 128,
+      "talking": [
+        {
+          "required": [
+            "diningRoomBattle"
+          ],
+          "events": [
+            {
+              "type": "textMessage",
+              "text": "Maybe I am not ready for this place.",
+              "faceHero": "diningRoomNpcA"
+            }
+          ]
+        },
+        {
+          "events": [
+            {
+              "type": "textMessage",
+              "text": "You think you have what it takes to access the vault?!",
+              "faceHero": "diningRoomNpcA"
+            },
+            {
+              "type": "battle",
+              "enemyId": "diningRoomBattle",
+              "arena": "archive-vault"
+            },
+            {
+              "type": "addStoryFlag",
+              "flag": "diningRoomBattle"
+            }
+          ]
+        }
+      ]
+    },
+    "diningRoomNpcB": {
+      "type": "Person",
+      "x": 144,
+      "y": 80,
+      "talking": [
+        {
+          "events": [
+            {
+              "type": "textMessage",
+              "text": "Explorers come from all over to archive their Hashimons here.",
+              "faceHero": "diningRoomNpcB"
+            }
+          ]
+        }
+      ]
+    },
+    "diningRoomNpcC": {
+      "type": "Person",
+      "x": 32,
+      "y": 128,
+      "behaviorLoop": [
+        {
+          "type": "stand",
+          "direction": "right",
+          "time": 800
+        },
+        {
+          "type": "stand",
+          "direction": "down",
+          "time": 700
+        },
+        {
+          "type": "stand",
+          "direction": "right",
+          "time": 800
+        }
+      ],
+      "talking": [
+        {
+          "events": [
+            {
+              "type": "textMessage",
+              "text": "I was so lucky to score a vault slot!",
+              "faceHero": "diningRoomNpcC"
+            }
+          ]
+        }
+      ]
+    },
+    "diningRoomNpcD": {
+      "type": "Person",
+      "x": 128,
+      "y": 144,
+      "behaviorLoop": [
+        {
+          "type": "stand",
+          "direction": "right",
+          "time": 1200
+        },
+        {
+          "type": "stand",
+          "direction": "down",
+          "time": 900
+        },
+        {
+          "type": "stand",
+          "direction": "left",
+          "time": 800
+        },
+        {
+          "type": "stand",
+          "direction": "down",
+          "time": 700
+        },
+        {
+          "type": "stand",
+          "direction": "right",
+          "time": 400
+        },
+        {
+          "type": "stand",
+          "direction": "up",
+          "time": 800
+        }
+      ],
+      "talking": [
+        {
+          "events": [
+            {
+              "type": "textMessage",
+              "text": "I've been dreaming of this Hashimon for weeks!",
+              "faceHero": "diningRoomNpcD"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "cutsceneSpaces": {
+    "112,48": [
+      {
+        "events": [
+          {
+            "type": "changeMap",
+            "map": "Kitchen",
+            "x": 80,
+            "y": 160,
+            "direction": "up"
+          }
+        ]
+      }
+    ],
+    "96,192": [
+      {
+        "events": [
+          {
+            "type": "changeMap",
+            "map": "Street",
+            "x": 80,
+            "y": 144,
+            "direction": "down"
+          }
+        ]
+      }
+    ]
+  },
+  "walls": {
+    "96,48": true,
+    "112,32": true,
+    "96,208": true,
+    "16,80": true,
+    "32,80": true,
+    "48,80": true,
+    "64,80": true,
+    "64,64": true,
+    "80,48": true,
+    "96,64": true,
+    "96,80": true,
+    "128,48": true,
+    "144,64": true,
+    "160,80": true,
+    "176,80": true,
+    "192,80": true,
+    "176,112": true,
+    "192,112": true,
+    "32,112": true,
+    "48,112": true,
+    "64,112": true,
+    "112,112": true,
+    "128,112": true,
+    "144,112": true,
+    "32,160": true,
+    "48,160": true,
+    "64,160": true,
+    "112,160": true,
+    "128,160": true,
+    "144,160": true,
+    "16,192": true,
+    "32,192": true,
+    "48,192": true,
+    "64,192": true,
+    "80,192": true,
+    "112,192": true,
+    "128,192": true,
+    "144,192": true,
+    "160,192": true,
+    "176,192": true,
+    "192,192": true,
+    "0,64": true,
+    "0,80": true,
+    "0,96": true,
+    "0,128": true,
+    "0,144": true,
+    "0,160": true,
+    "0,176": true,
+    "208,64": true,
+    "208,80": true,
+    "208,96": true,
+    "208,128": true,
+    "208,144": true,
+    "208,160": true,
+    "208,176": true
+  }
+}

@@ -150,21 +150,16 @@ class PlayerState {
   //reload without the player having to hit Save. Map position stays in Progress.
   save() {
     if (!window.localStorage) { return; }
-    window.localStorage.setItem("Hashimon_PlayerState", JSON.stringify({
-      hashimons: this.hashimons,
-      lineup: this.lineup,
-      items: this.items,
-      storyFlags: this.storyFlags,
-      questProgress: this.questProgress,
-      personSeed: this.personSeed,
-    }))
+    const progress = window.overworld?.progress || null;
+    SaveManager.writePlayer(this, progress);
   }
 
   load() {
     if (!window.localStorage) { return false; }
-    const file = window.localStorage.getItem("Hashimon_PlayerState");
-    if (!file) { return false; }
-    const data = JSON.parse(file);
+
+    const unified = SaveManager.load();
+    const data = unified?.player;
+    if (!data) { return false; }
     this.hashimons = data.hashimons || {};
     this.lineup = data.lineup || [];
     this.items = data.items || this.items;

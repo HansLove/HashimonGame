@@ -10,23 +10,12 @@ class Progress {
   //Only the world position lives here; the roster owns its own storage so that
   //captures and mined shares persist without an explicit Save.
   save() {
-    window.localStorage.setItem(this.saveFileKey, JSON.stringify({
-      mapId: this.mapId,
-      startingHeroX: this.startingHeroX,
-      startingHeroY: this.startingHeroY,
-      startingHeroDirection: this.startingHeroDirection,
-    }))
-    playerState.save();
+    SaveManager.writeProgress(this, window.playerState);
   }
 
   getSaveFile() {
-
-    if (!window.localStorage) {
-      return null;
-    }
-
-    const file = window.localStorage.getItem(this.saveFileKey);
-    return file ? JSON.parse(file) : null
+    const data = SaveManager.load();
+    return data?.progress || null;
   }
 
   load() {

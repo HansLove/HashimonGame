@@ -1,22 +1,27 @@
 #!/usr/bin/env node
 /** Smoke test for HashimonNames (run from repo root). */
-const fs = require("fs");
-const path = require("path");
-const vm = require("vm");
+import fs from "fs";
+import path from "path";
+import vm from "vm";
+import { fileURLToPath } from "url";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, "..");
 const ctx = vm.createContext({ window: {} });
 ctx.window = ctx;
 
 function load(file) {
-  vm.runInContext(fs.readFileSync(path.join(root, file), "utf8"), ctx, { filename: file });
+  let code = fs.readFileSync(path.join(root, file), "utf8");
+  code = code.replace(/^export\s+(const\s+\w+\s*=.*|{[^}]+});?\s*$/gm, "");
+  vm.runInContext(code, ctx, { filename: file });
 }
 
-load("Content/hashimons.js");
-load("Content/hashimonDNA.js");
-load("Content/hashimonTypes.js");
-load("Content/hashimonCompiler.js");
-load("Content/hashimonNames.js");
+load("src/content/hashimons.js");
+load("src/content/hashimonDNA.js");
+load("src/content/hashimonTypes.data.js");
+load("src/content/hashimonTypes.js");
+load("src/content/hashimonCompiler.js");
+load("src/content/hashimonNames.js");
 
 const h1 = {
   speciesKey: "glitchPup",

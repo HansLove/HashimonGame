@@ -1,14 +1,16 @@
 #!/usr/bin/env node
 /** Smoke test for Hashimon Album pack builder (run from repo root). */
-const fs = require("fs");
-const path = require("path");
-const vm = require("vm");
+import fs from "fs";
+import path from "path";
+import vm from "vm";
+import { fileURLToPath } from "url";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, "..");
 
 const required = [
-  "Content/hashimonAlbum.js",
-  "HashimonAlbumExport.js",
+  "src/content/hashimonAlbum.js",
+  "src/ui/HashimonAlbumExport.js",
   "album/index.html",
   "album/album.js",
   "album/album.css",
@@ -62,7 +64,7 @@ const ctx = vm.createContext({
 });
 ctx.window = ctx;
 
-load("Content/hashimonAlbum.js");
+load("src/content/hashimonAlbum.js");
 
 const sample = {
   hashimon_a: {

@@ -220,4 +220,6 @@ window.HashimonSystem = {
     return { difficulty, isNewBest, foundBlock: pow.foundBlock, ...evolution };
   },
 
-}
+};
+
+export const HashimonSystem = window.HashimonSystem;

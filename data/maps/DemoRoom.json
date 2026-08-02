@@ -1,0 +1,212 @@
+{
+  "id": "DemoRoom",
+  "lowerSrc": "/images/maps/DemoLower.png",
+  "upperSrc": "/images/maps/DemoUpper.png",
+  "configObjects": {
+    "hero": {
+      "type": "Person",
+      "isPlayerControlled": true,
+      "x": 80,
+      "y": 96
+    },
+    "npcA": {
+      "type": "Person",
+      "x": 160,
+      "y": 128,
+      "behaviorLoop": [
+        {
+          "type": "walk",
+          "direction": "left"
+        },
+        {
+          "type": "walk",
+          "direction": "down"
+        },
+        {
+          "type": "walk",
+          "direction": "right"
+        },
+        {
+          "type": "walk",
+          "direction": "up"
+        },
+        {
+          "type": "stand",
+          "direction": "up",
+          "time": 400
+        }
+      ],
+      "talking": [
+        {
+          "required": [
+            "TALKED_TO_ERIO"
+          ],
+          "events": [
+            {
+              "type": "textMessage",
+              "text": "Im thinking in Satoshi Nakamoto",
+              "faceHero": "npcA"
+            }
+          ]
+        },
+        {
+          "events": [
+            {
+              "type": "textMessage",
+              "text": "I'm going to crush you!",
+              "faceHero": "npcA"
+            },
+            {
+              "type": "battle",
+              "enemyId": "beth"
+            },
+            {
+              "type": "addStoryFlag",
+              "flag": "DEFEATED_BETH"
+            },
+            {
+              "type": "textMessage",
+              "text": "You crushed me like weak pepper.",
+              "faceHero": "npcA"
+            },
+            {
+              "type": "textMessage",
+              "text": "Go away!"
+            }
+          ]
+        }
+      ]
+    },
+    "npcC": {
+      "type": "Person",
+      "x": 64,
+      "y": 128,
+      "behaviorLoop": [
+        {
+          "type": "stand",
+          "direction": "left",
+          "time": 500
+        },
+        {
+          "type": "stand",
+          "direction": "down",
+          "time": 500
+        },
+        {
+          "type": "stand",
+          "direction": "right",
+          "time": 500
+        },
+        {
+          "type": "stand",
+          "direction": "up",
+          "time": 500
+        },
+        {
+          "type": "walk",
+          "direction": "left"
+        },
+        {
+          "type": "walk",
+          "direction": "down"
+        },
+        {
+          "type": "walk",
+          "direction": "right"
+        },
+        {
+          "type": "walk",
+          "direction": "up"
+        }
+      ]
+    },
+    "npcB": {
+      "type": "Person",
+      "x": 128,
+      "y": 80,
+      "template": "validator",
+      "talking": [
+        {
+          "events": [
+            {
+              "type": "textMessage",
+              "text": "Bahaha!",
+              "faceHero": "npcB"
+            },
+            {
+              "type": "addStoryFlag",
+              "flag": "TALKED_TO_ERIO"
+            }
+          ]
+        }
+      ]
+    },
+    "hashimonStone": {
+      "type": "HashimonStone",
+      "x": 32,
+      "y": 112,
+      "storyFlag": "USED_HASHIMON_STONE",
+      "hashimons": [
+        "v001",
+        "f001"
+      ]
+    }
+  },
+  "walls": {
+    "112,96": true,
+    "128,96": true,
+    "112,112": true,
+    "128,112": true
+  },
+  "cutsceneSpaces": {
+    "112,64": [
+      {
+        "events": [
+          {
+            "who": "npcB",
+            "type": "walk",
+            "direction": "left"
+          },
+          {
+            "who": "npcB",
+            "type": "stand",
+            "direction": "up",
+            "time": 500
+          },
+          {
+            "type": "textMessage",
+            "text": "You can't be in there!"
+          },
+          {
+            "who": "npcB",
+            "type": "walk",
+            "direction": "right"
+          },
+          {
+            "who": "hero",
+            "type": "walk",
+            "direction": "down"
+          },
+          {
+            "who": "hero",
+            "type": "walk",
+            "direction": "left"
+          }
+        ]
+      }
+    ],
+    "80,160": [
+      {
+        "events": [
+          {
+            "type": "changeMap",
+            "map": "Kitchen",
+            "x": 32,
+            "y": 32,
+            "direction": "down"
+          }
+        ]
+      }
+    ]
+  }
+}

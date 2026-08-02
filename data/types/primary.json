@@ -1,0 +1,390 @@
+{
+  "keys": [
+    "fuego",
+    "agua",
+    "onda",
+    "electrico",
+    "tierra",
+    "aire",
+    "astro",
+    "pixel",
+    "sueno",
+    "magia",
+    "metal",
+    "hongo",
+    "mental"
+  ],
+  "types": {
+    "fuego": {
+      "name": "Fire",
+      "subtypes": [
+        "Pure",
+        "Volcano",
+        "Ember"
+      ],
+      "hues": [
+        [
+          8,
+          42
+        ]
+      ],
+      "visual": {
+        "material": [
+          "cracked skin with living embers",
+          "hot obsidian scales",
+          "smoke-stained fur"
+        ],
+        "feature": [
+          "a mane of open flame",
+          "glowing fissures down the spine",
+          "horns of burning coal"
+        ],
+        "aura": "heat that warps the air around it"
+      }
+    },
+    "agua": {
+      "name": "Water",
+      "subtypes": [
+        "Pure",
+        "Vapor",
+        "Ice",
+        "Tide"
+      ],
+      "hues": [
+        [
+          175,
+          235
+        ]
+      ],
+      "visual": {
+        "material": [
+          "translucent wet skin",
+          "pearlescent scales",
+          "a body of contained water"
+        ],
+        "feature": [
+          "membranous fins",
+          "a current flowing inside its torso",
+          "ice crystals along its back"
+        ],
+        "aura": "suspended droplets orbiting slowly"
+      }
+    },
+    "onda": {
+      "name": "Wave",
+      "subtypes": [
+        "Pure",
+        "Light",
+        "Shadow",
+        "Vibration",
+        "Sound"
+      ],
+      "hues": [
+        [
+          40,
+          60
+        ],
+        [
+          260,
+          290
+        ]
+      ],
+      "visual": {
+        "material": [
+          "an outline that vibrates and doubles",
+          "a silhouette made of interference",
+          "a body with a visible echo"
+        ],
+        "feature": [
+          "concentric rings around its head",
+          "tuning-fork ears",
+          "a trailing after-image"
+        ],
+        "aura": "visible waves rippling out from its chest"
+      }
+    },
+    "electrico": {
+      "name": "Electric",
+      "subtypes": [
+        "Pure",
+        "Plus",
+        "Minus",
+        "Arc"
+      ],
+      "hues": [
+        [
+          45,
+          65
+        ]
+      ],
+      "visual": {
+        "material": [
+          "bristling static fur",
+          "skin with conductive veins",
+          "a body of contained charge"
+        ],
+        "feature": [
+          "arcs leaping between its antennae",
+          "a lightning-rod tail",
+          "glowing circuit markings"
+        ],
+        "aura": "sparks jumping to the ground"
+      }
+    },
+    "tierra": {
+      "name": "Earth",
+      "subtypes": [
+        "Pure",
+        "Crystal",
+        "Mud",
+        "Fossil"
+      ],
+      "hues": [
+        [
+          20,
+          45
+        ]
+      ],
+      "visual": {
+        "material": [
+          "a mineral crust",
+          "dry clay skin",
+          "a shell of sedimentary rock"
+        ],
+        "feature": [
+          "stone plates across its back",
+          "an open geode in its chest",
+          "claws of fossil root"
+        ],
+        "aura": "dust and pebbles hovering around it"
+      }
+    },
+    "aire": {
+      "name": "Air",
+      "subtypes": [
+        "Pure",
+        "Storm",
+        "Gale",
+        "Mist"
+      ],
+      "hues": [
+        [
+          190,
+          220
+        ]
+      ],
+      "visual": {
+        "material": [
+          "weightless fur",
+          "a body dispersing at the edges",
+          "cloud down"
+        ],
+        "feature": [
+          "wings of pure current",
+          "a spiraling tail",
+          "wind vortices along its flanks"
+        ],
+        "aura": "a constant swirl beneath its feet"
+      }
+    },
+    "astro": {
+      "name": "Astro",
+      "subtypes": [
+        "Pure",
+        "Star",
+        "Nova",
+        "Chaos"
+      ],
+      "hues": [
+        [
+          230,
+          280
+        ]
+      ],
+      "visual": {
+        "material": [
+          "deep-sky skin with stars inside it",
+          "a body of contained void",
+          "a nebula mantle"
+        ],
+        "feature": [
+          "a tilted planetary ring",
+          "a constellation etched on its side",
+          "eclipse eyes"
+        ],
+        "aura": "stardust falling upward"
+      }
+    },
+    "pixel": {
+      "name": "Pixel",
+      "subtypes": [
+        "Pure",
+        "Glitch",
+        "Block",
+        "Crypto"
+      ],
+      "hues": [
+        [
+          120,
+          160
+        ]
+      ],
+      "visual": {
+        "material": [
+          "a body of visible voxels",
+          "a deliberately low-resolution texture",
+          "digital-grid skin"
+        ],
+        "feature": [
+          "edges breaking into squares",
+          "a compression-artifact tail",
+          "two-pixel eyes"
+        ],
+        "aura": "sprite fragments flaking off and regenerating"
+      }
+    },
+    "sueno": {
+      "name": "Dream",
+      "subtypes": [
+        "Pure",
+        "Nightmare",
+        "Specter"
+      ],
+      "hues": [
+        [
+          275,
+          320
+        ]
+      ],
+      "visual": {
+        "material": [
+          "a body of dense mist",
+          "skin that blurs at the edges",
+          "a half-remembered silhouette"
+        ],
+        "feature": [
+          "pupil-less eyes",
+          "a dissolving tail",
+          "a floating mask before its face"
+        ],
+        "aura": "slow trailing wisps of smoke"
+      }
+    },
+    "magia": {
+      "name": "Magic",
+      "subtypes": [
+        "Pure",
+        "Psychic",
+        "Monster",
+        "Fae"
+      ],
+      "hues": [
+        [
+          290,
+          330
+        ]
+      ],
+      "visual": {
+        "material": [
+          "iridescent fur",
+          "skin with runes under the surface",
+          "a body woven from enchanted thread"
+        ],
+        "feature": [
+          "a sigil floating over its brow",
+          "spiraling horns",
+          "stained-glass wings"
+        ],
+        "aura": "glyphs turning in orbit"
+      }
+    },
+    "metal": {
+      "name": "Metal",
+      "subtypes": [
+        "Pure",
+        "Alloy",
+        "Magneto",
+        "Forge"
+      ],
+      "hues": [
+        [
+          200,
+          220
+        ]
+      ],
+      "visual": {
+        "material": [
+          "polished steel plating",
+          "worn chrome",
+          "riveted armor"
+        ],
+        "feature": [
+          "exposed joints",
+          "a chain tail",
+          "a chest plate with a serial number"
+        ],
+        "aura": "iron filings floating along field lines"
+      }
+    },
+    "hongo": {
+      "name": "Fungus",
+      "subtypes": [
+        "Pure",
+        "Spore",
+        "Mycelium",
+        "Rot"
+      ],
+      "hues": [
+        [
+          15,
+          40
+        ],
+        [
+          280,
+          310
+        ]
+      ],
+      "visual": {
+        "material": [
+          "mycelium skin",
+          "a spongy damp texture",
+          "a fungal-cap body"
+        ],
+        "feature": [
+          "a spotted cap",
+          "bioluminescent gills beneath it",
+          "a colony growing on its back"
+        ],
+        "aura": "a cloud of glowing spores"
+      }
+    },
+    "mental": {
+      "name": "Mental",
+      "subtypes": [
+        "Pure",
+        "Psychic",
+        "Telepath",
+        "Oracle"
+      ],
+      "hues": [
+        [
+          250,
+          285
+        ]
+      ],
+      "visual": {
+        "material": [
+          "smooth featureless skin",
+          "cold porcelain",
+          "a surface that reflects the viewer"
+        ],
+        "feature": [
+          "an exposed glowing skull",
+          "a third eye",
+          "appendages that move without touching the ground"
+        ],
+        "aura": "small objects levitating in a ring"
+      }
+    }
+  }
+}

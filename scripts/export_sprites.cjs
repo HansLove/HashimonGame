@@ -57,8 +57,8 @@ global.window = {};
 global.document = { createElement: () => makeCanvas() };
 
 //--- load the real game modules (order matters for globals) ---
-for (const f of ["Content/hashimonDNA.js", "Content/hashimonTypes.js", "Content/hashimons.js",
-  "Content/hashimonCompiler.js", "Content/hashimonSprite.js", "Content/hashimonSystem.js"]) {
+for (const f of ["src/content/hashimonDNA.js", "src/content/hashimonTypes.data.js", "src/content/hashimonTypes.js", "src/content/hashimons.js",
+  "src/content/hashimonCompiler.js", "src/content/hashimonSprite.js", "src/content/hashimonSystem.js"]) {
   eval(fs.readFileSync(path.join(GAME, f), "utf8"));
 }
 Object.assign(global, global.window);

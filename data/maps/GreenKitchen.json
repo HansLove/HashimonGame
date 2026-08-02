@@ -1,0 +1,217 @@
+{
+  "id": "GreenKitchen",
+  "lowerSrc": "/images/maps/GreenKitchenLower.png",
+  "upperSrc": "/images/maps/GreenKitchenUpper.png",
+  "configObjects": {
+    "hero": {
+      "type": "Person",
+      "isPlayerControlled": true,
+      "x": 48,
+      "y": 128
+    },
+    "greenKitchenNpcA": {
+      "type": "Person",
+      "x": 128,
+      "y": 128,
+      "behaviorLoop": [
+        {
+          "type": "stand",
+          "direction": "up",
+          "time": 400
+        },
+        {
+          "type": "stand",
+          "direction": "left",
+          "time": 800
+        },
+        {
+          "type": "stand",
+          "direction": "down",
+          "time": 400
+        },
+        {
+          "type": "stand",
+          "direction": "left",
+          "time": 800
+        }
+      ],
+      "talking": [
+        {
+          "events": [
+            {
+              "type": "textMessage",
+              "text": "Rootie runs the best validation protocol in the gardens.",
+              "faceHero": "greenKitchenNpcA"
+            }
+          ]
+        }
+      ]
+    },
+    "greenKitchenNpcB": {
+      "type": "Person",
+      "x": 16,
+      "y": 128,
+      "behaviorLoop": [
+        {
+          "type": "stand",
+          "direction": "up",
+          "time": 900
+        },
+        {
+          "type": "walk",
+          "direction": "down"
+        },
+        {
+          "type": "walk",
+          "direction": "down"
+        },
+        {
+          "type": "stand",
+          "direction": "right",
+          "time": 800
+        },
+        {
+          "type": "stand",
+          "direction": "down",
+          "time": 400
+        },
+        {
+          "type": "stand",
+          "direction": "right",
+          "time": 800
+        },
+        {
+          "type": "walk",
+          "direction": "up"
+        },
+        {
+          "type": "walk",
+          "direction": "up"
+        },
+        {
+          "type": "stand",
+          "direction": "up",
+          "time": 600
+        },
+        {
+          "type": "stand",
+          "direction": "right",
+          "time": 900
+        }
+      ],
+      "talking": [
+        {
+          "events": [
+            {
+              "type": "textMessage",
+              "text": "Finally... a Hashimon lab that speaks my language!",
+              "faceHero": "greenKitchenNpcB"
+            }
+          ]
+        }
+      ]
+    },
+    "greenKitchenNpcC": {
+      "type": "Person",
+      "x": 48,
+      "y": 80,
+      "template": "boss",
+      "talking": [
+        {
+          "required": [
+            "chefRootie"
+          ],
+          "events": [
+            {
+              "type": "textMessage",
+              "faceHero": [
+                "greenKitchenNpcC"
+              ],
+              "text": "My data seeds need more growth cycles."
+            }
+          ]
+        },
+        {
+          "events": [
+            {
+              "type": "textMessage",
+              "text": "Organic data is the fuel for the heart and soul!",
+              "faceHero": "greenKitchenNpcC"
+            },
+            {
+              "type": "battle",
+              "enemyId": "chefRootie",
+              "arena": "mempool-gardens"
+            },
+            {
+              "type": "addStoryFlag",
+              "flag": "chefRootie"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "cutsceneSpaces": {
+    "80,192": [
+      {
+        "events": [
+          {
+            "type": "changeMap",
+            "map": "StreetNorth",
+            "x": 112,
+            "y": 80,
+            "direction": "down"
+          }
+        ]
+      }
+    ]
+  },
+  "walls": {
+    "16,64": true,
+    "48,64": true,
+    "64,64": true,
+    "96,64": true,
+    "112,64": true,
+    "128,80": true,
+    "144,64": true,
+    "16,96": true,
+    "32,96": true,
+    "48,96": true,
+    "64,96": true,
+    "80,96": true,
+    "96,96": true,
+    "48,112": true,
+    "64,112": true,
+    "96,112": true,
+    "32,144": true,
+    "48,144": true,
+    "64,144": true,
+    "112,160": true,
+    "128,160": true,
+    "144,160": true,
+    "16,192": true,
+    "32,192": true,
+    "48,192": true,
+    "64,192": true,
+    "96,192": true,
+    "112,192": true,
+    "128,192": true,
+    "144,192": true,
+    "0,80": true,
+    "0,96": true,
+    "0,112": true,
+    "0,128": true,
+    "0,144": true,
+    "0,160": true,
+    "0,176": true,
+    "160,80": true,
+    "160,96": true,
+    "160,112": true,
+    "160,128": true,
+    "160,144": true,
+    "160,160": true,
+    "160,176": true,
+    "80,208": true
+  }
+}
