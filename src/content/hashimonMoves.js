@@ -35,6 +35,11 @@ window.HashimonMoves = {
 
   //Curated kits override auto-assignment where the species needs a specific identity
   speciesKits: {
+    genesis_fuego:     ["emberClaw", "scratch", "overclock"],
+    genesis_agua:      ["tidalCrash", "scratch", "strike"],
+    genesis_aire:      ["gustSlice", "hashPulse", "scratch"],
+    genesis_tierra:    ["rootGuard", "strike", "hashPulse"],
+    genesis_electrico: ["voltArc", "hashPulse", "scratch"],
     s001:       ["genesisBlock", "hashPulse", "overclock", "pixelBurst"],
     solarCub:   ["emberClaw", "scratch", "overclock"],
     s002:       ["alloyRam", "strike", "hashGlitch", "overclock"],

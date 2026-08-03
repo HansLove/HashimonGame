@@ -10,8 +10,12 @@ class CraftingMenu {
       return {
         label: species.name,
         description: species.description,
-        handler: () => {
-          playerState.addHashimon(HashimonSystem.createInstance(speciesKey));
+        handler: async () => {
+          try {
+            await playerState.craftHashimon(speciesKey);
+          } catch (e) {
+            console.warn("Craft emit failed:", e);
+          }
           this.close();
         }
       }

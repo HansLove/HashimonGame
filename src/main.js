@@ -16,6 +16,9 @@ import "./content/hashimonPrompt.js";
 import "./content/hashimonAlbum.js";
 import "./content/hashimonAlbumBridge.js";
 import "./content/hashimonSprite.js";
+import "./net/hashimonApi.js";
+import "./lib/pow.js";
+import "./lib/mineBurst.js";
 import "./content/hashimonMining.js";
 import "./content/hashimonZones.js";
 import "./content/enemies.js";
@@ -52,6 +55,7 @@ import "./ui/HashimonAlbumExport.js";
 import "./ui/CraftingMenu.js";
 import "./state/Progress.js";
 import "./ui/TitleScreen.js";
+import "./ui/GenesisOnboarding.js";
 
 import "./battle/Battle.js";
 import "./battle/Combatant.js";

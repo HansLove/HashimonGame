@@ -7,7 +7,7 @@ const GLOBAL_NAMES = [
   "DirectionInput", "KeyPressListener", "KeyboardMenu", "RevealingText",
   "TextMessage", "SceneTransition", "Overworld", "OverworldMap", "OverworldEvent",
   "MapGenerator", "PersonGenerator", "Progress", "SaveManager", "QuestManager",
-  "TitleScreen", "Hud", "ObjectiveHud", "MapLabel", "PauseMenu",
+  "TitleScreen", "GenesisOnboarding", "Hud", "ObjectiveHud", "MapLabel", "PauseMenu",
   "HashimonCollection", "HashimonAlbumExport", "CraftingMenu",
   "Battle", "Combatant", "Team", "SubmissionMenu", "ReplacementMenu",
   "BattleEvent", "TurnCycle",
@@ -15,6 +15,7 @@ const GLOBAL_NAMES = [
   "HashimonMoves", "Actions", "Enemies", "Quests", "HashimonPrompt", "HashimonAlbum",
   "HashimonAlbumBridge", "HashimonSprite", "HashimonMining", "HashimonZones",
   "HashimonEncounters", "MapThemes", "MapLoader", "HashimonConfig",
+  "HashimonApi",
   "playerState", "questManager", "saveManager",
 ];
 
@@ -74,6 +75,11 @@ export default defineConfig({
   root: ".",
   publicDir: "public",
   plugins: [legacyGlobalsPlugin()],
+  define: {
+    "import.meta.env.VITE_HASHIMON_API": JSON.stringify(
+      process.env.VITE_HASHIMON_API || "http://127.0.0.1:4000"
+    ),
+  },
   server: {
     port: 8081,
     open: "/index.html",

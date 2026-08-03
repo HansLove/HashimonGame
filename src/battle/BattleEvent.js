@@ -102,14 +102,19 @@ class BattleEvent {
       {
         label: "Capture",
         description: `Add ${individual.name} to your collection`,
-        handler: () => {
+        handler: async () => {
           menu.end();
-          const saved = window.playerState.addHashimon(individual);
-          if (captureFlag) {
-            window.playerState.storyFlags[captureFlag] = true;
-            window.playerState.save();
+          try {
+            const saved = await window.playerState.captureWild(wildSpecies);
+            if (captureFlag) {
+              window.playerState.storyFlags[captureFlag] = true;
+              window.playerState.save();
+            }
+            resolve(saved);
+          } catch (e) {
+            console.warn("Capture failed:", e);
+            resolve(null);
           }
-          resolve(saved);
         }
       },
       {

@@ -42,6 +42,7 @@ window.HashimonSystem = {
         bestShareBits: 0,
         bestShareHash: "0000demo",
         bestShareNonce: null,
+        bestShareExtranonce2: null,
         extranonce2: 0,        //the grind counter this creature resumes from
         totalHashes: 0,        //real hashes ever invested = proof of effort
         validShares: 0,

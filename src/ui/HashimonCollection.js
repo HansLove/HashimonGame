@@ -70,7 +70,7 @@ class HashimonCollection {
               ${h.name}${inLineup ? ` <span class="HashimonCollection_badge">in party</span>` : ""}
             </p>
             <p>${h.speciesLabel || HashimonNames.speciesLabel(h.speciesKey)} &middot; stage ${h.stage}/${h.maxStage} &middot; ${h.branch}</p>
-            <p>Best share: ${h.pow.bestShareDifficulty}</p>
+            <p>Best share: ${h.pow.bestShareBits || 0} bits</p>
           </div>
           <button data-detail="${h.id}">View sheet</button>
         </div>
@@ -141,7 +141,7 @@ class HashimonCollection {
 
     const sprite = HashimonSystem.getSpriteForStage(h);
     const genetics = HashimonCompiler.compile(h);
-    const verified = HashimonMining.verify(h);   //recompute the best share = proof it's real
+    const verified = h.verified === true ? true : (h.verified === false ? false : HashimonMining.verify(h));
     const tier = genetics.stars;                 //stars == stage == leading-zero nibbles
     //Progress = bits already banked toward the next leading zero (0..4).
     const percent = Math.min(100, Math.round((h.evolution.progress / h.evolution.nextThreshold) * 100));
@@ -180,7 +180,8 @@ class HashimonCollection {
           <p><span>Best share hash</span> ${h.pow.bestShareHash.slice(0, 18)}&hellip;</p>
           <p><span>Hashes invested</span> ${(h.pow.totalHashes || 0).toLocaleString()}</p>
           <p><span>Mining</span> ${h.pow.miningSeconds}s</p>
-          <p><span>Verified</span> ${verified === null ? "&mdash;" : (verified ? "✓ real work" : "✗ mismatch")}</p>
+          <p><span>Verified</span> ${verified === null ? "&mdash;" : (verified ? "✓ server verified" : "✗ mismatch")}</p>
+          ${!h.serverId ? `<p class="HashimonCollection_hint">Not synced with server — mining disabled.</p>` : ""}
           <p><span>Found block</span> ${h.pow.foundBlock ? "YES!" : "no"}</p>
         </div>
       </div>
@@ -225,26 +226,50 @@ class HashimonCollection {
       }
     });
 
-    //Real proof of work: the device grinds actual double-SHA-256 over this
-    //creature's DNA for a burst, and the genuine best hash is recorded on it.
-    this.element.querySelector("button[data-share]").addEventListener("click", (e) => {
+    //Real proof of work: fetch server job, grind bound-mode burst, POST share.
+    const mineBtn = this.element.querySelector("button[data-share]");
+    if (!h.serverId) {
+      mineBtn.disabled = true;
+      mineBtn.title = "Requires server-synced Hashimon";
+    }
+    mineBtn?.addEventListener("click", async (e) => {
       const btn = e.currentTarget;
-      btn.disabled = true; btn.innerText = "Mining…";
+      if (!h.serverId) {
+        this.lastShareMessage = "Connect to the Hashimon server to mine.";
+        this.renderDetail(id);
+        return;
+      }
+      btn.disabled = true;
+      btn.innerText = "Mining…";
       this.element.querySelector(".HashimonCollection_share-message").innerText = "Grinding hashes…";
-      //let the label paint before the synchronous grind
-      setTimeout(() => {
-        const r = HashimonMining.mine(h);
+      await new Promise(r => setTimeout(r, 20));
+      try {
+        const r = await HashimonMining.mine(h);
         window.playerState.save();
 
-        let message = `${r.hashes.toLocaleString()} hashes &middot; ${r.hashrate.toLocaleString()} H/s`;
-        if (r.newBest) { message += ` &middot; new best ${r.bestBits} bits (${r.tier} zeros)`; }
-        if (r.stageUp) { message += ` &middot; ⭐ NEW STAR! Rank ${r.newStage} — it evolved!`; utils.emitEvent("PlayerStateUpdated"); }
-        if (r.foundBlock) { message += " &middot; BLOCK FOUND!!"; }
+        let message = `${r.hashes.toLocaleString()} hashes`;
+        if (r.hashrate) { message += ` · ${r.hashrate.toLocaleString()} H/s`; }
+        if (r.found && r.verified) {
+          message += ` · share accepted ${r.bits} bits`;
+        } else if (r.found && !r.ok) {
+          message += ` · share rejected: ${r.error}`;
+        } else if (!r.found) {
+          message += ` · no share this burst (try again)`;
+        }
+        if (r.stageUp) {
+          message += ` · NEW STAR! Rank ${r.newStage}`;
+          utils.emitEvent("PlayerStateUpdated");
+        }
+        if (r.foundBlock) { message += " · BLOCK FOUND!!"; }
         this.lastShareMessage = message;
         debouncedAlbumSync();
         this.renderDetail(id);
-      }, 20);
-    })
+      } catch (err) {
+        this.lastShareMessage = String(err.message || err);
+        btn.disabled = false;
+        btn.innerText = "Mine";
+      }
+    });
     this.element.querySelector("button[data-back]").addEventListener("click", () => {
       this.renderList();
     })

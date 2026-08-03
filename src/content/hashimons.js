@@ -39,6 +39,83 @@ window.Hashimons = {
     ],
   },
 
+  //--- Elemental genesis starters (player picks one at New Adventure) ---
+  genesis_fuego: {
+    name: "Ember Genesis",
+    description: "A pure flame block, loyal from the first spark.",
+    species: "genesis_fuego",
+    type: "fuego", archetype: "canine",
+    forcedSubtype: "Pure",
+    branch: "solar", starClass: "yellow",
+    baseHp: 50, baseStats: { power: 8, defense: 7, speed: 7, energy: 10 },
+    templateId: "template_genesis_fuego",
+    spriteStages: [
+      { minStage: 1,  label: "Ember",  src: "/images/characters/pizzas/hashimon_1.png" },
+      { minStage: 6,  label: "Blaze",  src: "/images/characters/pizzas/hashimon_2.png" },
+      { minStage: 16, label: "Inferno", src: "/images/adult-lion.svg" },
+    ],
+  },
+  genesis_agua: {
+    name: "Tide Genesis",
+    description: "A contained tide in block form — patient and deep.",
+    species: "genesis_agua",
+    type: "agua", archetype: "amphibian",
+    forcedSubtype: "Pure",
+    branch: "block", starClass: "blue",
+    baseHp: 50, baseStats: { power: 7, defense: 8, speed: 7, energy: 10 },
+    templateId: "template_genesis_agua",
+    spriteStages: [
+      { minStage: 1,  label: "Ripple", src: "/images/characters/pizzas/v002.png" },
+      { minStage: 6,  label: "Current", src: "/images/characters/pizzas/v001.png" },
+      { minStage: 16, label: "Deep",   src: "/images/adult-lion.svg" },
+    ],
+  },
+  genesis_aire: {
+    name: "Gust Genesis",
+    description: "Light as a mempool breeze, never quite touching down.",
+    species: "genesis_aire",
+    type: "aire", archetype: "bird",
+    forcedSubtype: "Pure",
+    branch: "storm", starClass: "blue",
+    baseHp: 50, baseStats: { power: 7, defense: 7, speed: 8, energy: 10 },
+    templateId: "template_genesis_aire",
+    spriteStages: [
+      { minStage: 1,  label: "Breeze", src: "/images/characters/pizzas/f003.png" },
+      { minStage: 6,  label: "Gale",   src: "/images/characters/pizzas/s003.png" },
+      { minStage: 16, label: "Tempest", src: "/images/adult-lion.svg" },
+    ],
+  },
+  genesis_tierra: {
+    name: "Root Genesis",
+    description: "Layers of defense stacked like confirmed blocks.",
+    species: "genesis_tierra",
+    type: "tierra", archetype: "chelonian",
+    forcedSubtype: "Pure",
+    branch: "block", starClass: "green",
+    baseHp: 50, baseStats: { power: 7, defense: 8, speed: 6, energy: 10 },
+    templateId: "template_genesis_tierra",
+    spriteStages: [
+      { minStage: 1,  label: "Seedling", src: "/images/characters/pizzas/v003.png" },
+      { minStage: 6,  label: "Rooted",   src: "/images/characters/pizzas/v001.png" },
+      { minStage: 16, label: "Bedrock",  src: "/images/adult-lion.svg" },
+    ],
+  },
+  genesis_electrico: {
+    name: "Volt Genesis",
+    description: "Small, charged, and twitching with chain energy.",
+    species: "genesis_electrico",
+    type: "electrico", archetype: "rodent",
+    forcedSubtype: "Pure",
+    branch: "storm", starClass: "yellow",
+    baseHp: 50, baseStats: { power: 8, defense: 7, speed: 8, energy: 10 },
+    templateId: "template_genesis_electrico",
+    spriteStages: [
+      { minStage: 1,  label: "Spark",  src: "/images/characters/pizzas/c002.png" },
+      { minStage: 6,  label: "Arc",    src: "/images/characters/pizzas/c003.png" },
+      { minStage: 16, label: "Surge",  src: "/images/adult-lion.svg" },
+    ],
+  },
+
   //--- Fire / Genesis ---
   solarCub: {
     name: "Solar Cub",

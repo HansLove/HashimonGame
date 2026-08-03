@@ -1,0 +1,97 @@
+.GenesisOnboarding {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--game-font, "Ribeye", serif);
+}
+
+.GenesisOnboarding_backdrop {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 30%, rgba(20, 24, 40, 0.92), rgba(8, 10, 18, 0.98));
+}
+
+.GenesisOnboarding_grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.12;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.GenesisOnboarding_panel {
+  position: relative;
+  z-index: 1;
+  width: min(92%, 280px);
+  padding: 14px 12px 10px;
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background: rgba(12, 16, 28, 0.94);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+}
+
+.GenesisOnboarding_title {
+  margin: 0 0 6px;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  color: #f4f7ff;
+  text-align: center;
+}
+
+.GenesisOnboarding_copy {
+  margin: 0 0 10px;
+  font-size: 9px;
+  line-height: 1.45;
+  color: rgba(220, 228, 255, 0.82);
+  text-align: center;
+}
+
+.GenesisOnboarding_actions {
+  min-height: 120px;
+}
+
+.GenesisOnboarding .KeyboardMenu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.GenesisOnboarding .KeyboardMenu button {
+  border-left: 4px solid hsl(var(--genesis-hue, 200), 70%, 52%);
+  text-align: left;
+}
+
+.GenesisOnboarding .DescriptionBox {
+  margin-top: 8px;
+  min-height: 36px;
+}
+
+.GenesisOnboarding_hint {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  z-index: 40;
+  transform: translateX(-50%) translateY(12px);
+  max-width: 92%;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: rgba(10, 14, 24, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #e8eeff;
+  font-size: 8px;
+  line-height: 1.4;
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.GenesisOnboarding_hint.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}

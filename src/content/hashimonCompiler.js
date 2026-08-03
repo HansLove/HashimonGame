@@ -111,10 +111,14 @@ window.HashimonCompiler = {
       ? fusionDef.subtypes
       : primaryDef.subtypes;
 
+    const subtype = species?.forcedSubtype
+      ? species.forcedSubtype
+      : subtypePool[HashimonDNA.modulo(dna, 7, subtypePool.length)];
+
     return {
       primary:   { key: primary, name: primaryDef.name },
       secondary: secondary ? { key: secondary, name: HashimonTypes[secondary].name } : null,
-      subtype:   subtypePool[HashimonDNA.modulo(dna, 7, subtypePool.length)],
+      subtype,
       fusion:    fusionDef ? fusionDef.name : null,
       fusionFlavor: fusionDef?.flavor || null,
     };

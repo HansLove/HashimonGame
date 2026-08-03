@@ -110,4 +110,17 @@ if (!t1.subtype) {
   throw new Error("mono-type missing subtype");
 }
 
+["genesis_fuego", "genesis_agua", "genesis_aire", "genesis_tierra", "genesis_electrico"].forEach(key => {
+  const sp = Hashimons[key];
+  if (!sp) { throw new Error(`missing genesis species: ${key}`); }
+  const dna = HashimonDNA.derive(sp.templateId, 1, key);
+  const types = HashimonCompiler.compileTypes(dna, sp);
+  if (types.subtype !== "Pure") {
+    throw new Error(`${key} expected Pure subtype, got ${types.subtype}`);
+  }
+  if (types.primary.key !== sp.type) {
+    throw new Error(`${key} expected type ${sp.type}, got ${types.primary.key}`);
+  }
+});
+
 console.log(`OK: ${HashimonPrimaryKeys.length} primaries, ${fusionCount} fusions, v001=${kaleTypes.fusion}/${kaleTypes.subtype}`);

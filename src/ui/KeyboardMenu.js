@@ -11,9 +11,10 @@ class KeyboardMenu {
     this.options = options;
     this.element.innerHTML = this.options.map((option, index) => {
       const disabledAttr = option.disabled ? "disabled" : "";
+      const styleAttr = option.style ? ` style="${option.style}"` : "";
       return (`
         <div class="option">
-          <button ${disabledAttr} data-button="${index}" data-description="${option.description}">
+          <button ${disabledAttr}${styleAttr} data-button="${index}" data-description="${option.description}">
             ${option.label}
           </button>
           <span class="right">${option.right ? option.right() : ""}</span>

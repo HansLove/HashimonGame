@@ -149,7 +149,15 @@ class Overworld {
       }
     }
   } else {
-    window.playerState.reset();
+    await window.playerState.reset();
+    const speciesKey = await GenesisOnboarding.init(container);
+    await window.playerState.bootstrapServer({ speciesKey });
+    window.playerState.storyFlags.showGiveLifeHint = true;
+    window.playerState.save();
+  }
+
+  if (useSaveFile) {
+    await window.playerState.bootstrapServer();
   }
 
   if (window.PersonGenerator) {
@@ -162,6 +170,12 @@ class Overworld {
   //Load the HUD
   this.hud = new Hud();
   this.hud.init(container);
+
+  if (window.playerState.storyFlags.showGiveLifeHint) {
+    GenesisOnboarding.showGiveLifeHint(container);
+    delete window.playerState.storyFlags.showGiveLifeHint;
+    window.playerState.save();
+  }
 
   this.objectiveHud = new ObjectiveHud();
   this.objectiveHud.init(container);

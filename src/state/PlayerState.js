@@ -20,11 +20,9 @@ class PlayerState {
       hashimon.status.type = PlayerState.STATUS_ALIASES[hashimon.status.type]
         || hashimon.status.type;
     }
-    //Refresh move kits so saves pick up enriched species assignments.
     if (hashimon.speciesKey && window.HashimonMoves) {
       hashimon.moves = HashimonMoves.kitFor(hashimon.speciesKey);
     }
-    //Species label + unique nickname migration for older saves.
     if (window.HashimonNames && hashimon.speciesKey) {
       if (!hashimon.speciesLabel) {
         hashimon.speciesLabel = HashimonNames.speciesLabel(hashimon.speciesKey);
@@ -35,51 +33,69 @@ class PlayerState {
         hashimon.name = HashimonNames.generate(hashimon);
       }
     }
-    //PoW fields for the real grinder (older saves predate them).
     if (hashimon.pow) {
       const p = hashimon.pow;
       if (p.extranonce2 == null) { p.extranonce2 = 0; }
       if (p.totalHashes == null) { p.totalHashes = 0; }
       if (p.bestShareNonce === undefined) { p.bestShareNonce = null; }
+      if (p.bestShareExtranonce2 === undefined) { p.bestShareExtranonce2 = null; }
       if (p.bestShareBits == null) {
-        //derive from any legacy bestShareDifficulty; a "demo" hash counts as 0
         p.bestShareBits = /^0000[^0]/.test(p.bestShareHash || "") ? 0
           : Math.max(0, Math.floor(Math.log2(Math.max(1, p.bestShareDifficulty || 1))));
       }
-      //Rank/stage is now EARNED from the best real share — recompute so saves
-      //made under the old share-count model drop to their true tier.
       if (window.HashimonSystem) { HashimonSystem.refreshEvolution(hashimon); }
     }
   }
 
   constructor() {
-    //Single roster: everything you own lives here, whether it was your starter
-    //or caught in the wild. `lineup` holds the ids you take into battle.
     this.hashimons = {};
     this.lineup = [];
     this.items = [
       { actionId: "item_recoverHp", instanceId: "item1" },
       { actionId: "item_recoverHp", instanceId: "item2" },
       { actionId: "item_recoverHp", instanceId: "item3" },
-    ]
+    ];
     this.storyFlags = {};
     this.questProgress = { activeQuestId: null, completedSteps: [] };
     this.personSeed = "hero_genesis";
+    this.serverReady = false;
+    this.load();
+  }
 
-    if (!this.load()) {
-      this.seedStarter();
+  async bootstrapServer({ speciesKey } = {}) {
+    if (!window.HashimonApi) {
+      this.serverReady = false;
+      return false;
+    }
+    try {
+      await HashimonApi.ensureSession();
+      const all = Object.values(this.hashimons);
+      if (this.lineup.length === 0 || all.length === 0) {
+        if (!speciesKey) {
+          console.warn("Empty roster but no speciesKey — skipping starter emit.");
+          this.serverReady = false;
+          return false;
+        }
+        const server = await HashimonApi.emitHashimon(speciesKey, "starter");
+        const h = HashimonApi.mapServerToLocal(server, "hashimon_starter_001");
+        this.hashimons = { [h.id]: h };
+        this.lineup = [h.id];
+        this.storyFlags.genesisComplete = true;
+        this.save();
+      } else if (all.some(h => !h.serverId)) {
+        console.warn("Some Hashimon lack serverId — mining disabled until re-emitted.");
+      }
+      this.serverReady = true;
+      utils.emitEvent("PlayerStateUpdated");
+      return true;
+    } catch (e) {
+      console.warn("Hashimon server bootstrap failed:", e);
+      this.serverReady = false;
+      return false;
     }
   }
 
-  seedStarter() {
-    const starter = HashimonSystem.createInstance("s001", { id: "hashimon_starter_001" });
-    this.hashimons[starter.id] = starter;
-    this.lineup = [starter.id];
-  }
-
-  //Starting a new game wipes the roster. Without this the autosave would leak
-  //the previous run's Hashimons into a fresh save.
-  reset() {
+  resetLocal() {
     this.hashimons = {};
     this.lineup = [];
     this.storyFlags = {};
@@ -89,13 +105,28 @@ class PlayerState {
       { actionId: "item_recoverHp", instanceId: "item1" },
       { actionId: "item_recoverHp", instanceId: "item2" },
       { actionId: "item_recoverHp", instanceId: "item3" },
-    ]
-    this.seedStarter();
+    ];
+  }
+
+  async reset() {
+    this.resetLocal();
     this.save();
   }
 
-  //Adds an already-built instance (wild capture, crafting). Guards against id
-  //collisions so a second catch never overwrites the first one.
+  async emitAndAdd(speciesKey, provenance = "wild", localId) {
+    const server = await HashimonApi.emitHashimon(speciesKey, provenance);
+    const hashimon = HashimonApi.mapServerToLocal(server, localId);
+    return this.addHashimon(hashimon);
+  }
+
+  async captureWild(speciesKey) {
+    return this.emitAndAdd(speciesKey, "wild");
+  }
+
+  async craftHashimon(speciesKey) {
+    return this.emitAndAdd(speciesKey, "wild");
+  }
+
   addHashimon(hashimon) {
     let id = hashimon.id;
     while (this.hashimons[id]) {
@@ -146,8 +177,6 @@ class PlayerState {
     return { ok: true, name: hashimon.name };
   }
 
-  //The roster autosaves on every change so captures and mined shares survive a
-  //reload without the player having to hit Save. Map position stays in Progress.
   save() {
     if (!window.localStorage) { return; }
     const progress = window.overworld?.progress || null;
@@ -171,15 +200,12 @@ class PlayerState {
     }
     this.personSeed = data.personSeed || "hero_genesis";
 
-    //Hashimons captured before DNA existed get theirs derived now. It comes from
-    //their unchanged PoW identity, so they end up with the DNA they always
-    //would have had.
     Object.values(this.hashimons).forEach(h => {
       if (!h.dna) {
         h.dna = HashimonDNA.derive(h.pow.templateId, h.pow.birthNonce, h.speciesKey);
       }
       this.migrateHashimon(h);
-    })
+    });
 
     return this.lineup.length > 0;
   }

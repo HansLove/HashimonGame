@@ -1,99 +1,150 @@
-//Real proof of work. This is the seam the whole game turns on: where the lab
-//used to roll a fake share with Math.random, the player's device now genuinely
-//computes double SHA-256 over a dataset bound to the creature, and the best hash
-//it actually finds is recorded on that creature.
-//
-//The mapping to real mining, made literal:
-//   extranonce1  = the creature's DNA  (fixed identity / search context)
-//   extranonce2  = pow.extranonce2     (the counter this device grinds)
-//   share        = a hash with enough leading zero bits
-//   best share   = the rarest hash ever found for this creature = its proof of effort
-//
-//Sovereign and self-contained: it runs locally, contacts no pool, promises no
-//reward. A share is real, recomputable work — anyone can re-hash DNA + nonce and
-//confirm it. Connecting this to a live Bitcoin block template (so a share meeting
-//network difficulty is a real block) is the later gateway phase; the grinder here
-//is exactly the client that phase reuses.
+//Server-authoritative bound-mode PoW: fetch job → grind → POST share.
+import { mineBurst } from "../lib/mineBurst.js";
+import { DEFAULT_SHARE_TARGET_BITS, deriveExtranonce1, leadingZeroBits } from "../lib/pow.js";
+import HashimonApi from "../net/hashimonApi.js";
+
+function applyServerPow(hashimon, serverBody) {
+  const h = serverBody.hashimon || serverBody;
+  const pow = hashimon.pow;
+  if (h.pow) {
+    pow.extranonce2 = h.pow.extranonce2 ?? pow.extranonce2;
+    pow.bestShareBits = h.pow.bestShareBits ?? pow.bestShareBits;
+    pow.bestShareHash = h.pow.bestShareHash ?? pow.bestShareHash;
+    pow.bestShareNonce = h.pow.bestShareNonce ?? pow.bestShareNonce;
+    pow.bestShareExtranonce2 = h.pow.bestShareExtranonce2 ?? pow.bestShareExtranonce2;
+    pow.validShares = h.pow.validShares ?? pow.validShares;
+    pow.totalHashes = h.pow.totalHashes ?? pow.totalHashes;
+    pow.foundBlock = h.pow.foundBlock ?? pow.foundBlock;
+    if (pow.bestShareBits != null) {
+      pow.bestShareDifficulty = Math.pow(2, pow.bestShareBits);
+    }
+  }
+  hashimon.verified = serverBody.verified === true;
+  globalThis.HashimonSystem.refreshEvolution(hashimon);
+}
+
 window.HashimonMining = {
 
-  //Tuning. A "share" is any hash clearing shareTargetBits leading zeros; a block
-  //is the (astronomically unlikely) jackpot. Browser hashrate is tiny vs the real
-  //network, so evolution is driven by accumulated shares, never by blocks.
-  shareTargetBits: 10,
+  shareTargetBits: DEFAULT_SHARE_TARGET_BITS,
   blockTargetBits: 64,
-  budgetMs: 260,        //one "Mine" burst grinds real hashes for ~this long
+  budgetMs: 260,
 
-  //Bitcoin's PoW is double SHA-256; we hash DNA:nonce twice.
   hashOnce(str) { return SHA256(SHA256(str)); },
 
-  //How many leading zero BITS a hex digest has — its share difficulty.
   leadingZeroBits(hex) {
-    let bits = 0;
-    for (let i = 0; i < hex.length; i++) {
-      const v = parseInt(hex[i], 16);
-      if (v === 0) { bits += 4; continue; }
-      bits += Math.clz32(v) - 28;   //leading zero bits inside this nibble (0..3)
-      break;
-    }
-    return bits;
+    return leadingZeroBits(hex);
   },
 
-  //Grind a real burst for one creature, folding the genuine result into its PoW
-  //record. Resumes from the creature's own extranonce2 so effort accumulates
-  //across sessions and never repeats work.
-  mine(hashimon, opts = {}) {
-    const budgetMs = opts.budgetMs != null ? opts.budgetMs : this.budgetMs;
-    const maxHashes = opts.maxHashes || Infinity;
-    const dna = HashimonDNA.forHashimon(hashimon);
-    const pow = hashimon.pow;
+  /**
+   * Mine one burst against the authoritative server job.
+   * Requires hashimon.serverId and an active session.
+   */
+  async mine(hashimon, opts = {}) {
+    if (!hashimon.serverId) {
+      return { ok: false, error: "not_synced", verified: false };
+    }
 
-    let n = pow.extranonce2 || 0;
-    let bestBits = pow.bestShareBits != null
-      ? pow.bestShareBits
-      : Math.floor(Math.log2(Math.max(1, pow.bestShareDifficulty || 1)));
-    let bestHash = pow.bestShareHash, bestNonce = pow.bestShareNonce != null ? pow.bestShareNonce : null;
-    let newBest = false, newShares = 0, foundBlock = false, count = 0;
+    const burstMs = opts.budgetMs != null ? opts.budgetMs : this.budgetMs;
+    let job;
+
+    try {
+      job = await HashimonApi.fetchJob(hashimon.serverId);
+    } catch (e) {
+      return { ok: false, error: String(e.message || e), verified: false };
+    }
+
+    const dna = job.header?.merkleRoot || hashimon.dna;
+    const extranonce1 = job.extranonce1 || deriveExtranonce1(dna);
+    const extranonce2Start = hashimon.pow.extranonce2 ?? job.extranonce2Start ?? 0;
+    const shareTargetBits = job.shareTargetBits ?? DEFAULT_SHARE_TARGET_BITS;
 
     const t0 = performance.now();
-    while (count < maxHashes) {
-      const h = this.hashOnce(dna + ":" + n);
-      const bits = this.leadingZeroBits(h);
-      if (bits >= this.shareTargetBits) { newShares++; }
-      if (bits > bestBits) {
-        bestBits = bits; bestHash = h; bestNonce = n; newBest = true;
-        if (bits >= this.blockTargetBits) { foundBlock = true; }
-      }
-      n++; count++;
-      if ((count & 1023) === 0 && performance.now() - t0 >= budgetMs) { break; }
-    }
+    const burst = mineBurst({
+      dna,
+      extranonce1,
+      extranonce2Start,
+      shareTargetBits,
+      burstMs,
+    });
     const seconds = (performance.now() - t0) / 1000;
 
-    pow.extranonce2 = n;
-    pow.totalHashes = (pow.totalHashes || 0) + count;
-    pow.validShares += newShares;
-    pow.miningSeconds = +((pow.miningSeconds || 0) + seconds).toFixed(1);
-    if (newBest) {
-      pow.bestShareBits = bestBits;
-      pow.bestShareDifficulty = Math.pow(2, bestBits);   //keeps the evolution formula intact
-      pow.bestShareHash = bestHash;
-      pow.bestShareNonce = bestNonce;
+    hashimon.pow.extranonce2 = burst.nextExtranonce2;
+    hashimon.pow.totalHashes = (hashimon.pow.totalHashes || 0) + burst.hashes;
+    hashimon.pow.miningSeconds = +((hashimon.pow.miningSeconds || 0) + seconds).toFixed(1);
+
+    if (!burst.found || !burst.share) {
+      return {
+        ok: true,
+        found: false,
+        hashes: burst.hashes,
+        seconds,
+        hashrate: Math.round(burst.hashes / Math.max(seconds, 0.001)),
+        best: burst.best,
+        verified: hashimon.verified ?? null,
+        localOnly: true,
+      };
     }
-    if (foundBlock) { pow.foundBlock = true; }
 
-    const evolution = HashimonSystem.refreshEvolution(hashimon);
-    return {
-      hashes: count, seconds,
-      hashrate: Math.round(count / Math.max(seconds, 0.001)),
-      newShares, bestBits, bestHash, newBest, foundBlock, ...evolution,
-    };
+    try {
+      const res = await HashimonApi.submitShare(hashimon.serverId, {
+        jobId: job.jobId,
+        extranonce2: burst.share.extranonce2,
+        nonce: burst.share.nonce,
+        hash: burst.share.hash,
+        totalHashesAttempted: burst.hashes,
+      });
+      applyServerPow(hashimon, res);
+      const evolution = globalThis.HashimonSystem.refreshEvolution(hashimon);
+      return {
+        ok: true,
+        found: true,
+        verified: res.verified === true,
+        bits: res.bits,
+        bestBits: res.bestShareBits ?? burst.share.bits,
+        bestHash: res.bestShareHash ?? burst.share.hash,
+        tier: res.progression?.tier ?? evolution.tier,
+        newBest: true,
+        stageUp: evolution.stageUp,
+        newStage: evolution.newStage,
+        hashes: burst.hashes,
+        seconds,
+        hashrate: Math.round(burst.hashes / Math.max(seconds, 0.001)),
+        share: burst.share,
+        ...evolution,
+      };
+    } catch (e) {
+      if (e.code === "stale_job" || e.status === 409) {
+        return {
+          ok: false,
+          error: "stale_job",
+          share: burst.share,
+          verified: false,
+          retry: true,
+        };
+      }
+      return {
+        ok: false,
+        error: String(e.message || e),
+        share: burst.share,
+        verified: false,
+      };
+    }
   },
 
-  //Recompute a creature's claimed best share from its DNA + nonce. Because the
-  //work is real, this must match — it's how anyone verifies the effort.
   verify(hashimon) {
-    if (hashimon.pow.bestShareNonce == null) { return null; }   //nothing mined yet
+    if (hashimon.verified === true) { return true; }
+    if (hashimon.verified === false) { return false; }
+    if (hashimon.pow.bestShareNonce == null) { return null; }
     const dna = HashimonDNA.forHashimon(hashimon);
-    return this.hashOnce(dna + ":" + hashimon.pow.bestShareNonce) === hashimon.pow.bestShareHash;
+    if (hashimon.pow.bestShareExtranonce2 != null) {
+      const recomputed = this.hashOnce(
+        `${dna}:${deriveExtranonce1(dna)}:${hashimon.pow.bestShareExtranonce2}:${hashimon.pow.bestShareNonce}`
+      );
+      return recomputed === hashimon.pow.bestShareHash;
+    }
+    return this.hashOnce(`${dna}:${hashimon.pow.bestShareNonce}`) === hashimon.pow.bestShareHash;
   },
 
-}
+};
+
+export default window.HashimonMining;
