@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Hashimon">
+  <rect width="32" height="32" rx="4" fill="#120c2a"/>
+  <rect x="6" y="5" width="20" height="18" rx="2" fill="#3a1c78" stroke="#120c2a" stroke-width="2"/>
+  <rect x="8" y="7" width="16" height="6" fill="#00e5ff" opacity="0.35"/>
+  <rect x="10" y="10" width="3" height="3" fill="#fff"/>
+  <rect x="19" y="10" width="3" height="3" fill="#fff"/>
+  <rect x="13" y="16" width="6" height="2" fill="#9b05a8"/>
+  <rect x="10" y="24" width="4" height="3" fill="#00e5ff" opacity="0.8"/>
+  <rect x="18" y="24" width="4" height="3" fill="#00e5ff" opacity="0.8"/>
+</svg>

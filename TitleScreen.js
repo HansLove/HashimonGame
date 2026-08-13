@@ -5,6 +5,7 @@ class TitleScreen {
 
   getOptions(resolve) {
     const safeFile = this.progress.getSaveFile();
+    const canContinue = this.progress.canContinue();
     return [
       { 
         label: "New Adventure",
@@ -14,12 +15,12 @@ class TitleScreen {
           resolve();
         }
       },
-      safeFile ? {
+      canContinue ? {
         label: "Continue",
         description: "Resume your saved journey",
         handler: () => {
           this.close();
-          resolve(safeFile);
+          resolve(safeFile || true);
         }
       } : null
     ].filter(v => v);

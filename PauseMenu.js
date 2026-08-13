@@ -37,6 +37,61 @@ class PauseMenu {
           }
         },
         {
+          label: "Copy token 3D",
+          description: "Copy session token for the Luanti Hashimon world",
+          handler: async () => {
+            const container = document.querySelector(".game-container");
+            if (!window.HashimonApi) {
+              new TextMessage({
+                text: "Hashimon API client not loaded.",
+                onComplete: () => {}
+              }).init(container);
+              return;
+            }
+            try {
+              const result = await HashimonApi.copyTokenFor3D();
+              const msg = result.copied
+                ? "Token copied! In 3D: /hashimon login, click the box, paste (Cmd+V or Ctrl+V)."
+                : `Token: ${result.token}\n\nIn 3D: /hashimon login and paste in the form.`;
+              new TextMessage({
+                text: msg,
+                onComplete: () => {}
+              }).init(container);
+            } catch (err) {
+              new TextMessage({
+                text: `Could not get token: ${err.message || err}`,
+                onComplete: () => {}
+              }).init(container);
+            }
+          }
+        },
+        {
+          label: "Save token file 3D",
+          description: "Download hashimon_token.txt for /hashimon file in Luanti",
+          handler: async () => {
+            const container = document.querySelector(".game-container");
+            if (!window.HashimonApi) {
+              new TextMessage({
+                text: "Hashimon API client not loaded.",
+                onComplete: () => {}
+              }).init(container);
+              return;
+            }
+            try {
+              await HashimonApi.downloadTokenFileFor3D();
+              new TextMessage({
+                text: "Saved hashimon_token.txt — move it to your Luanti world folder, then /hashimon file",
+                onComplete: () => {}
+              }).init(container);
+            } catch (err) {
+              new TextMessage({
+                text: `Could not save token file: ${err.message || err}`,
+                onComplete: () => {}
+              }).init(container);
+            }
+          }
+        },
+        {
           label: "Save",
           description: "Save your map position (your party saves automatically)",
           handler: () => {

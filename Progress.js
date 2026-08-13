@@ -29,6 +29,26 @@ class Progress {
     return file ? JSON.parse(file) : null
   }
 
+  //Roster autosaves independently of map position. Continue should still
+  //appear if you captured Hashimons but never hit Pause → Save.
+  hasRosterSave() {
+    if (!window.localStorage) {
+      return false;
+    }
+    try {
+      const file = window.localStorage.getItem("Hashimon_PlayerState");
+      if (!file) { return false; }
+      const data = JSON.parse(file);
+      return Object.keys(data.hashimons || {}).length > 0;
+    } catch {
+      return false;
+    }
+  }
+
+  canContinue() {
+    return !!(this.getSaveFile() || this.hasRosterSave());
+  }
+
   load() {
     const file = this.getSaveFile();
     if (file) {
